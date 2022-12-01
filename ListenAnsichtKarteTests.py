@@ -33,7 +33,7 @@ html_list.append(html.Iframe(id="karte", srcDoc=open(r"C:\Users\Marc\Documents\B
 
 app.layout = html.Div(html_list)
 
-
+dash.page_container
 outputs = [Output("collapse-question-{}".format(i), "is_open") for i in range(len(sentences_head))]
 inputs = [Input("button-question-{}".format(i), "n_clicks") for i in range(len(sentences_head))]
 states = [State("collapse-question-{}".format(i), "is_open") for i in range(len(sentences_head))]
