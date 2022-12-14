@@ -8,11 +8,22 @@ import os
 
 html_list = []
 
-html_list.append(html.H3("Interaktive Karte Test"))
+#html_list.append(html.H3("Interaktive Karte Test"))
 
 #button for refreshing the map
 FA_icon = html.I(className="fa fa-refresh")
-button = (html.Div(dbc.Button([FA_icon, "Refresh"], color="light", className="me-1")))
+button = (html.Div(dbc.Button(FA_icon, color="light", className="me-1",
+style={
+                        "marginLeft": "93%",
+                        "width": "7%",
+                        "height": "60%",
+                        "fontSize": "1em",
+                       # "background-color": "grey",
+                        "color": "black",
+                       # "border-radius": "4px",
+                       # "border": "2px solid black",
+                    },
+                    )))
 html_list.append(button)
 #----------!!!!!!!!!
 # pfad zur karte manchmal weird muss vorm testen angepasst werden(also wenn was falsch läuft kann gut hier dran liegen)
