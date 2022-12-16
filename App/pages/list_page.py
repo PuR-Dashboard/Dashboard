@@ -164,19 +164,19 @@ def toggle_collapses(butts, stats):
         #print(tuple(stats))
         #return tuple(stats)
 
-@callback(
-    Output("page-layout", "children"), [Input("revert_filter_test", "n_clicks")],
-    prevent_initial_call=True
-)
-def filter_buttons(n_clicks):
-    #temp_content = filter_content(data, {"location": "Heidelberg"})
-
-    names2, content2 = create_content(data)
-
-    layout = create_layout(names2, content2)
-    #print(layout)
-
-    return layout
+#@callback(
+#    Output("page-layout", "children"), [Input("revert_filter_test", "n_clicks")],
+#    prevent_initial_call=True
+#)
+#def filter_buttons(n_clicks):
+#    #temp_content = filter_content(data, {"location": "Heidelberg"})
+#
+#    names2, content2 = create_content(data)
+#
+#    layout = create_layout(names2, content2)
+#    #print(layout)
+#
+#    return layout
 
 @callback(
     Output("page-layout", "children"), [Input("filter_test", "n_clicks")],
