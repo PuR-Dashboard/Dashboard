@@ -1,4 +1,4 @@
-﻿"location,lat,lon,occupancy_tendency,occupancy_tendency:de,occupancy_traffic_light,occupancy_label:de"
-"Heidelberg,8.6752599999999997,49.4057200000000023,decreasing,abnehmend,yellow,wenige vorhanden"
-"Zwingenberg,8.9831599999999998,49.4658400000000000,stagnating,stagnierend,green,ausreichend vorhanden"
-"Bamberg,10.8998399999999993,49.9017499999999998,decreasing,abnehmend,yellow,wenige vorhanden"
+﻿location,lat ,lon,occupancy_tendency,occupancy_tendency:de,occupancy_traffic_light,occupancy_label:de
+Heidelberg,8.6752599999999997,49.405720000000002,"decreasing,",abnehmend,yellow,wenige vorhanden
+Zwingenberg,8.9831599999999998,49.46584,stagnating,stagnierend,green,ausreichend vorhanden
+Bamberg,10.899839999999999,49.90175,decreasing,abnehmend,yellow,wenige vorhanden
