@@ -1,4 +1,4 @@
-# Import necessary libraries 
+# Import necessary libraries
 from dash import html, dcc
 from dash.dependencies import Input, Output
 
@@ -17,8 +17,8 @@ nav = navbar.Navbar()
 # Define the index page layout
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
-    nav, 
-    html.Div(id='page-content', children=[]), 
+    nav,
+    html.Div(id='page-content', children=[]),
 ])
 
 # Create the callback to handle mutlipage inputs

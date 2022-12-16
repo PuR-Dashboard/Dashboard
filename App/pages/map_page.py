@@ -29,10 +29,14 @@ style={
 html_list.append(button)
 #----------!!!!!!!!!
 # pfad zur karte manchmal weird muss vorm testen angepasst werden(also wenn was falsch läuft kann gut hier dran liegen)
-html_list.append(html.Iframe(id="karte", srcDoc=open(os.path.join(os.path.dirname(__file__), '../../P&R_Karte.html'), "r").read(), width="100%", height="600"))
+m = map_functions.create_map()
+
+#----------!!!!!!!!!
+# pfad zur karte manchmal weird muss vorm testen angepasst werden(also wenn was falsch läuft kann gut hier dran liegen)
+html_list.append(html.Iframe(id="karte", srcDoc=open(os.path.join(os.path.dirname(__file__), '../P&R_Karte.html'), "r").read(), width="100%", height="800"))
 
 #html.P(id='placeholder')
-@callback(Output(component_id='karte', component_property='karte'), 
+@callback(Output(component_id='karte', component_property='karte'),
    [Input(component_id='Refresh', component_property='n_clicks')])
 
 def update(nr_clicks):
@@ -62,10 +66,8 @@ def update(nr_clicks):
     # Button für die Suche
     folium.plugins.Search(layer = einzugsgebiete,position = 'topright').add_to(html_list)
     folium.LayerControl().add_to(html_list)
-    
+
     return html_list
-     
+
 
 layout = html.Div(html_list)
-
-
