@@ -8,17 +8,22 @@ from app import app
 # Connect to your app pages
 from pages import map_page, list_page
 
-# Connect the navbar to the index
+# Connect the components to the index
 from components import navbar
+from components import sidebar
 
 # Define the navbar
 nav = navbar.Navbar()
+
+#Define sidebar
+sid = sidebar.Sidebar()
 
 # Define the index page layout
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     nav,
     html.Div(id='page-content', children=[]),
+    sid,
 ])
 
 # Create the callback to handle mutlipage inputs

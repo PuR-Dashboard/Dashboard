@@ -6,6 +6,30 @@ from dash.dependencies import Input, Output, State
 import numpy as np
 from dash.exceptions import PreventUpdate
 import os
+from utility import map_functions
+from utility.map_functions import *
+from pandas import read_csv
+
+
+SIDEBAR_STYLE = {
+    "position": "fixed",
+    "top": "4rem",
+    "right": 0,
+    "bottom": 0,
+    "width": "16rem",
+    "padding": "2rem 1rem",
+    "background-color": "#f8f9fa",
+    "overflow": "scroll"
+}
+
+BUTTON_STYLE = {
+    "width": "8rem",
+    "height": "2rem",
+    "padding": "2rem 1rem",
+    "text-align":"center",
+}
+
+
 
 html_list = []
 
@@ -33,7 +57,7 @@ m = map_functions.create_map()
 
 #----------!!!!!!!!!
 # pfad zur karte manchmal weird muss vorm testen angepasst werden(also wenn was falsch läuft kann gut hier dran liegen)
-html_list.append(html.Iframe(id="karte", srcDoc=open(os.path.join(os.path.dirname(__file__), '../P&R_Karte.html'), "r").read(), width="100%", height="800"))
+html_list.append(html.Iframe(id="karte", srcDoc=open(os.path.join(os.path.dirname(__file__), '../P&R_Karte.html'), "r").read(), width="87%", height="800"))
 
 #html.P(id='placeholder')
 @callback(Output(component_id='karte', component_property='karte'),
@@ -68,6 +92,8 @@ def update(nr_clicks):
     folium.LayerControl().add_to(html_list)
 
     return html_list
+
+
 
 
 layout = html.Div(html_list)

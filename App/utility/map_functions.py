@@ -29,7 +29,7 @@ def Marker(markers, folium_map):
 
 
 # Bestimmung der Bildschirmgröße
-def Bildschirmgröße():
+def Bildschirmgroesse():
 
     user32 = ctypes.windll.user32
     screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
@@ -141,7 +141,7 @@ def add_legend(folium_map):
 def update(m):
 
     data = read_csv("C:\\Users\\Marc\\Downloads\\Dashboard\\Dashboard\\Location_Data (1).csv",delimiter=',')
-    screensize = Bildschirmgröße()
+    screensize = Bildschirmgroesse()
     html = create_html(data, screensize)
     markers = []
     for  i in range (len(data)):
