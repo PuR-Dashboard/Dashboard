@@ -12,25 +12,6 @@ path_to_links = '../../Data/Urls.json'
 path_to_csv = '../../Data/Location_Data.csv'
 
 
-def add_location(dic, url):
-    """
-    This function adds the location to the json file and updates the csv file.
-
-    Parameters
-    ----------
-    dic : dict
-        Dictionary containing the characteristics of the location.
-    url : str
-        The url for the location-API.
-    """
-
-    # Add the link to the json file
-    add_link_to_json(dic['location'], url)
-
-    # Update the csv file
-    update_csv()
-
-
 def update_csv():
     """
     This function updates the csv file containing the locations of the facilities with the information from the urls.
@@ -52,7 +33,7 @@ def update_csv():
         for location, url in zip(locations, urls):
 
             # Extract the information from the url
-            data = access_api(url)
+            data = extract_information_from_url(url)
 
             # Write the header
             if first_row:
@@ -118,7 +99,7 @@ def get_locations_and_urls():
     return locations, urls
 
 
-def access_api(url):
+def extract_information_from_url(url):
     """
     This function extracts the information for the facility from the url.
 
@@ -145,50 +126,3 @@ def access_api(url):
 
     # Return the information
     return data[0]
-
-
-def delete_link_in_json(location):
-    """
-    This function deletes the link for the location from the json file.
-
-    Parameters
-    ----------
-    location : str
-        The location for which the link should be deleted.
-    """
-
-    # Access the json file with the information about the locations
-    with open(path_to_links, 'r') as f:
-        content = json.load(f)
-
-    # Delete the link for the location
-    del content[location]
-
-    # Write the new content to the json file
-    with open(path_to_links, 'w') as f:
-        json.dump(content, f, indent=4)
-
-
-def add_link_to_json(location, url):
-    """
-    This function adds the link for the location to the json file. Can also be used to update the link of the given
-    location.
-
-    Parameters
-    ----------
-    location : str
-        The location for which the link should be added.
-    url : str
-        The url for the location.
-    """
-
-    # Access the json file with the information about the locations
-    with open(path_to_links, 'r') as f:
-        content = json.load(f)
-
-    # Add the link for the location
-    content[location] = url
-
-    # Write the new content to the json file
-    with open(path_to_links, 'w') as f:
-        json.dump(content, f, indent=4)
