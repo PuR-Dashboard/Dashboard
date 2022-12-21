@@ -2,14 +2,28 @@ import csv
 import requests
 import json
 
-# User credentials
-username = 'optipark'
-password = 'Dyb1yoTU4TG8'
+username = 'optipark'  # Username for the API
+password = 'Dyb1yoTU4TG8'  # Password for the API
 
-# Path: Data/Urls.json
-path_to_links = '../../Data/Urls.json'
-# Path: Data/Location_Data.csv
-path_to_csv = '../../Data/Location_Data.csv'
+path_to_links = '../../Data/Urls.json'  # Path to the json file with the API access links
+path_to_csv = '../../Data/Location_Data.csv'  # Path to the csv file containing the location data
+
+
+def add_location(dic, url):
+    """
+    This function adds the location to the json file and updates the csv file.
+
+    Parameters
+    ----------
+    dic : dict
+        Dictionary containing the characteristics of the location.
+    url : str
+        The url for the location-API.
+    """
+
+    add_link_to_json(dic['location'], url)  # Add the link to the json file
+
+    update_csv()  # Update the csv file
 
 
 def update_csv():
@@ -17,59 +31,41 @@ def update_csv():
     This function updates the csv file containing the locations of the facilities with the information from the urls.
     """
 
-    # Get the locations and the urls
-    locations, urls = get_locations_and_urls()
+    locations, urls = get_locations_and_urls()  # Get the list of locations and the list of urls
 
-    # Create boolean variable to write the header
-    first_row = True
+    first_row = True  # Create boolean variable to write the header
 
-    # Open the csv file
-    with open(path_to_csv, 'w', newline='') as csvfile:
+    with open(path_to_csv, 'w', newline='') as csvfile:  # Open the csv file
 
-        # Create a csv writer
-        writer = csv.writer(csvfile, delimiter=',')
+        writer = csv.writer(csvfile, delimiter=',')  # Create a csv writer
 
-        # Iterate over the locations and the urls
-        for location, url in zip(locations, urls):
+        for location, url in zip(locations, urls):  # Iterate over the locations and the urls
 
-            # Extract the information from the url
-            data = extract_information_from_url(url)
+            data = access_api(url)  # Extract the information from the url
 
-            # Write the header
-            if first_row:
-                # Get the keys of the dictionary
-                header = list(data)
+            if first_row:  # If it is the first row
+                header = list(data)  # Get the keys of the dictionary
 
-                # Remove the geometry key from the header
-                header.remove('geometry')
+                header.remove('geometry')  # Remove the geometry key from the header
 
-                # Add necessary keys to the header
-                header = ['location', 'lat', 'lon'] + header
+                header = ['location', 'lat', 'lon'] + header  # Add the location, lat and lon keys to the header
 
-                # Write the header
-                writer.writerow(header)
+                writer.writerow(header)  # Write the header
 
-                # Set the first_row variable to False
-                first_row = False
+                first_row = False  # Set the first_row variable to False
 
-            # Get the coordinates of the location
-            point = data['geometry']
+            point = data['geometry']  # Get the coordinates of the location
 
-            # Remove unnecessary characters from the coordinates
-            split = point.split(' ')
+            split = point.split(' ')  # Split the string at the space
 
-            # Extract the latitude and longitude
-            lat = float(split[1][1:])
-            lon = float(split[2][:-1])
+            lat = float(split[1][1:])  # Remove the '(' from the latitude and convert to float
+            lon = float(split[2][:-1])  # Remove the ')' from the longitude and convert to float
 
-            # Create a list with the values of the dictionary
-            values = list(data.values())
+            values = list(data.values())  # Get the values of the dictionary
 
-            # Remove the point from the values
-            values.remove(point)
+            values.remove(point)  # Remove the point from the values
 
-            # Write the location and the values for the location to the csv file
-            writer.writerow([location, lat, lon] + values)
+            writer.writerow([location, lat, lon] + values)  # Write the row to the csv file
 
 
 def get_locations_and_urls():
@@ -80,26 +76,21 @@ def get_locations_and_urls():
         Tuple containing the list of locations and the list of urls.
     """
 
-    # Access the json file with the information about the locations
-    with open(path_to_links, 'r') as f:
-        content = json.load(f)
+    with open(path_to_links, 'r') as f:  # Open the json file with the API access links
+        content = json.load(f)  # Load the content of the json file
 
-    # Create an empty list for the locations
-    locations = []
+    locations = []  # Create an empty list for the locations
 
-    # Create an empty list for the urls of the locations
-    urls = []
+    urls = []  # Create an empty list for the urls
 
-    # Iterate over the urls and extract the location from each one
-    for key, value in content.items():
-        locations.append(key)
-        urls.append(value)
+    for key, value in content.items():  # Iterate over the keys and values of the dictionary
+        locations.append(key)  # Add the location to the list
+        urls.append(value)  # Add the url to the list
 
-    # Return the list of locations and the list of urls
-    return locations, urls
+    return locations, urls  # Return the list of locations and the list of urls
 
 
-def extract_information_from_url(url):
+def access_api(url):
     """
     This function extracts the information for the facility from the url.
 
@@ -114,15 +105,52 @@ def extract_information_from_url(url):
         Dictionary containing the information for the facility.
     """
 
-    # Send a request to the url using the username and password
-    r = requests.get(url, auth=(username, password))
+    r = requests.get(url, auth=(username, password))  # Send a request to the url using the username and password
 
-    # If the request was not successful, print the faulty url
-    if r.status_code != 200:
-        raise Exception('Could not access the url {}'.format(url))
+    if r.status_code != 200:  # If the request was not successful
+        raise Exception('Could not access the url {}'.format(url))  # Raise an exception and print the url
 
-    # Extract the information from the response
-    data = r.json()
+    data = r.json()  # Extract the json data
 
-    # Return the information
-    return data[0]
+    return data[0]  # Return the first element of the list (that is, the dictionary)
+
+
+def delete_link_in_json(location):
+    """
+    This function deletes the link for the location from the json file.
+
+    Parameters
+    ----------
+    location : str
+        The location for which the link should be deleted.
+    """
+
+    with open(path_to_links, 'r') as f:  # Open the json file with the information about the locations
+        content = json.load(f)  # Load the content of the json file
+
+    del content[location]  # Delete the link for the location
+
+    with open(path_to_links, 'w') as f:  # Open the json file with the information about the locations
+        json.dump(content, f, indent=4)  # Write the new content to the json file
+
+
+def add_link_to_json(location, url):
+    """
+    This function adds the link for the location to the json file. Can also be used to update the link of the given
+    location.
+
+    Parameters
+    ----------
+    location : str
+        The location for which the link should be added.
+    url : str
+        The url for the location.
+    """
+
+    with open(path_to_links, 'r') as f:  # Open the json file with the information about the locations
+        content = json.load(f)  # Load the content of the json file
+
+    content[location] = url  # Add the link for the location
+
+    with open(path_to_links, 'w') as f:  # Open the json file with the information about the locations
+        json.dump(content, f, indent=4)  # Write the new content to the json file
