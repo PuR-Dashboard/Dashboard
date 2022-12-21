@@ -4,7 +4,7 @@ from dash import html, dcc, callback
 from dash.dependencies import Input, Output, State, MATCH, ALL
 import numpy as np
 from dash.exceptions import PreventUpdate
-from ..utility.util_functions import *
+from utility.util_functions import *
 
 
 data = get_data()  # Get DataFrame containing data stored in the Location Data csv

@@ -2,7 +2,7 @@ import os
 import dash_bootstrap_components as dbc
 from dash import html, callback
 from dash.dependencies import Input, Output
-from ..utility.map_functions import *
+from utility.map_functions import *  # Needs to stay this way to run from command line
 from folium import plugins
 
 

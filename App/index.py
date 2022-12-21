@@ -2,6 +2,7 @@
 from dash import html, dcc
 from dash.dependencies import Input, Output
 
+from App.components import sidebar
 # Connect to main app.py file
 from app import app
 
@@ -18,12 +19,15 @@ Further, it includes callback functions for the different pages of the applicati
 """
 
 
-nav = navbar.Navbar()  # Create the navbar
+nav = navbar.get_navbar()  # Create the navbar
+
+sid = sidebar.get_sidebar()  # Create the sidebar
 
 app.layout = html.Div([  # Create a Div containing the navbar and the content
     dcc.Location(id='url', refresh=False),  # Track current URL of the page
     nav,  # Add the navbar
     html.Div(id='page-content', children=[]),  # Add the page content
+    sid  # Add the sidebar
 ])
 
 

@@ -3,12 +3,11 @@ from dash import html
 import dash_bootstrap_components as dbc
 
 
-def navbar():
+def get_navbar():
     """
     This function defines and returns a Dash layout for the navigation bar of the application.
     :return: A Dash layout for the navigation bar of the application.
     """
-
     layout = html.Div(  # Create a Div element
         [
             dbc.NavbarSimple(  # Bootstrap component which creates a simple navigation bar

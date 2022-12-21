@@ -6,6 +6,7 @@ from folium_jsbutton import JsButton
 from pandas import read_csv
 import ctypes
 import branca
+from utility.util_functions import get_data
 
 
 def add_markers(markers, folium_map):
@@ -168,10 +169,7 @@ def update(m):
     """
 
     # TODO: Fix path
-    data = read_csv(
-        "C:\\Users\\Marc\\Downloads\\Dashboard\\Dashboard\\Location_Data (1).csv",
-        delimiter=','
-    )
+    data = get_data()  # Get the data
 
     screensize = get_screensize()  # Get the screensize
 

@@ -3,9 +3,12 @@ import os
 import pathlib
 
 
+top_folder = "Dashboard"
+
+
 # get the top directory of our app, regardless of depth
 # TODO: Error if while loop breaks and nothing matching was found
-def get_root_dir(name_of_top_folder="Dashboard-main"):
+def get_root_dir(name_of_top_folder=top_folder):
     """
     Get the top directory of our app, regardless of depth
     :param name_of_top_folder:
@@ -28,6 +31,7 @@ def get_root_dir(name_of_top_folder="Dashboard-main"):
 def get_data(name_of_csv="Location_Data.csv"):
     """
     Get data stored in our Location Data and return DataFrame
+    :param name_of_top_folder: The name of the top folder
     :param name_of_csv: The name of the csv file
     :return: The DataFrame containing the data
     """
