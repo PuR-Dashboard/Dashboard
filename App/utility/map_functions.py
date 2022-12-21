@@ -1,4 +1,6 @@
 import pyautogui
+import os
+import sys
 import folium
 from folium import plugins
 from folium.plugins import MarkerCluster
@@ -6,7 +8,7 @@ from folium_jsbutton import JsButton
 from pandas import read_csv
 import ctypes
 import branca
-from utility.util_functions import get_data
+from util_functions import get_data
 
 
 def add_markers(markers, folium_map):
