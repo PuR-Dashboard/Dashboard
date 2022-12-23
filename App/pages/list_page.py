@@ -91,6 +91,11 @@ def create_content(df: pd.DataFrame):
 
     return names, content
 
+#table for characteristics
+df = get_data()
+table = dbc.Table.from_dataframe(
+    df, striped=True, bordered=True, hover=True, index=True
+)
 
 #function to dynamically create the dash components of the new layout, will always be used after filtering or refreshing
 #----!!! Names and content is at the moment created through the create_content() def, will need new creation function after create_content() is DEPRECATED
@@ -117,7 +122,8 @@ def create_layout(names:list[str], content:list[str]):
                 )))
                 #append collapsible content
         html_list.append(dbc.Collapse(
-            dbc.CardBody(content[i]),
+            dbc.CardBody(table),
+           #dbc.CardBody(content[i]),
             id={"type":"content", "index":i}, 
             is_open=False
         ))
