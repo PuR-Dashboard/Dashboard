@@ -5,10 +5,25 @@ from dash.dependencies import Input, Output, State, MATCH, ALL
 import numpy as np
 from dash.exceptions import PreventUpdate
 from utility.util_functions import *
-from utility.filter_funktion import filter_names, filter_for_value
+from utility.filter_funktion import filter_names, filter_for_value, filter_for_index
+from components.sidebar import get_sidebar
 
 #global so the filter functions can access the date
 global data, temp_data
+
+
+DEL_BUTTON_STYLE = {  # Define the style of the buttons
+    #"width": "8rem",  # Set the width of the buttons to 8rem
+    #"height": "2rem",  # Set the height of the buttons to 2rem
+    "padding": "2rem 1rem",  # Add some padding to the buttons
+    "marginRight": "0%",  # Align the text in the buttons to the right
+}
+
+global sid
+seitentag = "_list"
+
+sid = get_sidebar(seitentag)
+
 
 #baseline truth of the users data
 data = get_data()
@@ -102,22 +117,33 @@ def create_layout(names:list[str], content:list[str]):
     returns: list of python dash and dash.html elements, will be the new layout
     """
     #currently content is list of strings, datatype will vary in the future
-
+    global sid
     #init list of components
     html_list = []
+
+    html_list.append(dbc.Input(  # Input field for the name
+                        id="test_side",  # Set the id of the input field to sideboard_name_filter
+                        type="text",  # Set the type of the input field to text
+                        debounce=False,  # Set the debounce-attribute of the input field to False
+                        value="",  # Set the value of the input field to an empty string
+                        placeholder="Location Name",  # Set the placeholder of the input field to Location Name
+                        autofocus=True  # Set the autofocus-attribute of the input field to True
+                    ),)
+
 
     #iterate through names(names and content must have the same length)
     for i in range(len(names)):
         #append header of location
-        html_list.append(dbc.CardHeader(dbc.Button(
+        html_list.append(dbc.CardHeader([dbc.Button(
                     names[i],
                     color="outline",
                     id={"type":"header", "index":i},
                     value=i
-                )))
+                ), html.Button("Hello", id={"type":"button_control", "index":i})]))
                 #append collapsible content
         html_list.append(dbc.Collapse(
             dbc.CardBody(content[i]),
+            #html.Iframe(create_table()),
             id={"type":"content", "index":i}, 
             is_open=False
         ))
@@ -127,6 +153,8 @@ def create_layout(names:list[str], content:list[str]):
         html_list.append(html.H3("No results found!"))
         html_list.append(html.Hr())
 
+    html_list.append(sid)
+
     return html_list
 
 #create headers and content
@@ -134,7 +162,7 @@ names, content = create_content(data)
 #create new layout
 html_list_for_layout = create_layout(names, content)
 
-layout = html.Div(children=html_list_for_layout, id="page-layout")
+layout = html.Div(children=html_list_for_layout, id="list_layout")
 
 
 
@@ -155,43 +183,66 @@ def toggle_collapses(_butts, stats):
         return not stats
 
 
+@callback(
+    Output("test_side", "value"),
+    [Input({"type": "button_control", "index": ALL}, "n_clicks")],
+    prevent_initial_call=True,
+)
+def remove_location(_n):
+    triggered_id = ctx.triggered_id
+
+    return triggered_id["index"]
 
 #function responsible for filtering and changing the layout
 #callback inputs are all buttons and dash components used for either filtering or pop up/modal handeling
 #callback outputs are interactive dash components for filtering and the pages layout
 #state is the open/close state of the pop up/modal
 @callback(
-    [Output("page-layout", "children"), 
-    Output("modal_window", "is_open"),
-    Output("sideboard_name_filter", "value"),
-    Output("modal_name_filter", "value"),
-    Output("modal_occupancy_filter", "value")],
-    [Input("clear_filter_button", "n_clicks"),
-    Input("advanced_filter_button", "n_clicks"),
-    Input("modal_submit_button", "n_clicks"),
-    Input("modal_cancel_button", "n_clicks"),
-    Input("modal_name_filter", "value"),
-    Input("modal_occupancy_filter", "value"),
-    Input("sideboard_name_filter", "value")],
-    [State("modal_window", "is_open")],
+    [Output("list_layout", "children"), 
+    Output("modal_window" + seitentag, "is_open"),
+    Output("sideboard_name_filter" + seitentag, "value"),
+    Output("modal_name_filter" + seitentag, "value"),
+    Output("modal_occupancy_filter" + seitentag, "value"),
+    Output("sideboard_occupancy_filter" + seitentag, "value")],
+    [Input("clear_filter_button" + seitentag, "n_clicks"),
+    Input("advanced_filter_button" + seitentag, "n_clicks"),
+    Input("modal_submit_button" + seitentag, "n_clicks"),
+    Input("modal_cancel_button" + seitentag, "n_clicks"),
+    Input("modal_name_filter" + seitentag, "value"),
+    Input("modal_occupancy_filter" + seitentag, "value"),
+    Input("sideboard_name_filter" + seitentag, "value"),
+    Input("sideboard_occupancy_filter" + seitentag, "value"),
+    Input({"type": "button_control", "index": ALL}, "n_clicks")],
+    [State("modal_window" + seitentag, "is_open")],
     prevent_initial_call=True
 )
-def filter_list(_n1, _n2, _n3, _n4, modal_name_text, modal_occupancy_radio, sideboard_name_text, modal_state): #cancel_c_clicks,
-    triggered_id = ctx.triggered_id
+def filter_list(_n1, _n2, _n3, _n4, modal_name_text, modal_occupancy_radio, sideboard_name_text, sideboard_occupancy_radio, _delete_button, modal_state): #cancel_c_clicks,
+    global data, temp_data
 
+    triggered_id = ctx.triggered_id
+    #print(type(triggered_id))
     #depending on the button pressed, act accordingly and return according values
-    if triggered_id == "clear_filter_button":
-        return revert_filter_buttons(), modal_state, "", "", "None"
-    elif triggered_id == "advanced_filter_button":
-        return keep_layout(), (not modal_state), "", modal_name_text, modal_occupancy_radio
-    elif triggered_id == "modal_submit_button":
+    if isinstance(triggered_id, dash._utils.AttributeDict):
+        filter_id = triggered_id["index"]
+        # Call method for updating csv/deleting line with index from csv
+        data = filter_for_index(data, filter_id)
+        temp_data = filter_for_index(temp_data, filter_id)
+        return keep_layout(), modal_state, sideboard_name_text, modal_name_text, modal_occupancy_radio, sideboard_occupancy_radio
+    elif triggered_id == "clear_filter_button" + seitentag:
+        return revert_filter_buttons(), modal_state, "", "", "None", "None"
+    elif triggered_id == "advanced_filter_button" + seitentag:
+        return keep_layout(), (not modal_state), "", modal_name_text, modal_occupancy_radio, "None"
+    elif triggered_id == "modal_submit_button" + seitentag:
         filter_dict = create_filter_dict(modal_name_text, modal_occupancy_radio)
-        return filter_buttons(filter_dict), (not modal_state), "", modal_name_text, modal_occupancy_radio
-    elif triggered_id == "modal_cancel_button":
-        return keep_layout(), (not modal_state), "", "", "None"
-    elif triggered_id == "sideboard_name_filter":
-        filter_dict = create_filter_dict(sideboard_name_text, modal_occupancy_radio)
-        return filter_buttons(filter_dict), False, sideboard_name_text, modal_name_text, modal_occupancy_radio
+        return filter_buttons(filter_dict), (not modal_state), "", modal_name_text, modal_occupancy_radio, "None"
+    elif triggered_id == "modal_cancel_button" + seitentag:
+        return keep_layout(), (not modal_state), "", "", "None", "None"
+    elif triggered_id == "sideboard_name_filter" + seitentag:
+        filter_dict = create_filter_dict(sideboard_name_text, sideboard_occupancy_radio)
+        return filter_buttons(filter_dict), False, sideboard_name_text, modal_name_text, modal_occupancy_radio, sideboard_occupancy_radio
+    elif triggered_id == "sideboard_occupancy_filter" + seitentag:
+        filter_dict = create_filter_dict(sideboard_name_text, sideboard_occupancy_radio)
+        return filter_buttons(filter_dict), False, sideboard_name_text, modal_name_text, modal_occupancy_radio, sideboard_occupancy_radio
     else:
         raise PreventUpdate
         

@@ -2,6 +2,10 @@
 from dash import html, dcc
 from dash.dependencies import Input, Output
 
+<<<<<<< Updated upstream
+=======
+from components import sidebar
+>>>>>>> Stashed changes
 # Connect to main app.py file
 from app import app
 
@@ -18,12 +22,25 @@ nav = navbar.Navbar()
 #Define sidebar
 sid = sidebar.Sidebar()
 
+<<<<<<< Updated upstream
 # Define the index page layout
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     nav,
     html.Div(id='page-content', children=[]),
     sid,
+=======
+
+nav = navbar.get_navbar()  # Create the navbar
+
+#sid = sidebar.get_sidebar()  # Create the sidebar
+
+app.layout = html.Div([  # Create a Div containing the navbar and the content
+    dcc.Location(id='url', refresh=False),  # Track current URL of the page
+    nav,  # Add the navbar
+    html.Div(id='page-content', children=[]),  # Add the page content
+    #sid  # Add the sidebar
+>>>>>>> Stashed changes
 ])
 
 # Create the callback to handle mutlipage inputs

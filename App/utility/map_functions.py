@@ -40,17 +40,28 @@ def Bildschirmgroesse():
 # Popup kreiiren
 # input: Name des Popup
 # output: popup
+<<<<<<< Updated upstream
 def create_html(data,screensize):
      result = []
 
      for i in range (len(data)):
          one = data.iloc[i]
+=======
+def create_html(data,screensize,colors):
+     result = []
+
+     for i in range (len(data)):
+
+         one = data.iloc[i]
+         arrow = "&#x2B06;" if (one[3] == "increasing") else ("&#x2B07;" if (one[3] == "decreasing")else "&#x2B05;")
+>>>>>>> Stashed changes
          html=f"""
              <h1> {one[0]}</h1>
              <img src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1" width="250" height="250" align = "right">
              &thinsp;
              <p><B><u>Charkteristika:</u></B></p>
              <ul>
+<<<<<<< Updated upstream
                  <li><B>occupancy_tendency</B>: {one[3]}</li>
                  &thinsp;
 
@@ -59,16 +70,31 @@ def create_html(data,screensize):
                  &thinsp;
                  <li><B>occupancy_label:</B> {one[6]}</li>&thinsp;
                  <li><B><a href="https://www.python-graph-gallery.com">ÖPNV-Anbindung</a></B>: S3, S4, Bus</li>
+=======
+                 <li><B>Anzahl der Stellplätze</B>:</li>
+                 &thinsp;
+
+                 &thinsp;
+                 <li><B>Art der Parkgelegenheit</B>:</li>
+                 &thinsp;
+                 <li><B>ÖPNV-Anbindung</a></B>: S3, S4, Bus</li>
+>>>>>>> Stashed changes
              </ul>
              &thinsp;
              <p><B><u>Prognose:</u></B></p>
              <ul>
+<<<<<<< Updated upstream
                  <li> <B>Mo-Fr</B> Morgens <font color = red>&emsp; voll </font></li>&thinsp;
                  <li> <B>Mo-Fr</B> Mittags <font color = green>&emsp; leer </font></li>&thinsp;
                  <li> <B>Mo-Fr</B> Abends<font color = orange>&emsp; mittel </font></li>&thinsp;
                  <li> <B>Sa-So</B> Morgens</li>&thinsp;
                  <li> <B>Sa-So</B> Mittags</li>&thinsp;
                  <li> <B>Sa-So</B> Abends</li>&thinsp;
+=======
+                 <li> <B>aktuelle Auslastung:</B> <font color = {colors[i]}>&emsp; {one[6]}  </font>&emsp;{arrow}</li>&thinsp;
+                 <li> <B>Auslastungshistorie der Woche</B> </li>&thinsp;
+
+>>>>>>> Stashed changes
              </ul>
              </p>
              <body><py-script output="plot">
@@ -138,6 +164,7 @@ def add_legend(folium_map):
 
 
     #updaten der Map
+<<<<<<< Updated upstream
 def update(m):
 
     data = read_csv("C:\\Users\\Marc\\Downloads\\Dashboard\\Dashboard\\Location_Data (1).csv",delimiter=',')
@@ -158,18 +185,52 @@ def update(m):
     # Butto für die Angabe des Standortes
     folium.plugins.LocateControl().add_to(m)
 
+=======
+def update(data,m):
+
+    #data = read_csv("C:\\Users\\Marc\\Downloads\\Dashboard\\Dashboard\\Location_Data (1).csv",delimiter=',')
+
+    screensize = Bildschirmgroesse()
+    colors= ["orange" if (data.iloc[i][6] == "wenige vorhanden") else ("green" if (data.iloc[i][6] == "ausreichend vorhanden")else "red") for i in range (len(data))]
+    tooltips= ["mittlere Auslastung" if (data.iloc[i][6] == "wenige vorhanden") else ("geringe Auslastung" if (data.iloc[i][6] == "ausreichend vorhanden")else "starke Auslastung") for i in range (len(data))]
+    html = create_html(data, screensize,colors)
+    markers = []
+    for  i in range (len(data)):
+        markers.append([data.iloc[i][2], data.iloc[i][1], html[i],"red"])
+
+    Marker(markers,m)
+
+    # erstellen & visualisieren der Einzugsgebiete
+    einzugsgebiete = MarkerCluster(name ='Einzugsgebiete', show = False).add_to(m)
+    gebiete = []
+    for i in range (len(data)):
+        gebiete.append([data.iloc[i][2], data.iloc[i][1],10000])
+    create_Einzugsgebiete(gebiete,einzugsgebiete)
+    # Butto für die Angabe des Standortes
+    folium.plugins.LocateControl().add_to(m)
+
+>>>>>>> Stashed changes
     # Button für die Suche
     folium.plugins.Search(layer = einzugsgebiete,position = 'topright').add_to(m)
     folium.LayerControl().add_to(m)
     m
     return m
 
+<<<<<<< Updated upstream
 def create_map():
     m = folium.Map(location=[51.5, 10.0], zoom_start=6.47)
     update(m)
     add_legend(m)
     m.save("P&R_Karte.html")
     m
+=======
+def create_map(data):
+    m = folium.Map(location=[51.5, 10.0], zoom_start=6.47)
+    update(data,m)
+    add_legend(m)
+    m.save("P&R_Karte.html")
+
+>>>>>>> Stashed changes
     return m
 
 
