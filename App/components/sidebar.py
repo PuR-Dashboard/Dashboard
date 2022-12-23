@@ -21,30 +21,17 @@ BUTTON_STYLE = {
 }
 
 
-<<<<<<< Updated upstream
-def Sidebar():
-    sidebar = html.Div(
-=======
 def get_sidebar(distinction):
     """
     This function defines and returns a Dash layout for the sidebar of the application.
     :return: The layout of the sidebar of the application.
     """
     sidebar = html.Div(  # Create a div element for the sidebar
->>>>>>> Stashed changes
         [
             html.H2("Funcs", className="display-4"),
             html.Hr(),
             dbc.Nav(
                 [
-<<<<<<< Updated upstream
-                    html.H4("Name"),
-                    dbc.Input(id="sideboard_name_filter", type="text", debounce=False, value="", placeholder="Location Name", autofocus=True),
-                    dbc.Button("Advanced", id="advanced_filter_button", value=999, style=BUTTON_STYLE),
-                    html.Br(),
-                    dbc.Button("Clear Filter", id="clear_filter_button",style=BUTTON_STYLE),
-                    html.Br(),
-=======
                     html.H4("Name"),  # Title of the navigation links
                     dbc.Input(  # Input field for the name
                         id="sideboard_name_filter" + distinction,  # Set the id of the input field to sideboard_name_filter
@@ -79,43 +66,10 @@ def get_sidebar(distinction):
                         style=BUTTON_STYLE  # Set the style of the button to BUTTON_STYLE
                     ),
                     html.Br(),  # Line break
->>>>>>> Stashed changes
                 ],
                 vertical=True,
                 pills=True,
             ),
-<<<<<<< Updated upstream
-            dbc.Modal(
-            [
-                dbc.ModalHeader("Nach Kategorie filtern"),
-                dbc.ModalBody(
-                    [
-                        dbc.Label("Name:"),
-                        dbc.Input(id="modal_name_filter", type="text", debounce=True, value=""),
-                        dbc.Label("Auslastung:"),
-                        dbc.RadioItems(
-                            options=[
-                            {'label': 'Hoch', 'value': 'red'}, 
-                            {'label': 'Mittel', 'value': 'yellow'}, 
-                            {'label': 'Niedrig', 'value': 'green'}, 
-                            {'label': 'Keine Angabe', 'value': 'None'}
-                            ],
-                            value='None',
-                            inline=False,
-                            id="modal_occupancy_filter"
-                        ),
-                    ]
-                ),
-                dbc.ModalFooter(
-                    [
-                        dbc.Button("Apply", color="primary", id="modal_submit_button"),
-                        dbc.Button("Discard", id="modal_cancel_button"),
-                    ]
-                ),
-            ],
-            id="modal_window",
-            centered=True,
-=======
             dbc.Modal(  # Modal to display the advanced filter
                 [
                     dbc.ModalHeader("Nach Kategorie filtern"),  # Header of the modal
@@ -158,14 +112,9 @@ def get_sidebar(distinction):
                 ],
                 id="modal_window" + distinction,  # Set the id of the modal to modal_window
                 centered=True,  # Set the centered-attribute of the modal to True
->>>>>>> Stashed changes
             ),
         ],
         style=SIDEBAR_STYLE,
     )
 
-<<<<<<< Updated upstream
-    return html.Div([sidebar])
-=======
     return sidebar  # Return the sidebar as a div element
->>>>>>> Stashed changes

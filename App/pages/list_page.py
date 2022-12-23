@@ -139,7 +139,7 @@ def create_layout(names:list[str], content:list[str]):
                     color="outline",
                     id={"type":"header", "index":i},
                     value=i
-                ), html.Button("Hello", id={"type":"button_control", "index":i})]))
+                ), html.Button("Löschen", id={"type":"button_control", "index":i})]))
                 #append collapsible content
         html_list.append(dbc.Collapse(
             dbc.CardBody(content[i]),

@@ -88,4 +88,3 @@ def create_table():
 
 #print(type(create_content()))
 table = create_table()
-print(table.layout)
