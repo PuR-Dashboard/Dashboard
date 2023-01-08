@@ -5,12 +5,14 @@ from dash.dependencies import Input, Output, State, MATCH, ALL
 import numpy as np
 from dash.exceptions import PreventUpdate
 from utility.util_functions import *
-from utility.filter_funktion import filter_names, filter_for_value, filter_for_index, filter_for_list, filter_max_value
+from utility.filter_funktion import filter_names, filter_for_value, filter_for_index
 from components.sidebar import get_sidebar
+import plotly.express as px
 
+
+import fontstyle
 #global so the filter functions can access the date
 global data, temp_data
-
 
 
 DEL_BUTTON_STYLE = {  # Define the style of the buttons
@@ -181,9 +183,40 @@ def create_content(df: pd.DataFrame):
 
 #table for characteristics
 
-table = dbc.Table.from_dataframe(
-    data, striped=True, bordered=True, hover=True, index=True
-)
+def create_table(content:list[str]):
+
+    table_header = [
+        html.Thead(html.Tr([html.Th("Charakeristiken"), html.Th("")]))
+    ]
+    charakter = ["location:","lat:" ,"lon:","occupancy_tendency:","occupancy_tendency:","occupancy_traffic_light:","occupancy_label:" ]
+    rows = [html.Tr([html.Td(charakter[i]), html.Td(content[i*2])]) for i in range (len(charakter))]
+
+    table_body = [html.Tbody(rows)]
+
+    table_1 = dbc.Table(table_header + table_body, borderless=True, hover=False)
+
+    return table_1
+
+
+#create plot for the distribution over the week
+#!!!!Fehlen die Daten, um die Verteilung für die Orte individuell zu gestalten
+def create_plot(content:list[str] = [1,2,3,4,5,6]):
+
+
+    graph = dcc.Graph(
+        figure={
+            'data': [
+                {'x': ["Montag","Dienstag", "Mittwoch", "Donnerstag","Freitag", "WE"], 'y': [content[0],content[1],content[2],content[3],content[4],content[5], ],
+                'type': 'bar','name': 'Auslastung',
+                "marker": {"color": "lightskyblue"}}
+            ],
+            'layout': {
+                'title': 'Prognose über die Woche'
+            }
+        }
+    )
+    return graph
+
 
 #function to dynamically create the dash components of the new layout, will always be used after filtering or refreshing
 #----!!! Names and content is at the moment created through the create_content() def, will need new creation function after create_content() is DEPRECATED
@@ -198,6 +231,16 @@ def create_layout(names:list[str], content:list[str]):
     global sid
     #init list of components
     html_list = []
+    html_list.append(button_refresh)
+    #html_list.append(dbc.Input(  # Input field for the name
+    #                    id="test_side",  # Set the id of the input field to sideboard_name_filter
+    #                    type="text",  # Set the type of the input field to text
+    #                    debounce=False,  # Set the debounce-attribute of the input field to False
+    #                    value="",  # Set the value of the input field to an empty string
+    #                    placeholder="Location Name",  # Set the placeholder of the input field to Location Name
+    #                    autofocus=True  # Set the autofocus-attribute of the input field to True
+    #                ),)
+
 
     #iterate through names(names and content must have the same length)
     for i in range(len(names)):
@@ -214,7 +257,7 @@ def create_layout(names:list[str], content:list[str]):
 
                 #append collapsible content
         html_list.append(dbc.Collapse(
-            dbc.CardBody(table),
+            [dbc.CardBody(create_table(content[i]), style ={"width": "60%", "marginLeft": "3%"}), dbc.CardBody(create_plot(),style ={"width": "50%", "color": "#F0F8FF"}) ],
             #dbc.CardBody(content[i]),
             #html.Iframe(create_table()),
             id={"type":"content", "index":i},
@@ -276,6 +319,15 @@ def remove_location(_n):
 
     return triggered_id["index"]
 
+@callback(
+    Output("test_side", "value"),
+    [Input({"type": "button_control", "index": ALL}, "n_clicks")],
+    prevent_initial_call=True,
+)
+def remove_location(_n):
+    triggered_id = ctx.triggered_id
+
+    return triggered_id["index"]
 
 #method which edits the data according to the changes in the edit_window
 def edit_data(changed_data:list[str],index):
