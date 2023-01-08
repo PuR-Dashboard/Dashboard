@@ -43,9 +43,6 @@ sid = get_sidebar(seitentag)
 data = get_data()
 temp_data = data.copy(deep=True)
 
-html_list = []  # Create an empty list to store the HTML elements
-print("hallo")
-FA_icon = html.I(className="fa fa-refresh")  # Create an icon for the refresh button
 
 #button for refreshing the map
 FA_icon = html.I(className="fa fa-refresh")
@@ -77,7 +74,7 @@ def create_html_map(data):
                     html.Iframe( #Create an Iframe element to get an interactive map
                     id="page-layout", # Set the id of the Iframe element
                     srcDoc=open(os.path.join(os.path.dirname(__file__), '../P&R_Karte.html'), "r").read(),# Set the source of the Iframe element to be the previously created map
-                     width="87%", height="800" # set the width and the height of the IFrame Element
+                     width="84%", height="800" # set the width and the height of the IFrame Element
                      ))
 
     html_list.append(sid)
@@ -113,7 +110,8 @@ layout = html.Div( #creating the layout
     Output("modal_window" + seitentag, "is_open"),
     Output("sideboard_name_filter" + seitentag, "value"),
     Output("modal_name_filter" + seitentag, "value"),
-    Output("modal_occupancy_filter" + seitentag, "value")],
+    Output("modal_occupancy_filter" + seitentag, "value"),
+    Output("sideboard_occupancy_filter" + seitentag, "value")],
     [Input("clear_filter_button" + seitentag, "n_clicks"),
     Input("advanced_filter_button" + seitentag, "n_clicks"),
     Input("modal_submit_button" + seitentag, "n_clicks"),
@@ -122,34 +120,40 @@ layout = html.Div( #creating the layout
     Input("modal_name_filter" + seitentag, "value"),
     Input("modal_occupancy_filter" + seitentag, "value"),
     Input("sideboard_name_filter" + seitentag, "value")],
+    Input("sideboard_occupancy_filter" + seitentag, "value"),
     [State("modal_window" + seitentag, "is_open")],
     prevent_initial_call=True
 )
 
-def filter_map(_n1, _n2, _n3, _n4,n_5, modal_name_text, modal_occupancy_radio, sideboard_name_text, modal_state): #cancel_c_clicks,
+def filter_map(_n1, _n2, _n3, _n4,n_5, modal_name_text, modal_occupancy_radio, sideboard_name_text,sideboard_occupancy_radio, modal_state): #cancel_c_clicks,
     triggered_id = ctx.triggered_id
 
     #depending on the button pressed, act accordingly and return according values
 
     if triggered_id == "clear_filter_button" + seitentag:
-        return reverse_Map(), modal_state, "", "", "None" #
+        return reverse_Map(), modal_state, "", "", "None" ,"None"#
 
     elif triggered_id == "advanced_filter_button" + seitentag:# was genau soll hier passieren
-        return keep_layout_Map(), (not modal_state), "", modal_name_text, modal_occupancy_radio
+        return keep_layout_Map(), (not modal_state), "", modal_name_text, modal_occupancy_radio,"None"
 
     elif triggered_id == "modal_submit_button" + seitentag:
         filter_dict = list_page.create_filter_dict(modal_name_text, modal_occupancy_radio) #creating a dictionary according to the filter
-        return filter_buttons_Map(filter_dict), (not modal_state), "", modal_name_text, modal_occupancy_radio
+        return filter_buttons_Map(filter_dict), (not modal_state), "", modal_name_text, modal_occupancy_radio, "None"
 
     elif triggered_id == "modal_cancel_button" + seitentag:
-        return keep_layout_Map(), (not modal_state), "", "", "None"
+        return keep_layout_Map(), (not modal_state), "", "", "None","None"
 
     elif triggered_id == "sideboard_name_filter" + seitentag:
         filter_dict = list_page.create_filter_dict(sideboard_name_text, modal_occupancy_radio)
-        return filter_buttons_Map(filter_dict), False, sideboard_name_text, modal_name_text, modal_occupancy_radio
+        return filter_buttons_Map(filter_dict), False, sideboard_name_text, modal_name_text, modal_occupancy_radio,sideboard_occupancy_radio
+
+    elif triggered_id == "sideboard_occupancy_filter" + seitentag:
+
+        filter_dict = list_page.create_filter_dict(sideboard_name_text, sideboard_occupancy_radio)
+        return filter_buttons_Map(filter_dict), False, sideboard_name_text, modal_name_text, modal_occupancy_radio, sideboard_occupancy_radio
 
     elif triggered_id == "test_refresh":
-        return update(n_5), False, sideboard_name_text, modal_name_text, modal_occupancy_radio
+        return update(n_5), False, sideboard_name_text, modal_name_text, modal_occupancy_radio, "None"
 
     # default
     else:

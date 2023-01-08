@@ -157,7 +157,8 @@ def create_content(df: pd.DataFrame):
 
         inhalt = []
         for c in cols:
-            mini = str(c) + ": " + str(row[c].values[0])
+            mini = str(row[c].values[0])
+            #mini = str(c) + ": " + str(row[c].values[0])
             inhalt.append(mini)
             inhalt.append(html.Br())
 
@@ -184,6 +185,16 @@ def create_layout(names:list[str], content:list[str]):
     global sid
     #init list of components
     html_list = []
+    html_list.append(button_refresh)
+    #html_list.append(dbc.Input(  # Input field for the name
+    #                    id="test_side",  # Set the id of the input field to sideboard_name_filter
+    #                    type="text",  # Set the type of the input field to text
+    #                    debounce=False,  # Set the debounce-attribute of the input field to False
+    #                    value="",  # Set the value of the input field to an empty string
+    #                    placeholder="Location Name",  # Set the placeholder of the input field to Location Name
+    #                    autofocus=True  # Set the autofocus-attribute of the input field to True
+    #                ),)
+
 
     #iterate through names(names and content must have the same length)
     for i in range(len(names)):
@@ -248,6 +259,63 @@ def remove_location(_n):
 
     return triggered_id["index"]"""
 
+@callback(
+    Output("test_side", "value"),
+    [Input({"type": "button_control", "index": ALL}, "n_clicks")],
+    prevent_initial_call=True,
+)
+def remove_location(_n):
+    triggered_id = ctx.triggered_id
+
+    return triggered_id["index"]
+
+
+#method which edits the data according to the changes in the edit_window
+def edit_data(changed_data:list[str],index):
+    global data, temp_data
+
+    charakeristics = ["price","road_network_connection","number_parking_lots","administration","surrounding_infrastructure","kind","public_transport"]
+
+    for i in range(len(changed_data)):
+        data.iloc[index][charakeristics[i]] = changed_data[i]
+
+    temp_data = data
+
+
+#method to open the edit window and to close it after pressing the apply button
+@callback(
+    Output({"type": "edit_window", "index": MATCH}, "is_open"),
+    [Input({"type": "button_eddit", "index": MATCH}, 'n_clicks'),
+     Input({"type": "edit_submit_button", "index": MATCH}, 'n_clicks'),
+     Input({"type": "edit_address", "index": MATCH}, 'value'),
+     Input({"type": "edit_parking_lots", "index": MATCH}, 'value'),
+     Input({"type": "edit_accessibility", "index": MATCH}, 'value'),
+     Input({"type": "edit_price", "index": MATCH}, 'value'),
+     Input({"type": "edit_infrastructure", "index": MATCH}, 'value'),
+     Input({"type": "edit_administration", "index": MATCH}, 'value'),
+     Input({"type": "edit_parking_type", "index": MATCH}, 'value'),
+     Input({"type": "edit_connection", "index": MATCH}, 'value'), ],
+    [State({"type": "edit_window", "index": MATCH}, "is_open")],
+    prevent_initial_call=True,
+)
+def open_edit_window(n_clicks_edit,n_clicks_submit,adress, parking_lots, accessibility,price, infrastructure, administration,parking_type, connection, edit_state):
+
+    triggered_id = ctx.triggered_id
+
+    global data, temp_data
+
+
+    # if the edit button was pressed the edit window opens
+    if triggered_id["type"] == "button_eddit":
+        return (not edit_state)
+
+    # if the apply button was pressed the edit window closes and the data updates
+    elif triggered_id["type"] == "edit_submit_button" :
+
+        #edit_data([price,connection,parking_lots, administration, infrastructure, parking_type, accessibility],index)
+        return(not edit_state)
+    else:
+        raise PreventUpdate
 
 #---------testing------------
 
