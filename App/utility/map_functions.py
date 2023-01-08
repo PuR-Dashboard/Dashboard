@@ -46,7 +46,7 @@ def create_popup_html(data, screensize):
 
     for i in range(len(data)):  # Iterate over all rows
         one = data.iloc[i] # Get the row with the data
-        html = f"""  
+        html = f"""
             <h1> {one[0]}</h1>
             <img src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1" width="250" height="250" align="right">
             &thinsp;
@@ -163,15 +163,19 @@ def add_legend(folium_map):
     return folium_map  # Return the map with the legend
 
 
-def update(m):
-    """
-    Updates the map
-    :param m: The map to update
-    :return: The updated map
-    """
 
-    # TODO: Fix path
-    data = get_data()  # Get the data
+    #updaten der Map
+def update(data,m):
+
+    #data = read_csv("C:\\Users\\Marc\\Downloads\\Dashboard\\Dashboard\\Location_Data (1).csv",delimiter=',')
+
+    screensize = Bildschirmgroesse()
+    colors= ["orange" if (data.iloc[i][6] == "wenige vorhanden") else ("green" if (data.iloc[i][6] == "ausreichend vorhanden")else "red") for i in range (len(data))]
+    tooltips= ["mittlere Auslastung" if (data.iloc[i][6] == "wenige vorhanden") else ("geringe Auslastung" if (data.iloc[i][6] == "ausreichend vorhanden")else "starke Auslastung") for i in range (len(data))]
+    html = create_html(data, screensize,colors)
+    markers = []
+    for  i in range (len(data)):
+        markers.append([data.iloc[i][2], data.iloc[i][1], html[i],"red"])
 
     screensize = get_screensize()  # Get the screensize
 
@@ -221,15 +225,13 @@ def update(m):
     return m  # Return the updated map
 
 
-def create_map():
-    """
-    Creates the map
-    :return: The map
-    """
-    m = folium.Map(  # Create the map
-        location=[51.5, 10.0],  # The location of the map
-        zoom_start=6.47  # The zoom level of the map
-    )
+def create_map(data):
+    m = folium.Map(location=[51.5, 10.0], zoom_start=6.47)
+    update(data,m)
+    add_legend(m)
+    m.save("P&R_Karte.html")
+
+    return m
 
     update(m)  # Update the map
 
