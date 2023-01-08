@@ -4,21 +4,30 @@ import dash_bootstrap_components as dbc
 
 SIDEBAR_STYLE = {
     "position": "fixed",
-    "top": "4rem",
+    "top": "3.5rem",
     "right": 0,
     "bottom": 0,
-    "width": "16rem",
+    "width": "14rem",
     "padding": "2rem 1rem",
-    "background-color": "#f8f9fa",
+    "background-color": "black",
     "overflow": "scroll"
 }
 
 BUTTON_STYLE = {
-    "width": "8rem",
-    "height": "2rem",
-    "padding": "2rem 1rem",
+    "width": "10rem",
+    "height": "3.5rem",
+   # "padding": "1.5rem 1rem",
     "text-align":"center",
+    "background-color":"grey",
+    "border": "grey",
+    # "margin-top": "0.5rem",
+    # "margin-bottom": "0.5rem",
+    "color": "black"
+
 }
+
+FA_icon_Trash = html.I(className="fa fa-trash fa-lg")
+FA_icon_Plus = html.I(className="fa fa-plus fa-lg")
 
 
 def get_sidebar(distinction):
@@ -28,11 +37,11 @@ def get_sidebar(distinction):
     """
     sidebar = html.Div(  # Create a div element for the sidebar
         [
-            html.H2("Funcs", className="display-4"),
-            html.Hr(),
+            #html.H2("Funcs", className="display-4"),
+            #html.Hr(),
             dbc.Nav(
                 [
-                    html.H4("Name"),  # Title of the navigation links
+                    html.H5("Location",style={'color': 'white'}),  # Title of the navigation links
                     dbc.Input(  # Input field for the name
                         id="sideboard_name_filter" + distinction,  # Set the id of the input field to sideboard_name_filter
                         type="text",  # Set the type of the input field to text
@@ -41,7 +50,8 @@ def get_sidebar(distinction):
                         placeholder="Location Name",  # Set the placeholder of the input field to Location Name
                         autofocus=True  # Set the autofocus-attribute of the input field to True
                     ),
-                    html.H4("Auslastung:"),  # Label for the occupancy input field
+                    html.Hr(),
+                    html.H5("Occupancy:",style={'color': 'white'}),  # Label for the occupancy input field
                     dbc.RadioItems(  # Radio buttons to select the occupancy
                         options=[  # Define the options of the radio buttons
                                     {'label': 'Ja', 'value': 'yes'},  # Option for high occupancy
@@ -50,8 +60,10 @@ def get_sidebar(distinction):
                                 ],
                         value=None,  # Set the value of the radio buttons to None
                         inline=False,  # Set the inline-attribute of the radio buttons to False
-                        id="sideboard_administration_filter" + distinction  # Set the id of the radio buttons to modal_occupancy_filter
+                        id="sideboard_administration_filter" + distinction,  # Set the id of the radio buttons to modal_occupancy_filter
+                        style={'color': 'white'}
                     ),
+                    html.Hr(),
                     html.H4("Anzahl Stellplätze:"),
                     dcc.RangeSlider(min=1,max=6,step=None,id='sideboard_parking_lots_slider' + distinction, updatemode='drag',
                         marks={
@@ -75,19 +87,22 @@ def get_sidebar(distinction):
                     dbc.Button(  # Button to filter the locations by name
                         "Advanced",  # Text of the button
                         id="advanced_filter_button" + distinction,  # Set the id of the button to advanced_filter_button
-                        value=999,  # Set the value of the button to 999
+                        value=999,  # Set the value of the button to
+                        size= "md",
                         style=BUTTON_STYLE  # Set the style of the button to BUTTON_STYLE
                     ),
                     html.Br(),  # Line break
                     dbc.Button(  # Button to clear the filter
-                        "Clear Filter",  # Text of the button
+                        [FA_icon_Trash, " Clear Filter"],  # Text of the button
                         id="clear_filter_button" + distinction,  # Set the id of the button to clear_filter_button
+                        size= "md",
                         style=BUTTON_STYLE  # Set the style of the button to BUTTON_STYLE
                     ),
                     html.Br(),  # Line break
                     dbc.Button(  # Button to clear the filter
-                        "Add Location",  # Text of the button
+                        [FA_icon_Plus, " Add Location"],  # Text of the button
                         id="open_modal_add_location_button" + distinction,  # Set the id of the button to clear_filter_button
+                        size= "md",
                         style=BUTTON_STYLE  # Set the style of the button to BUTTON_STYLE
                     ),
                 ],

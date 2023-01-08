@@ -19,7 +19,20 @@ DEL_BUTTON_STYLE = {  # Define the style of the buttons
     "padding": "2rem 1rem",  # Add some padding to the buttons
     "marginRight": "0%",  # Align the text in the buttons to the right
 }
+FA_icon_trash= html.I(className="fa fa-trash fa-lg")
+FA_icon_pen= html.I(className="fa fa-pencil fa-lg")
 
+ARR_BUTTON_STYLE = { #Define the style of the arrow button
+    "color": "black", #set the arrow itself is black
+    "background-color":"transparent", #set the background color to transparent
+    "border": "transparent" #set the border color to transparent
+}
+FA_icon_Arrow = html.I(className="fa fa-chevron-down fa-lg") #arrow icon for the arrow button
+
+CONTENT_STYLE = { #style the content of list_page so that it aligns with the sidebar
+    "margin-right": "18%", #set the distance to the right margin where the sidebar goes
+    "padding": "2rem 1rem"
+}
 global sid
 seitentag = "_list"
 
@@ -185,16 +198,6 @@ def create_layout(names:list[str], content:list[str]):
     global sid
     #init list of components
     html_list = []
-    html_list.append(button_refresh)
-    #html_list.append(dbc.Input(  # Input field for the name
-    #                    id="test_side",  # Set the id of the input field to sideboard_name_filter
-    #                    type="text",  # Set the type of the input field to text
-    #                    debounce=False,  # Set the debounce-attribute of the input field to False
-    #                    value="",  # Set the value of the input field to an empty string
-    #                    placeholder="Location Name",  # Set the placeholder of the input field to Location Name
-    #                    autofocus=True  # Set the autofocus-attribute of the input field to True
-    #                ),)
-
 
     #iterate through names(names and content must have the same length)
     for i in range(len(names)):
@@ -204,7 +207,11 @@ def create_layout(names:list[str], content:list[str]):
                     color="outline",
                     id={"type":"header", "index":i},
                     value=i
-                ), html.Button("Löschen", id={"type":"button_control", "index":i})]))
+                ), dbc.Button([FA_icon_trash, ""], id={"type":"button_control", "index":i}, className = "pull-right",style = ARR_BUTTON_STYLE),
+                   dbc.Button([FA_icon_pen, ""], id={"type":"pen_button", "index" :i}, className = "pull-right" ,style = ARR_BUTTON_STYLE),
+                   dbc.Button([FA_icon_Arrow, ""], id={"type":"arrow_button", "index" :i}, className = "pull-right" ,style = ARR_BUTTON_STYLE)
+                   ]))
+
                 #append collapsible content
         html_list.append(dbc.Collapse(
             dbc.CardBody(table),
@@ -236,7 +243,7 @@ layout = html.Div(children=html_list_for_layout, id="list_layout")
 #takes all dash objects with id type content and header, and then outputs the result to the content type with matching id index
 @callback(
     Output({"type": "content", "index": MATCH}, "is_open"),
-    [Input({"type": "header", "index": MATCH}, "n_clicks")],
+    [Input({"type": "arrow_button","index": MATCH}, "n_clicks")],
     [State({"type": "content", "index": MATCH}, "is_open")],
 )
 def toggle_collapses(_butts, stats):

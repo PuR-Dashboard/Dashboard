@@ -31,6 +31,11 @@ BUTTON_STYLE = {
     "text-align":"center",
 }
 
+CONTENT_STYLE = {
+    "margin-right": "0rem",
+    "padding": "2rem 1rem",
+}
+
 seitentag = "_map"
 
 #html_list = []
@@ -83,7 +88,8 @@ def create_html_map(data):
 
 layout = html.Div( #creating the layout
                 children = create_html_map(data), # the elements of the layout
-                 id = "layout_map" # the ID of the layout
+                 id = "layout_map", # the ID of the layout
+                 style = CONTENT_STYLE  #style the content of the page
                  )
 
 
