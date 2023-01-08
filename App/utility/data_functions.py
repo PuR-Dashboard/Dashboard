@@ -1,6 +1,7 @@
 import csv
 import requests
 import json
+from datetime import datetime
 
 from requests import Response
 
@@ -11,6 +12,7 @@ path_to_urls = '../../Data/Urls.json'  # Path to the json file with the API acce
 path_to_csv = '../../Data/Location_Data.csv'  # Path to the csv file containing the location data
 path_to_characteristics = '../../Data/Characteristics.csv'  # Path to the csv file containing the characteristics of the
 # locations
+path_to_occupancy = '../../Data/Occupancy.csv'
 
 
 # --- DEPRECATED --- #
@@ -30,7 +32,7 @@ def update_csv() -> None:
 
         for location, url in zip(locations, urls):  # Iterate over the locations and the urls
 
-            data = get_dict_from_api(url)  # Extract the information from the url
+            data = get_dict_from_url(url)  # Extract the information from the url
 
             if first_row:  # If it is the first row
                 header = list(data)  # Get the keys of the dictionary
@@ -99,22 +101,27 @@ def add_location(dic, url) -> None:
         If the location already exists.
     """
 
-    if not check_location_exists(dic['location']):  # If the location does not exist yet
+    location = dic['location']  # Get the location from the dictionary
+
+    if not check_location_exists(location):  # If the location does not exist yet
         # --- Add the location and its api-access to the Urls.json file --- #
-        add_url_to_json(dic['location'], url)  # Add the link to the json file
+        add_url_to_json(location, url)  # Add the link to the json file
 
         # --- Append the location with its characteristics to the csv file --- #
         with open(path_to_characteristics, 'a', newline='') as characteristics_file:  # Open the csv file
 
             writer = csv.writer(characteristics_file, delimiter=',')  # Create a csv writer
 
-            writer.writerow([dic['location'], get_lat_lon_from_url(url)] + list(dic.values())[1:])  # Write the location
+            writer.writerow([location, get_lat_lon_from_url(url)] + list(dic.values())[1:])  # Write the location
             # and its characteristics
 
             characteristics_file.close()  # Close the file
 
+        # --- Append the location to the csv file containing the occupancies --- #
+        add_location_to_occ_csv(location)  # Add the location to the csv file containing the occupancies
+
     else:  # If the location already exists
-        raise Exception('The location {} already exists'.format(dic['location']))  # Raise an exception
+        raise Exception('The location {} already exists'.format(location))  # Raise an exception
 
 
 def remove_location(location: str) -> None:
@@ -267,6 +274,82 @@ def update_characteristics_in_csv(dic: dict) -> None:
                 writer.writerow(line)  # Write the line to the csv file
 
 
+# --- Functions for the Occupancy.csv file --- #
+
+def update_location_occupancy(location: str) -> None:
+    """
+    This function updates the occupancy of the location. First, the function tries to read the occupancy of the given
+    location from its url. If that was successful, the function updates the occupancy in the csv file. It appends a new
+    line to the csv file with the current time stamp and the occupancy. For all other locations, the function simply
+    appends the previous occupancy in the new row
+
+    Parameters
+    ----------
+    location : str
+        The location for which the occupancy should be updated.
+    """
+
+    if not check_location_exists(location):  # If the location does not exist
+        raise Exception('The location {} does not exist'.format(location))  # Raise an exception
+
+    with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
+        content = json.load(f)  # Load the content of the json file
+
+    url = content[location]  # Get the url for the location
+
+    dic = get_dict_from_url(url)  # Get the dictionary with the occupancy information from the url
+
+    occupancy_tendency = dic['occupancy_tendency']  # Get the occupancy tendency from the dictionary
+
+    # Open the input file in read mode and the output file in write mode
+    with open('input.csv', 'r') as input_file, open('output.csv', 'w') as output_file:
+        reader = csv.reader(input_file)  # Create a csv reader
+        writer = csv.writer(output_file)  # Create a csv writer
+
+        first_row = next(reader)  # Read the first row of the csv file
+        last_row = None  # Initialize the last row
+
+        for row in reader:  # Iterate over the rows
+            last_row = row  # Set the last row to the current row
+            writer.writerow(row)  # Write the row to the output file
+
+        new_row = [datetime.now()]  # Initialize the new row with the current time stamp
+        for i in range(1, len(first_row)):  # Iterate over the columns
+            new_row.append(
+                occupancy_tendency if first_row[i] == location else last_row[i]
+            )  # Add the occupancy tendency to the new row if the column is the column for the location, otherwise add
+            # the occupancy of the last row
+
+        writer.writerow(new_row)  # Write the new row to the output file
+
+
+def add_location_to_occ_csv(location: str) -> None:
+    """
+    This function adds the location to the occupancy csv file. Note that the location is added to the first row of the
+    csv file. For every timestamp already existing in the csv file, the occupancy of the location is set to no value.
+
+    Parameters
+    ----------
+    location : str
+        The location that should be added.
+    """
+
+    with open(path_to_occupancy, 'r') as f, open(path_to_occupancy, 'w') as w:  # Open the csv file in read and write
+        reader = csv.reader(f)  # Create a csv reader
+        writer = csv.writer(w)  # Create a csv writer
+
+        all_rows = []  # Create a list to store the lines of the csv file
+        row = next(reader)  # Get the first row of the csv file
+        row.append(location)  # Add the location to the row
+        all_rows.append(row)  # Add the first row to the list
+
+        for row in reader:  # Iterate over the rows of the csv file
+            row.append('')  # Add an empty cell to the row
+            all_rows.append(row)  # Add the row to the list
+
+        writer.writerows(all_rows)  # Write the list to the csv file
+
+
 # --- Functions for the API access --- #
 
 def get_lat_lon_from_url(url: str) -> tuple[float, float]:
@@ -286,7 +369,7 @@ def get_lat_lon_from_url(url: str) -> tuple[float, float]:
         The longitude of the location.
     """
 
-    data = get_dict_from_api(url)  # Access the API and get the dictionary with the information
+    data = get_dict_from_url(url)  # Access the API and get the dictionary with the information
 
     point = data['geometry']  # Get the coordinates of the location
 
@@ -298,7 +381,7 @@ def get_lat_lon_from_url(url: str) -> tuple[float, float]:
     return lat, lon  # Return the latitude and longitude in the url
 
 
-def get_dict_from_api(url: str) -> dict:
+def get_dict_from_url(url: str) -> dict:
     """
     This function extracts the information for the facility from the url.
 
@@ -346,3 +429,7 @@ def get_response_from_url(url: str) -> Response:
         raise Exception('Could not access the url {}'.format(url))  # Raise an exception and print the url
 
     return r  # Return the response
+
+
+if __name__ == '__main__':
+    update_location_occupancy('Zwingenberg')
