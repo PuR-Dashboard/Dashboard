@@ -614,7 +614,7 @@ def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, *params):
         print(glob_vars.current_filter)
 
         #filter_dict = create_filter_dict(*characs)
-        filter_data(glob_vars.current_filter)
+        filter_data()#glob_vars.current_filter)
         return (not modal_state,) + tuple(characs)
     elif triggered_id == "advanced_filter_button" + seitentag:
         characs = list(characs)
