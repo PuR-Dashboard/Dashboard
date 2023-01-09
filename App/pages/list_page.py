@@ -5,14 +5,14 @@ from dash.dependencies import Input, Output, State, MATCH, ALL
 import numpy as np
 from dash.exceptions import PreventUpdate
 from utility.util_functions import *
-from utility.filter_funktion import filter_names, filter_for_value, filter_for_index
+from utility.filter_funktion import filter_names, filter_for_value, filter_for_index, filter_for_list, filter_max_value
 from components.sidebar import get_sidebar
 import plotly.express as px
-
+import pages.global_vars as glob_vars
+from collections import defaultdict
 
 import fontstyle
-#global so the filter functions can access the date
-global data, temp_data
+
 
 
 DEL_BUTTON_STYLE = {  # Define the style of the buttons
@@ -42,38 +42,162 @@ sid = get_sidebar(seitentag)
 
 
 #baseline truth of the users data
-data = get_data()
+#data = get_data(name_of_csv="Characteristics.csv")
+#print(data.columns, len(data.columns))
+#list_row = ["Heidelberg", 1,  1, "None", "None", "None", "None", "None", "1-25", "None"]
+#data.loc[len(data)] = list_row
 
+#print("Data: ", data)
 #editable copy for filtering content
-temp_data = data.copy(deep=True)
+#temp_data = data.copy(deep=True)
 
 
+
+def create_edit_window(index:int):
+    edit_popUp = dbc.Modal(  # Modal to display the advanced filter
+        [
+            dbc.ModalHeader("Edit"),# Header of the modal
+            dbc.ModalBody(  # Body of the modal
+                [
+                    dbc.Label("address"),
+                    dbc.Input(
+                                    id={"type":"edit_address", "index":index},
+                                    type="text",  # Set the type of the input field to text
+                                    debounce=False,  # Set the debounce-attribute of the input field to True
+                                    placeholder="edit adress",
+                                    value=None  # Set the value of the input field to an empty string
+                    ),
+                    dbc.Label("Administration:",style = {"margin-top":"5%"}),
+                    dbc.RadioItems(  # Radio buttons to select the occupancy
+                        options=[  # Define the options of the radio buttons
+                                    {'label': 'Yes', 'value': 'yes'},  # Option for high occupancy
+                                    {'label': 'No', 'value': 'no'},  # Option for medium occupancy
+                                    {'label': 'No specification', 'value': None}  # Option for no occupancy
+                                ],
+                        value=None,  # Set the value of the radio buttons to None
+                        inline=True,  # Set the inline-attribute of the radio buttons to False
+                        id={"type":"edit_administration", "index":index}  # Set the id of the radio buttons to modal_occupancy_filter
+                    ),
+
+                    dbc.Label("Parking type",style = {"margin-top":"5%", "weight":"bold"}),
+                    dcc.Dropdown(
+                                    options=[
+                                        {'label': 'Parkhaus', 'value': 'Parkhaus'},
+                                        {'label': 'Separate Fläche', 'value': 'Separate Fläche'},
+                                        {'label': 'Am Fahrbahnrand / an der Straße', 'value': 'Am Fahrbahnrand / an der Straße'},
+                                    ],
+                                    placeholder="edit parking type",
+                                    id={"type":"edit_parking_type", "index":index},
+                                ),
+
+                    dbc.Label("Number of carports",style = {"margin-top":"5%", "weight":"bold"}),
+                    dcc.RangeSlider(min=1,max=6,step=None,id={"type":"edit_parking_lots", "index":index}, updatemode='drag',
+                                    marks={
+                                        1: '1',
+                                        2: '25',
+                                        3: '50',
+                                        4: '100',
+                                        5: '200',
+                                        6: "1200",
+                                    },
+                                    value=[1, 6],
+                    ),
+
+                    dbc.Label("Max Preis(\u20ac):",style = {"margin-top":"5%"}),
+                    dbc.Input(
+                        id={"type":"edit_price", "index":index},
+                        type="number",  # Set the type of the input field to text
+                        debounce=False,  # Set the debounce-attribute of the input field to True
+                        placeholder="edit price in \u20ac",
+                        value=None  # Set the value of the input field to an empty string
+                    ),
+
+                    dbc.Label("ÖPNV accessibility",style = {"margin-top":"5%"}),
+                    dbc.Input(
+                                    id={"type":"edit_accessibility", "index":index},
+                                    type="number",  # Set the type of the input field to text
+                                    debounce=False,  # Set the debounce-attribute of the input field to True
+                                    placeholder="edit ÖPNV accessibility",
+                                    value=None  # Set the value of the input field to an empty string
+                    ),
+
+                    dbc.Label("Connection:",style = {"margin-top":"5%"}),
+                    dcc.Dropdown(
+                        options=[
+                            {'label': 'Übergeordnetes Netz innerorts (Bundesstraßen)', 'value': 'Übergeordnetes Netz innerorts (Bundesstraßen)'},
+                            {'label': 'Übergeordnetes Netz außerorts (Bundesstraßen)', 'value': 'Übergeordnetes Netz außerorts (Bundesstraßen)'},
+                            {'label': 'Nachgeordnetes Netz innerorts', 'value': 'Nachgeordnetes Netz innerorts'},
+                            {'label': 'Nachgeordnetes Netz außerorts', 'value': 'Nachgeordnetes Netz außerorts'},
+                        ],
+                        placeholder="edit connection",
+                        id={"type":"edit_connection", "index":index},
+                    ),
+
+                    dbc.Label("surrounding infrastructure",style = {"margin-top":"5%"}),
+                    dcc.Dropdown(
+                        options=[
+                            {'label': 'Grünflächen', 'value': 'Grünflächen'},
+                            {'label': 'Wohnflächen', 'value': 'Wohnflächen'},
+                            {'label': 'Industrieflächen', 'value': 'Industrieflächen'},
+                            {'label': 'Gewerbegebieten', 'value': 'Gewerbegebieten'},
+                            {'label': 'Mischflächen', 'value': 'Mischflächen'},
+                        ],
+                        placeholder="edit infrastructure",
+                        id={"type":"edit_infrastructure", "index":index},
+                    ),
+
+
+                ]
+            ),
+            dbc.ModalFooter(  # Footer of the modal
+                [
+                    dbc.Button(  # Button to close the modal
+                        "Apply",  # Text of the button
+                        color="primary",  # Set the color of the button to primary
+                        id={"type":"edit_submit_button", "index":index}  # Set the id of the button to modal_submit_button
+                    ),
+
+                ]
+            ),
+        ],
+        id={"type":"edit_window", "index":index},  # Set the id of the modal to modal_window
+        centered=True,  # Set the centered-attribute of the modal to True
+    )
+    return edit_popUp
 
 
 #filtering the given df for the characteristics in the filter_dict
-def filter_content(df: pd.DataFrame, filter_dict):
+def filter_content(df: pd.DataFrame, filter_dict:defaultdict):
     """
     df: Dataframe with user content to be filtered
-    filter_dict: dictionary with all characteristics to be filtered for as keys, and either None or the given values as values
+    filter_dict: default dictionary with all characteristics to be filtered for as keys, value to be filtered for as value and default value as none
 
     returns: filtered dataframe by standards of filter_dict
     """
     #currently only filters for location and occupancy
 
     #if none then no location name was given the filter, so no filtering
-
-    for key in filter_dict:
+    #print(df, filter_dict
+    keys = df.columns.values
+    print("Keys are: ", keys)
+    for key in keys:
         if filter_dict[key] == None:
+            #print("Es wurde continued")
             continue
         elif key == "location":
+            #print("loc is: ", filter_dict[key])
             df = filter_names(df, filter_dict[key])
-        if type(filter_dict[key]) == str:
+            #print(df)
+        elif type(filter_dict[key]) == str:
             df = filter_for_value(df, key, filter_dict[key])
         elif type(filter_dict[key]) == list:
+            #print(filter_dict[key])
             df = filter_for_list(df, key, filter_dict[key])
+            #print(df)
         elif type(filter_dict[key]) == int or type(filter_dict[key]) == float:
             df = filter_max_value(df, key, filter_dict[key])
 
+    #print("Am Ende: ", df)
     #filtered dataframe
     return df
 
@@ -160,6 +284,7 @@ def create_filter_dict(location:str = "", price:int = -1, parking_lots_range:lis
 #function to create the content of the tables(the content of the collapsibles)
 #will be switched out by table through vuetify library and is not documented further -> soon to be DEPRECATED
 def create_content(df: pd.DataFrame):
+    #print("create data: ", df)
     cols = df.columns
     #print(cols)
     content = []
@@ -229,6 +354,19 @@ def create_layout(names:list[str], content:list[str]):
     """
     #currently content is list of strings, datatype will vary in the future
     global sid
+    FA_icon = html.I(className="fa fa-refresh")
+    button_refresh = (html.Div(dbc.Button([FA_icon, " Refresh"], color="light", className="me-1",id = "refresh_list", value = 0,
+                    style={
+                        "marginLeft": "0%",
+                        "width": "7%",
+                        "height": "60%",
+                        "fontSize": "1em",
+                       # "background-color": "grey",
+                        "color": "black",
+                       # "border-radius": "4px",
+                       # "border": "2px solid black",
+                    },
+                    )))
     #init list of components
     html_list = []
     html_list.append(button_refresh)
@@ -249,18 +387,20 @@ def create_layout(names:list[str], content:list[str]):
                     names[i],
                     color="outline",
                     id={"type":"header", "index":i},
-                    value=i
+                    value=i,
+                    
                 ), dbc.Button([FA_icon_trash, ""], id={"type":"button_control", "index":i}, className = "pull-right",style = ARR_BUTTON_STYLE),
                    dbc.Button([FA_icon_pen, ""], id={"type":"pen_button", "index" :i}, className = "pull-right" ,style = ARR_BUTTON_STYLE),
                    dbc.Button([FA_icon_Arrow, ""], id={"type":"arrow_button", "index" :i}, className = "pull-right" ,style = ARR_BUTTON_STYLE)
-                   ]))
+                   ], style = {"width":"87%"}))
 
                 #append collapsible content
         html_list.append(dbc.Collapse(
-            [dbc.CardBody(create_table(content[i]), style ={"width": "60%", "marginLeft": "3%"}), dbc.CardBody(create_plot(),style ={"width": "50%", "color": "#F0F8FF"}) ],
+            [dbc.CardBody(create_table(content[i]), style ={"width": "60%", "marginLeft": "3%"}), dbc.CardBody(create_plot(),style ={"width": "50%", "color": "#F0F8FF"}) , create_edit_window(i)],
             #dbc.CardBody(content[i]),
             #html.Iframe(create_table()),
             id={"type":"content", "index":i},
+            style = {"width":"87%"},
             is_open=False
         ))
 
@@ -274,13 +414,48 @@ def create_layout(names:list[str], content:list[str]):
     return html_list
 
 #create headers and content
-names, content = create_content(data)
+names, content = create_content(glob_vars.data)
 #create new layout
 html_list_for_layout = create_layout(names, content)
 
 layout = html.Div(children=html_list_for_layout, id="list_layout")
 
+#print(type(glob_vars.data["number_parking_lots"][0]))
 
+#Callbacks:-----------------------------------------------
+
+@callback(
+    Output("modal_testing_indication" + seitentag, "value"),
+    [Input("second_modal_testing_indication" + seitentag, "value")]
+)
+def testing_indi(val):
+    return val
+
+
+
+@callback(
+    Output({"type": "button_control", "index": MATCH}, "n_clicks"),
+    [Input({"type": "button_control", "index": MATCH}, "n_clicks")],
+    prevent_initial_call=True,
+)
+def delete_location(del_button):
+    triggered_id = ctx.triggered_id["index"]
+
+    row_to_delete = glob_vars.data.iloc[[triggered_id]]
+    location_to_delete = row_to_delete["location"].values[0]
+    #print(row_to_delete, location_to_delete)
+
+    path = get_path_to_csv(name_of_csv="Characteristics_testing.csv")
+
+    temp_data = get_data(name_of_csv="Characteristics_testing.csv")
+    temp_data = temp_data[temp_data["location"] != location_to_delete]
+    
+    temp_data.to_csv(path, index=False)
+
+    reset_data()
+    filter_data()
+
+    #print(triggered_id)
 
 #function to collapse and expand the list items
 #takes all dash objects with id type content and header, and then outputs the result to the content type with matching id index
@@ -298,53 +473,22 @@ def toggle_collapses(_butts, stats):
         #return opposite state of triggered button for either collapse or expand
         return not stats
 
-#dunno if test or not lol
-"""@callback(
-    Output("test_side", "value"),
-    [Input({"type": "button_control", "index": ALL}, "n_clicks")],
-    prevent_initial_call=True,
-)
-def remove_location(_n):
-    triggered_id = ctx.triggered_id
-
-    return triggered_id["index"]"""
-
-@callback(
-    Output("test_side", "value"),
-    [Input({"type": "button_control", "index": ALL}, "n_clicks")],
-    prevent_initial_call=True,
-)
-def remove_location(_n):
-    triggered_id = ctx.triggered_id
-
-    return triggered_id["index"]
-
-@callback(
-    Output("test_side", "value"),
-    [Input({"type": "button_control", "index": ALL}, "n_clicks")],
-    prevent_initial_call=True,
-)
-def remove_location(_n):
-    triggered_id = ctx.triggered_id
-
-    return triggered_id["index"]
 
 #method which edits the data according to the changes in the edit_window
 def edit_data(changed_data:list[str],index):
-    global data, temp_data
+    #global data, temp_data
 
-    charakeristics = ["price","road_network_connection","number_parking_lots","administration","surrounding_infrastructure","kind","public_transport"]
+    charakteristics = ["price","road_network_connection","number_parking_lots","administration","surrounding_infrastructure","kind","public_transport"]
 
     for i in range(len(changed_data)):
-        data.iloc[index][charakeristics[i]] = changed_data[i]
+        glob_vars.data.iloc[index][charakteristics[i]] = changed_data[i]
 
-    temp_data = data
 
 
 #method to open the edit window and to close it after pressing the apply button
 @callback(
     Output({"type": "edit_window", "index": MATCH}, "is_open"),
-    [Input({"type": "button_eddit", "index": MATCH}, 'n_clicks'),
+    [Input({"type": "pen_button", "index": MATCH}, 'n_clicks'),
      Input({"type": "edit_submit_button", "index": MATCH}, 'n_clicks'),
      Input({"type": "edit_address", "index": MATCH}, 'value'),
      Input({"type": "edit_parking_lots", "index": MATCH}, 'value'),
@@ -361,11 +505,10 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,adress, parking_lots, accessi
 
     triggered_id = ctx.triggered_id
 
-    global data, temp_data
-
+    #+global data
 
     # if the edit button was pressed the edit window opens
-    if triggered_id["type"] == "button_eddit":
+    if triggered_id["type"] == "pen_button":
         return (not edit_state)
 
     # if the apply button was pressed the edit window closes and the data updates
@@ -412,11 +555,11 @@ def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, *params):
     - order of parameters(Input and Output) is important, especially in combination with filter dict handling
     """
 
-    global data
+    #global data
 
     triggered_id = ctx.triggered_id
-
-    characteristics = list(data.columns.values)
+    #print(triggered_id)
+    characteristics = list(glob_vars.data.columns.values)
     #latitude and longitude not given by pop up
     non_changeable = ["lat", "lon"]
 
@@ -451,23 +594,39 @@ def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, *params):
 
 
     if triggered_id == "modal_filter_cancel_button" + seitentag:
-
         return (not modal_state,) + tuple(empty_ret_list)
     elif triggered_id == "modal_filter_submit_button" + seitentag:
         reset_data()
-        filter_dict = {}
+        #filter_dict = {}
 
 
         for c, chara in zip(characs, characteristics):
+            if c == None:
+                continue
             if chara == "number_parking_lots":
-                c = make_parking_lot_list(c[0], c[1], parking_lot_marks)
+                if c[0] == 1 and c[1] == 6:
+                    c = None
+                else:
+                    c = make_parking_lot_list(c[0], c[1], parking_lot_marks)
 
-            filter_dict[chara] = c
+            glob_vars.current_filter[chara] = c
+
+        print(glob_vars.current_filter)
 
         #filter_dict = create_filter_dict(*characs)
-        filter_data(filter_dict)
+        filter_data(glob_vars.current_filter)
         return (not modal_state,) + tuple(characs)
     elif triggered_id == "advanced_filter_button" + seitentag:
+        characs = list(characs)
+        for i in range(len(characteristics)):
+            key = characteristics[i]
+            #print(key)
+            if glob_vars.current_filter[key] == None:
+                continue
+            else:
+                characs[i] = glob_vars.current_filter[key]
+
+
         return (not modal_state,) + tuple(characs)
     else:
         raise PreventUpdate
@@ -515,10 +674,10 @@ def add_new_location(_1, _2, _3, URL_value, *params):
             if new characteristics are added, then the order of the parameters must be changed accordingly!!!
     Also order of putputs is depending on order of input
     """
-    global data
+    #global data
     #print(type(connection))
     #print(URL_value, params)
-    characteristics = list(data.columns.values)
+    characteristics = list(glob_vars.data.columns.values)
 
     #latitude and longitude not given by pop up
     non_changeable = ["lat", "lon"]
@@ -573,6 +732,7 @@ def add_new_location(_1, _2, _3, URL_value, *params):
 
 #-----
 #layout refresh callback and sidebar handling
+#ANMERKUNGEN: Maybe braucht man hier keine args liste sondern kann einfach feste parameter machen? kommt drauf an wie viele parameter am ende
 @callback(
     [Output("list_layout", "children"),
     Output("sideboard_name_filter" + seitentag, "value"),
@@ -581,28 +741,61 @@ def add_new_location(_1, _2, _3, URL_value, *params):
     [Input("modal_filter_submit_button" + seitentag, "n_clicks"),
     #Input("modal_filter_cancel_button" + seitentag, "n_clicks"),
     Input("clear_filter_button" + seitentag, "n_clicks"),
+    Input("refresh_list", "n_clicks"),
     #Input("modal_add_location_cancel_button" + seitentag, "n_clicks"),
     Input("sideboard_parking_lots_slider" + seitentag, "marks"),
     #Input("placeholder_div" + seitentag, "n_clicks"),
     Input("sideboard_name_filter" + seitentag, "value"),
     Input("sideboard_administration_filter" + seitentag, "value"),
     Input("sideboard_parking_lots_slider" + seitentag, "value"),],
-    prevent_initial_call=False
+    prevent_initial_call=True
 )
 def update_layout(*args):
 
     triggered_id = ctx.triggered_id
     #print(triggered_id)
 
+    #manually write characteristics of quick filters
+    sidebar_characs = ["location", "administration", "number_parking_lots"]
+
+    #num is amount of sidebar elements that are quickfilter, i.e. the last num inputs of this callback
+    num = 3
+    sidebar_values = args[-num:]
+    print("VALS: ", sidebar_values)
+    # index of callback input for 
+    marks = args[-4]
+
     if triggered_id == "clear_filter_button" + seitentag:
         reset_data()
+        reset_global_filter()
         return refresh_layout(), "", "", [1,6]
     #elif triggered_id == "sideboard_name_filter" + seitentag or triggered_id == "sideboard_occupancy_filter" + seitentag:
+    elif triggered_id == "refresh_list":
+        return refresh_layout(), args[-3], args[-2], args[-1]
     else:
+        #print(triggered_id, glob_vars.current_filter, marks, args[-1])
         reset_data()
-        filter_dict = create_filter_dict(args[-2], args[-1])
-        filter_data(filter_dict)
-                               #dash components
+        assert len(sidebar_characs) == len(sidebar_values)
+
+        for s, val in zip(sidebar_characs, sidebar_values):
+            if s == "number_parking_lots":
+                if val[0] == 1 and val[1] == 6:
+                    glob_vars.current_filter.pop(s, None)
+                    continue
+                else: 
+                    #print("conversion: ", make_parking_lot_list(val[0], val[1], marks))
+                    glob_vars.current_filter[s] = make_parking_lot_list(val[0], val[1], marks)
+            elif val == None or val == "":
+                glob_vars.current_filter.pop(s, None)
+                continue
+            else:
+                glob_vars.current_filter[s] = val
+        #filter_dict = create_filter_dict(administration=args[-2], parking_lots_range=args[-1])
+        print(glob_vars.current_filter)
+        filter_data()#glob_vars.current_filter)
+        
+        #print(glob_vars.data)
+
         return refresh_layout(), args[-3], args[-2], args[-1]
 
 
@@ -618,16 +811,18 @@ def make_parking_lot_list(mini, maxi, values):
     return value_list
 
 
+def reset_global_filter():
+    glob_vars.current_filter = defaultdict(lambda: None)
 
 
-def filter_data(filter_dict: dict[str:str]):
-    global data
+def filter_data():#filter_dict: dict[str:str]):
+    #global data
 
-    data = filter_content(data, filter_dict)
+    glob_vars.data = filter_content(glob_vars.data, glob_vars.current_filter)
 
 
 def refresh_layout():
-    names, content = create_content(data)
+    names, content = create_content(glob_vars.data)
 
     layout = create_layout(names, content)
 
@@ -635,99 +830,9 @@ def refresh_layout():
 
 
 def reset_data(name="Characteristics.csv"):
-    global data
-    data = get_data(name)
+    #global data
+    glob_vars.data = get_data("Characteristics_testing.csv")
+    #list_row = ["Heidelberg", 1,  1, "None", "None", "None", "None", "None", "1-25", "None"]
+    #glob_vars.data.loc[len(glob_vars.data)] = list_row
 #---------------------------
 
-
-
-"""
-#function responsible for filtering and changing the layout
-#callback inputs are all buttons and dash components used for either filtering or pop up/modal handeling
-#callback outputs are interactive dash components for filtering and the pages layout
-#state is the open/close state of the pop up/modal
-@callback(
-    [Output("list_layout", "children"),
-    Output("modal_window" + seitentag, "is_open"),
-    Output("sideboard_name_filter" + seitentag, "value"),
-    Output("modal_name_filter" + seitentag, "value"),
-    Output("modal_occupancy_filter" + seitentag, "value"),
-    Output("sideboard_occupancy_filter" + seitentag, "value")],
-    [Input("clear_filter_button" + seitentag, "n_clicks"),
-    Input("advanced_filter_button" + seitentag, "n_clicks"),
-    Input("modal_submit_button" + seitentag, "n_clicks"),
-    Input("modal_cancel_button" + seitentag, "n_clicks"),
-    Input("modal_name_filter" + seitentag, "value"),
-    Input("modal_occupancy_filter" + seitentag, "value"),
-    Input("sideboard_name_filter" + seitentag, "value"),
-    Input("sideboard_occupancy_filter" + seitentag, "value"),
-    Input({"type": "button_control", "index": ALL}, "n_clicks")],
-    [State("modal_window" + seitentag, "is_open")],
-    prevent_initial_call=True
-)
-def filter_list(_n1, _n2, _n3, _n4, modal_name_text, modal_occupancy_radio, sideboard_name_text, sideboard_occupancy_radio, _delete_button, modal_state): #cancel_c_clicks,
-    global data, temp_data
-
-    triggered_id = ctx.triggered_id
-    #print(type(triggered_id))
-    #depending on the button pressed, act accordingly and return according values
-    if isinstance(triggered_id, dash._utils.AttributeDict):
-        filter_id = triggered_id["index"]
-        # Call method for updating csv/deleting line with index from csv
-        data = filter_for_index(data, filter_id)
-        temp_data = filter_for_index(temp_data, filter_id)
-        return keep_layout(), modal_state, sideboard_name_text, modal_name_text, modal_occupancy_radio, sideboard_occupancy_radio
-    elif triggered_id == "clear_filter_button" + seitentag:
-        return revert_filter_buttons(), modal_state, "", "", "None", "None"
-    elif triggered_id == "advanced_filter_button" + seitentag:
-        return keep_layout(), (not modal_state), "", modal_name_text, modal_occupancy_radio, "None"
-    elif triggered_id == "modal_submit_button" + seitentag:
-        filter_dict = create_filter_dict(modal_name_text, modal_occupancy_radio)
-        return filter_buttons(filter_dict), (not modal_state), "", modal_name_text, modal_occupancy_radio, "None"
-    elif triggered_id == "modal_cancel_button" + seitentag:
-        return keep_layout(), (not modal_state), "", "", "None", "None"
-    elif triggered_id == "sideboard_name_filter" + seitentag:
-        filter_dict = create_filter_dict(sideboard_name_text, sideboard_occupancy_radio)
-        return filter_buttons(filter_dict), False, sideboard_name_text, modal_name_text, modal_occupancy_radio, sideboard_occupancy_radio
-    elif triggered_id == "sideboard_occupancy_filter" + seitentag:
-        filter_dict = create_filter_dict(sideboard_name_text, sideboard_occupancy_radio)
-        return filter_buttons(filter_dict), False, sideboard_name_text, modal_name_text, modal_occupancy_radio, sideboard_occupancy_radio
-    else:
-        raise PreventUpdate
-
-
-#function to replace the filtered dataframe with the original
-#returns layout of page
-def revert_filter_buttons():
-    global data, temp_data
-
-    names2, content2 = create_content(data)
-    layout2 = create_layout(names2, content2)
-    temp_data = data.copy(deep=True)
-
-    return layout2
-
-#function to replace the filtered dataframe with itself, not changing anything
-#returns layout of page
-def keep_layout():
-    global data, temp_data
-
-    temp_data = filter_content(temp_data, {"location": None, "occupancy_traffic_light": None})
-    names2, content2 = create_content(temp_data)
-    layout2 = create_layout(names2, content2)
-
-    return layout2
-
-#function to replace the current dataframe with the filtered version of the original
-#returns layout of page
-def filter_buttons(filter_dict: dict[str:str]):
-
-    global data, temp_data
-
-    temp_data = data.copy(deep=True)
-
-    temp_data = filter_content(temp_data, filter_dict)
-    names2, content2 = create_content(temp_data)
-    layout2 = create_layout(names2, content2)
-    return layout2
-"""

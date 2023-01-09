@@ -20,7 +20,7 @@ BUTTON_STYLE = {
     "text-align":"center",
     "background-color":"grey",
     "border": "grey",
-    # "margin-top": "0.5rem",
+    "margin-top":"5%",
     # "margin-bottom": "0.5rem",
     "color": "black"
 
@@ -46,7 +46,7 @@ def get_sidebar(distinction):
                         id="sideboard_name_filter" + distinction,  # Set the id of the input field to sideboard_name_filter
                         type="text",  # Set the type of the input field to text
                         debounce=False,  # Set the debounce-attribute of the input field to False
-                        value="",  # Set the value of the input field to an empty string
+                        value=None,  # Set the value of the input field to an empty string
                         placeholder="Location Name",  # Set the placeholder of the input field to Location Name
                         autofocus=True  # Set the autofocus-attribute of the input field to True
                     ),
@@ -64,7 +64,7 @@ def get_sidebar(distinction):
                         style={'color': 'white'}
                     ),
                     html.Hr(),
-                    html.H4("Anzahl Stellplätze:"),
+                    html.H4("Anzahl Stellplätze:",style={'color': 'white'}),
                     dcc.RangeSlider(min=1,max=6,step=None,id='sideboard_parking_lots_slider' + distinction, updatemode='drag',
                         marks={
                             1: '1',
@@ -76,13 +76,38 @@ def get_sidebar(distinction):
                         },
                         value=[1, 6]
                     ),
-                    dbc.Input(  # Input field for the name
-                        id="sideboard_slider_test" + distinction,  # Set the id of the input field to sideboard_name_filter
-                        type="text",  # Set the type of the input field to text
-                        debounce=False,  # Set the debounce-attribute of the input field to False
-                        value="",  # Set the value of the input field to an empty string
-                        placeholder="Values",  # Set the placeholder of the input field to Location Name
-                        autofocus=True  # Set the autofocus-attribute of the input field to True
+                    dcc.Dropdown(
+                                options=[
+                                    {'label': 'location', 'value': 'location', "disabled":True},
+                                    {'label': 'price', 'value': 'price', "disabled":True},
+                                    {'label': 'road_network_connection', 'value': 'road_network_connection', "disabled":True},
+                                    {'label': 'number_parking_lots', 'value': 'number_parking_lots', "disabled":True},
+                                    {'label': 'administration', 'value': 'administration', "disabled":True},
+                                    {'label': 'surrounding_infrastructure', 'value': 'surrounding_infrastructure', "disabled":True},
+                                    {'label': 'kind', 'value': 'kind', "disabled":True},
+                                    {'label': 'public_transport', 'value': 'public_transport', "disabled":True},
+                                    
+                                ],
+                                placeholder="No Filters",
+                                id="modal_testing_indication" + distinction,
+                                multi=True,
+                                
+                    ),
+                    dcc.Dropdown(
+                                options=[
+                                    {'label': 'location', 'value': 'location'},
+                                    {'label': 'price', 'value': 'price'},
+                                    {'label': 'road_network_connection', 'value': 'road_network_connection'},
+                                    {'label': 'number_parking_lots', 'value': 'number_parking_lots'},
+                                    {'label': 'administration', 'value': 'administration'},
+                                    {'label': 'surrounding_infrastructure', 'value': 'surrounding_infrastructure'},
+                                    {'label': 'kind', 'value': 'kind'},
+                                    {'label': 'public_transport', 'value': 'public_transport'},
+                                ],
+                                placeholder="No Filters",
+                                id="second_modal_testing_indication" + distinction,
+                                multi=True,
+                                disabled=False,
                     ),
                     dbc.Button(  # Button to filter the locations by name
                         "Advanced",  # Text of the button
