@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 
 
 # Define the navbar structure
-def Navbar():
+def get_navbar():
 
     layout = html.Div([
         dbc.NavbarSimple(

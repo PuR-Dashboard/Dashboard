@@ -229,6 +229,20 @@ def create_layout(names:list[str], content:list[str]):
     """
     #currently content is list of strings, datatype will vary in the future
     global sid
+    FA_icon = html.I(className="fa fa-refresh")
+    button_refresh = (
+        html.Div(dbc.Button([FA_icon, " Refresh"], color="light", className="me-1", id="refresh_list", value=0,
+                            style={
+                                "marginLeft": "0%",
+                                "width": "7%",
+                                "height": "60%",
+                                "fontSize": "1em",
+                                # "background-color": "grey",
+                                "color": "black",
+                                # "border-radius": "4px",
+                                # "border": "2px solid black",
+                            },
+                            )))
     #init list of components
     html_list = []
     html_list.append(button_refresh)

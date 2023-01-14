@@ -32,7 +32,7 @@ def update_csv() -> None:
 
         for location, url in zip(locations, urls):  # Iterate over the locations and the urls
 
-            data = get_dict_from_url(url)  # Extract the information from the url
+            data = __get_dict_from_url(url)  # Extract the information from the url
 
             if first_row:  # If it is the first row
                 header = list(data)  # Get the keys of the dictionary
@@ -103,16 +103,16 @@ def add_location(dic, url) -> None:
 
     location = dic['location']  # Get the location from the dictionary
 
-    if not check_location_exists(location):  # If the location does not exist yet
+    if not __check_location_exists(location):  # If the location does not exist yet
         # --- Add the location and its api-access to the Urls.json file --- #
-        add_url_to_json(location, url)  # Add the link to the json file
+        __add_url_to_json(location, url)  # Add the link to the json file
 
         # --- Append the location with its characteristics to the csv file --- #
         with open(path_to_characteristics, 'a', newline='') as characteristics_file:  # Open the csv file
 
             writer = csv.writer(characteristics_file, delimiter=',')  # Create a csv writer
 
-            writer.writerow([location, get_lat_lon_from_url(url)] + list(dic.values())[1:])  # Write the location
+            writer.writerow([location, __get_lat_lon_from_url(url)] + list(dic.values())[1:])  # Write the location
             # and its characteristics
 
             characteristics_file.close()  # Close the file
@@ -134,16 +134,16 @@ def remove_location(location: str) -> None:
         The location that should be removed.
     """
 
-    if check_location_exists(location):  # If the location exists
-        remove_location_from_json(location)  # Remove the location from the json file
+    if __check_location_exists(location):  # If the location exists
+        __remove_location_from_json(location)  # Remove the location from the json file
 
-        remove_location_from_csv(location)  # Remove the location from the csv file
+        __remove_location_from_csv(location)  # Remove the location from the csv file
 
     else:  # If the location does not exist
         raise Exception('The location {} does not exist'.format(location))  # Raise an exception
 
 
-def check_location_exists(location: str) -> bool:
+def __check_location_exists(location: str) -> bool:
     """
     This function checks if the location exists in the json file. If there is an entry in the Urls.json file for the
     location, the function returns True. Otherwise, it returns False.
@@ -167,7 +167,7 @@ def check_location_exists(location: str) -> bool:
 
 # --- Functions for the Urls.json file --- #
 
-def remove_location_from_json(location: str) -> None:
+def __remove_location_from_json(location: str) -> None:
     """
     This function deletes the link for the location from the json file.
 
@@ -186,7 +186,7 @@ def remove_location_from_json(location: str) -> None:
         json.dump(content, f, indent=4)  # Write the new content to the json file
 
 
-def update_url_in_json(location: str, url: str) -> None:
+def __update_url_in_json(location: str, url: str) -> None:
     """
     This function updates the link for the location in the json file.
 
@@ -198,10 +198,10 @@ def update_url_in_json(location: str, url: str) -> None:
         The new url for the location.
     """
 
-    add_url_to_json(location, url)  # Update the link in the json file by calling the add_link_to_json function
+    __add_url_to_json(location, url)  # Update the link in the json file by calling the add_link_to_json function
 
 
-def add_url_to_json(location: str, url: str) -> None:
+def __add_url_to_json(location: str, url: str) -> None:
     """
     This function adds the link for the location to the json file. Can also be used to update the link of the given
     location.
@@ -225,7 +225,7 @@ def add_url_to_json(location: str, url: str) -> None:
 
 # --- Functions for the Characteristics.csv file --- #
 
-def remove_location_from_csv(location: str) -> None:
+def __remove_location_from_csv(location: str) -> None:
     """
     This function removes the location from the csv file.
 
@@ -257,6 +257,8 @@ def update_characteristics_in_csv(dic: dict) -> None:
         Dictionary containing the new characteristics of the location.
     """
 
+    sorted_items = sorted(dic.items(), key=lambda x: x[0])  # Sort the items of the dictionary by the key
+
     location = dic['location']  # Get the location from the dictionary
 
     with open(path_to_characteristics, 'r') as f:  # Open the csv file
@@ -268,7 +270,7 @@ def update_characteristics_in_csv(dic: dict) -> None:
 
         for line in lines:  # Iterate over the lines
             if line[0] == location:  # If the location is the location that should be updated
-                writer.writerow([location, line[1], line[2]] + list(dic.values()))  # Write the new characteristics to
+                writer.writerow([location, line[1], line[2]] + sorted_items)  # Write the new characteristics to
                 # the csv file
             else:  # If the location is not the location that should be updated
                 writer.writerow(line)  # Write the line to the csv file
@@ -289,7 +291,7 @@ def update_location_occupancy(location: str) -> None:
         The location for which the occupancy should be updated.
     """
 
-    if not check_location_exists(location):  # If the location does not exist
+    if not __check_location_exists(location):  # If the location does not exist
         raise Exception('The location {} does not exist'.format(location))  # Raise an exception
 
     with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
@@ -297,7 +299,7 @@ def update_location_occupancy(location: str) -> None:
 
     url = content[location]  # Get the url for the location
 
-    dic = get_dict_from_url(url)  # Get the dictionary with the occupancy information from the url
+    dic = __get_dict_from_url(url)  # Get the dictionary with the occupancy information from the url
 
     occupancy_tendency = dic['occupancy_tendency']  # Get the occupancy tendency from the dictionary
 
@@ -352,7 +354,7 @@ def add_location_to_occ_csv(location: str) -> None:
 
 # --- Functions for the API access --- #
 
-def get_lat_lon_from_url(url: str) -> tuple[float, float]:
+def __get_lat_lon_from_url(url: str) -> tuple[float, float]:
     """
     This function returns the latitude and longitude of the location given in the API.
 
@@ -369,7 +371,7 @@ def get_lat_lon_from_url(url: str) -> tuple[float, float]:
         The longitude of the location.
     """
 
-    data = get_dict_from_url(url)  # Access the API and get the dictionary with the information
+    data = __get_dict_from_url(url)  # Access the API and get the dictionary with the information
 
     point = data['geometry']  # Get the coordinates of the location
 
@@ -381,7 +383,7 @@ def get_lat_lon_from_url(url: str) -> tuple[float, float]:
     return lat, lon  # Return the latitude and longitude in the url
 
 
-def get_dict_from_url(url: str) -> dict:
+def __get_dict_from_url(url: str) -> dict:
     """
     This function extracts the information for the facility from the url.
 
@@ -396,14 +398,14 @@ def get_dict_from_url(url: str) -> dict:
         Dictionary containing the information for the facility.
     """
 
-    request = get_response_from_url(url)  # Send a request to the url and get the response
+    request = __get_response_from_url(url)  # Send a request to the url and get the response
 
     data = request.json()  # Extract the json data from the response
 
     return data[0]  # Return the first element of the list (that is, the dictionary)
 
 
-def get_response_from_url(url: str) -> Response:
+def __get_response_from_url(url: str) -> Response:
     """
     This function sends a request to the url and returns the response.
 
