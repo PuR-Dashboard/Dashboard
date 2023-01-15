@@ -9,7 +9,7 @@ current_filter = None
 def init():
     #print("initialize")
     global data
-    data = get_data(name_of_csv="Characteristics_testing.csv")
+    data = get_data(name_of_csv="Characteristics.csv")
     
     global current_filter
     current_filter = defaultdict(lambda: None)

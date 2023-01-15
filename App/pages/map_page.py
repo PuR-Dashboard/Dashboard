@@ -12,6 +12,7 @@ from pandas import read_csv
 from pages import list_page
 from utility.util_functions import *
 from components.sidebar import get_sidebar
+from utility.data_functions import add_location
 from utility.filter_funktion import *
 import pages.global_vars as glob_vars
 from collections import defaultdict
@@ -137,29 +138,32 @@ def filter_content(df: pd.DataFrame, filter_dict:defaultdict):
 
 #open adding module, add location etc
 @callback(
-    [Output("modal_add_location" + seitentag, "is_open"),
+    [Output("placeholder_div_adding" + seitentag, "n_clicks"),
+    Output("modal_add_location" + seitentag, "is_open"),
     Output("modal_field_warning" + seitentag, "style"),
     Output("modal_add_location_url" + seitentag, "value"),
     Output("modal_add_location_name" + seitentag, "value"),
+    Output("modal_add_location_address" + seitentag, "value"),
+    Output("modal_add_location_administration" + seitentag, "value"),
+    Output("modal_add_location_kind" + seitentag, "value"),
+    Output("modal_add_location_parking_lots" + seitentag, "value"),
     Output("modal_add_location_price" + seitentag, "value"),
     Output("modal_add_location_connection" + seitentag, "value"),
-    Output("modal_add_location_parking_lots" + seitentag, "value"),
-    Output("modal_add_location_administration" + seitentag, "value"),
-    Output("modal_add_location_infrastructure" + seitentag, "value"),
-    Output("modal_add_location_kind" + seitentag, "value"),
-    Output("modal_add_location_num_connections" + seitentag, "value"),],
+    Output("modal_add_location_num_connections" + seitentag, "value"),
+    Output("modal_add_location_infrastructure" + seitentag, "value"),],
     [Input("modal_add_location_submit_button" + seitentag, "n_clicks"),
     Input("open_modal_add_location_button" + seitentag, "n_clicks"),
     Input("modal_add_location_cancel_button" + seitentag, "n_clicks"),
     Input("modal_add_location_url" + seitentag, "value"),
     Input("modal_add_location_name" + seitentag, "value"),
+    Input("modal_add_location_address" + seitentag, "value"),
+    Input("modal_add_location_administration" + seitentag, "value"),
+    Input("modal_add_location_kind" + seitentag, "value"),
+    Input("modal_add_location_parking_lots" + seitentag, "value"),
     Input("modal_add_location_price" + seitentag, "value"),
     Input("modal_add_location_connection" + seitentag, "value"),
-    Input("modal_add_location_parking_lots" + seitentag, "value"),
-    Input("modal_add_location_administration" + seitentag, "value"),
-    Input("modal_add_location_infrastructure" + seitentag, "value"),
-    Input("modal_add_location_kind" + seitentag, "value"),
-    Input("modal_add_location_num_connections" + seitentag, "value"),],
+    Input("modal_add_location_num_connections" + seitentag, "value"),
+    Input("modal_add_location_infrastructure" + seitentag, "value"),],
     [State("modal_add_location" + seitentag, "is_open")],
     prevent_initial_call=True,
     suppress_callback_exceptions=True
@@ -198,21 +202,21 @@ def add_new_location(_1, _2, _3, URL_value, *params):
     triggered_id = ctx.triggered_id
 
     if triggered_id == "modal_add_location_cancel_button" + seitentag:
-        return (not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
+        return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
     elif triggered_id == "open_modal_add_location_button" + seitentag:
-        return (not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
+        return (dash.no_update, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
     elif triggered_id == "modal_add_location_submit_button" + seitentag:
         #check if URL and name are given
         error_made = [False, False]
         #url must be given
         if URL_value == None or URL_value == "":
 
-            return (modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
+            return (dash.no_update, modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
 
         #location name must be given
         if characs[0] == None or characs[0] == "":
 
-            return (modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
+            return (dash.no_update, modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
 
 
         #make dictionary for function
@@ -222,9 +226,9 @@ def add_new_location(_1, _2, _3, URL_value, *params):
             add_dictionary[charac] = c
 
         # NOW FUNCTION TO ADD LOCATION TO CSV
+        add_location(url=URL_value, dic=add_dictionary)
 
-
-        return (not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
+        return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
     else:
         raise PreventUpdate
 
@@ -233,31 +237,37 @@ def add_new_location(_1, _2, _3, URL_value, *params):
 
 #modal filter handling
 @callback(
-    [Output("modal_filter_window" + seitentag, "is_open"),
+    [Output("placeholder_div_filter" + seitentag, "n_clicks"),
+    Output("modal_filter_window" + seitentag, "is_open"),
+    Output("modal_advanced_filter_occupancy" + seitentag, "value"),
     Output("modal_advanced_filter_name" + seitentag, "value"),
+    Output("modal_advanced_filter_address" + seitentag, "value"),
+    Output("modal_advanced_filter_administration" + seitentag, "value"),
+    Output("modal_advanced_filter_kind" + seitentag, "value"),
+    Output("modal_advanced_filter_parking_lots" + seitentag, "value"),
     Output("modal_advanced_filter_price" + seitentag, "value"),
     Output("modal_advanced_filter_connection" + seitentag, "value"),
-    Output("modal_advanced_filter_parking_lots" + seitentag, "value"),
-    Output("modal_advanced_filter_administration" + seitentag, "value"),
-    Output("modal_advanced_filter_infrastructure" + seitentag, "value"),
-    Output("modal_advanced_filter_kind" + seitentag, "value"),
-    Output("modal_advanced_filter_num_connections" + seitentag, "value"),],
+    Output("modal_advanced_filter_num_connections" + seitentag, "value"),
+    Output("modal_advanced_filter_infrastructure" + seitentag, "value"),],
     [Input("advanced_filter_button" + seitentag, "n_clicks"),
     Input("modal_filter_submit_button" + seitentag, "n_clicks"),
     Input("modal_filter_cancel_button" + seitentag, "n_clicks"),
     Input("modal_advanced_filter_parking_lots" + seitentag, "marks"),
+    Input("modal_advanced_filter_occupancy" + seitentag, "value"),
+    Input("modal_advanced_filter_occupancy" + seitentag, "marks"),
     Input("modal_advanced_filter_name" + seitentag, "value"),
+    Input("modal_advanced_filter_address" + seitentag, "value"),
+    Input("modal_advanced_filter_administration" + seitentag, "value"),
+    Input("modal_advanced_filter_kind" + seitentag, "value"),
+    Input("modal_advanced_filter_parking_lots" + seitentag, "value"),
     Input("modal_advanced_filter_price" + seitentag, "value"),
     Input("modal_advanced_filter_connection" + seitentag, "value"),
-    Input("modal_advanced_filter_parking_lots" + seitentag, "value"),
-    Input("modal_advanced_filter_administration" + seitentag, "value"),
-    Input("modal_advanced_filter_infrastructure" + seitentag, "value"),
-    Input("modal_advanced_filter_kind" + seitentag, "value"),
-    Input("modal_advanced_filter_num_connections" + seitentag, "value"),],
+    Input("modal_advanced_filter_num_connections" + seitentag, "value"),
+    Input("modal_advanced_filter_infrastructure" + seitentag, "value"),],
     [State("modal_filter_window" + seitentag, "is_open")],
     prevent_initial_call=True
 )
-def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, *params):
+def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, occupancy_vals, occupancy_marks, *params):
     """
     - variables with _ are n_clicks and not important
     - params is list with characteristics and modal state at the end
@@ -288,56 +298,53 @@ def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, *params):
 
     #make lists with ground value types for characteristics
     #typical value none
-    charac_with_none = ["location", "road_network_connection", "administration", "surrounding_infrastructure", "kind", "price", "public_transport"]
-    two_value_slider = ["number_parking_lots"]
+    #charac_with_none = ["location", "road_network_connection", "administration", "surrounding_infrastructure", "kind", "price", "public_transport"]
+    #two_value_slider = ["number_parking_lots"]
 
 
-    empty_ret_list = []
+    empty_ret_list = [None]
 
     for c in characteristics:
-        if c in charac_with_none:
-            empty_ret_list.append(None)
-        elif c in two_value_slider:
-            if c == "number_parking_lots":
-                empty_ret_list.append([1,6])
+        empty_ret_list.append(None)
 
 
 
     if triggered_id == "modal_filter_cancel_button" + seitentag:
-        return (not modal_state,) + tuple(empty_ret_list)
+        return (0, not modal_state,) + tuple(empty_ret_list)
     elif triggered_id == "modal_filter_submit_button" + seitentag:
-        lay = reverse_Map()
+        reset_data()
         #filter_dict = {}
-
+        
+        glob_vars.current_filter["occupancy"] = occupancy_vals
 
         for c, chara in zip(characs, characteristics):
             if c == None:
+                glob_vars.current_filter.pop(chara, None)
                 continue
-            if chara == "number_parking_lots":
+            """if chara == "number_parking_lots":
                 if c[0] == 1 and c[1] == 6:
+                    #glob_vars.current_filter.pop(chara, None)
                     c = None
                 else:
-                    c = list_page.make_parking_lot_list(c[0], c[1], parking_lot_marks)
+                    c = make_parking_lot_list(c[0], c[1], parking_lot_marks)"""
 
             glob_vars.current_filter[chara] = c
 
-        print(glob_vars.current_filter)
-
+        
+        #print("Before_filtering: ", glob_vars.current_filter)
         #filter_dict = create_filter_dict(*characs)
         filter_data()#glob_vars.current_filter)
-        return (not modal_state,) + tuple(characs)
+        return (1, not modal_state, occupancy_vals) + tuple(characs)
     elif triggered_id == "advanced_filter_button" + seitentag:
         characs = list(characs)
+        #print("characteristics ", characteristics)
         for i in range(len(characteristics)):
             key = characteristics[i]
-            #print(key)
-            if glob_vars.current_filter[key] == None:
-                continue
-            else:
-                characs[i] = glob_vars.current_filter[key]
+            
+            characs[i] = glob_vars.current_filter[key]
 
-
-        return (not modal_state,) + tuple(characs)
+        #print("charac print: ", characs, modal_state)
+        return (dash.no_update, not modal_state, glob_vars.current_filter["occupancy"]) + tuple(characs)
     else:
         raise PreventUpdate
 
@@ -345,37 +352,22 @@ def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, *params):
 
 
 #layout refresh callback and sidebar handling
-"""@callback(
-    [Output("layout_map", "children"),
-    Output("sideboard_name_filter" + seitentag, "value"),
-    Output("sideboard_administration_filter" + seitentag, "value"),
-    Output("sideboard_parking_lots_slider" + seitentag, "value"),],
-    [Input("modal_filter_submit_button" + seitentag, "n_clicks"),
-    #Input("modal_filter_cancel_button" + seitentag, "n_clicks"),
-    Input("clear_filter_button" + seitentag, "n_clicks"),
-    #Input("modal_add_location_cancel_button" + seitentag, "n_clicks"),
-    Input("sideboard_parking_lots_slider" + seitentag, "marks"),
-    #Input("placeholder_div" + seitentag, "n_clicks"),
-    Input("sideboard_name_filter" + seitentag, "value"),
-    Input("sideboard_administration_filter" + seitentag, "value"),
-    Input("sideboard_parking_lots_slider" + seitentag, "value"),],
-    prevent_initial_call=False
-)"""
+
+
 @callback(
     [Output("layout_map", "children"),
     Output("sideboard_name_filter" + seitentag, "value"),
-    Output("sideboard_administration_filter" + seitentag, "value"),
-    Output("sideboard_parking_lots_slider" + seitentag, "value"),],
-    [Input("modal_filter_submit_button" + seitentag, "n_clicks"),
-    #Input("modal_filter_cancel_button" + seitentag, "n_clicks"),
+    Output("sideboard_address_filter" + seitentag, "value"),
+    Output("sideboard_occupancy_filter" + seitentag, "value"),
+    Output("sideboard_price_filter" + seitentag, "value"),],
+    [Input("placeholder_div_filter" + seitentag, "n_clicks"),
+    Input("placeholder_div_adding" + seitentag, "n_clicks"),
     Input("clear_filter_button" + seitentag, "n_clicks"),
     Input("test_refresh", "n_clicks"),
-    #Input("modal_add_location_cancel_button" + seitentag, "n_clicks"),
-    Input("sideboard_parking_lots_slider" + seitentag, "marks"),
-    #Input("placeholder_div" + seitentag, "n_clicks"),
     Input("sideboard_name_filter" + seitentag, "value"),
-    Input("sideboard_administration_filter" + seitentag, "value"),
-    Input("sideboard_parking_lots_slider" + seitentag, "value"),],
+    Input("sideboard_address_filter" + seitentag, "value"),
+    Input("sideboard_occupancy_filter" + seitentag, "value"),
+    Input("sideboard_price_filter" + seitentag, "value"),],
     prevent_initial_call=True
 )
 def update_layout(*args):
@@ -384,38 +376,37 @@ def update_layout(*args):
     #print(triggered_id)
 
     #manually write characteristics of quick filters
-    sidebar_characs = ["location", "administration", "number_parking_lots"]
+    sidebar_characs = ["location", "address", "occupancy", "price"]
 
     #num is amount of sidebar elements that are quickfilter, i.e. the last num inputs of this callback
-    num = 3
+    num = 4
     sidebar_values = args[-num:]
     print("VALS: ", sidebar_values)
     # index of callback input for 
     marks = args[-4]
 
     if triggered_id == "clear_filter_button" + seitentag:
-        new_lay = reverse_Map()
+        reset_data()
         reset_global_filter()
-        return new_lay, "", "", [1,6]
+        new_lay = reverse_Map()
+        
+        return (new_lay,) + tuple(sidebar_values)
     #elif triggered_id == "sideboard_name_filter" + seitentag or triggered_id == "sideboard_occupancy_filter" + seitentag:
-    elif triggered_id == "test_refresh":
-        return create_html_map(glob_vars.data), args[-3], args[-2], args[-1]
-    else:
-        #print(triggered_id, glob_vars.current_filter, marks, args[-1])
-        glob_vars.data = get_data(name_of_csv="Characteristics.csv")
+    elif triggered_id == "test_refresh" or triggered_id == "placeholder_div_filter" + seitentag: #or triggered_id == "placeholder_div_adding" + seitentag:
+        reset_data()
+        filter_data()
+        return (create_html_map(glob_vars.data),) + tuple(sidebar_values)
 
+    else:
+        print()
+        reset_data()
+        #sidebar_characs = ["location", "address", "occupancy", "price"]
         assert len(sidebar_characs) == len(sidebar_values)
 
         for s, val in zip(sidebar_characs, sidebar_values):
-            if s == "number_parking_lots":
-                if val[0] == 1 and val[1] == 6:
-                    glob_vars.current_filter.pop(s, None)
-                    continue
-                else: 
-                    #print("conversion: ", make_parking_lot_list(val[0], val[1], marks))
-                    glob_vars.current_filter[s] = list_page.make_parking_lot_list(val[0], val[1], marks)
-            elif val == None or val == "":
-                glob_vars.current_filter.pop(s, None)
+            
+            if val == None or val == "":
+                glob_vars.current_filter[s] = None
                 continue
             else:
                 glob_vars.current_filter[s] = val
@@ -425,26 +416,10 @@ def update_layout(*args):
         
         #print(glob_vars.data)
 
-        return keep_layout_Map(), args[-3], args[-2], args[-1]
-"""def update_layout(*args):
+        return (keep_layout_Map(),) + tuple(sidebar_values)
 
-    triggered_id = ctx.triggered_id
-    #print(triggered_id)
 
-    if triggered_id == "clear_filter_button" + seitentag:
-        #also resets data
-        new_lay = reverse_Map()
-        reset_global_filter()
-        return new_lay, "", "", [1,6]
-    #elif triggered_id == "sideboard_name_filter" + seitentag or triggered_id == "sideboard_occupancy_filter" + seitentag:
-    else:
-        new_lay = reverse_Map()
-        filter_dict = list_page.create_filter_dict(args[-2], args[-1])
-        filter_data(filter_dict)
-                               #dash components
-        return new_lay, args[-3], args[-2], args[-1]
 
-"""
 #function to replace the filtered dataframe with the original
 #returns layout of page
 def reverse_Map():
@@ -469,13 +444,15 @@ def filter_data():#filter_dict: dict[str:str]):
 #function to replace the filtered dataframe with itself, not changing anything
 #returns layout of page
 def keep_layout_Map():
-
+    reset_data()
+    filter_data()
     #global data, temp_data
 
     return create_html_map(glob_vars.data)
 
 
-
+def reset_data(name="Characteristics.csv"):
+    glob_vars.data = get_data(name)
 
 #function to replace the current dataframe with the filtered version of the original
 #returns layout of page
