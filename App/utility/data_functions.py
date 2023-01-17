@@ -2,7 +2,7 @@ import csv
 import requests
 import json
 from datetime import datetime
-
+from utility.util_functions import *
 from requests import Response
 
 username = 'optipark'  # Username for the API
@@ -42,7 +42,7 @@ def add_location(dic, url) -> None:
         __add_url_to_json(location, url)  # Add the link to the json file
 
         # --- Append the location with its characteristics to the csv file --- #
-        with open(path_to_characteristics, 'a', newline='') as characteristics_file:  # Open the csv file
+        with open(get_path_to_csv("Characteristics.csv"), 'a', newline='', encoding='utf-8-sig') as characteristics_file:  # Open the csv file
 
             writer = csv.writer(characteristics_file, delimiter=',')  # Create a csv writer
 
@@ -52,7 +52,7 @@ def add_location(dic, url) -> None:
             characteristics_file.close()  # Close the file
 
         # --- Append the location to the csv file containing the occupancies --- #
-        add_location_to_occ_csv(location)  # Add the location to the csv file containing the occupancies
+        #add_location_to_occ_csv(location)  # Add the location to the csv file containing the occupancies
 
     else:  # If the location already exists
         raise Exception('The location {} already exists'.format(location))  # Raise an exception
@@ -148,12 +148,12 @@ def __add_url_to_json(location: str, url: str) -> None:
         The url for the location.
     """
 
-    with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
+    with open(get_path_to_csv("Urls.json"), 'r') as f:  # Open the json file with the information about the locations
         content = json.load(f)  # Load the content of the json file
 
     content[location] = url  # Add the link for the location
 
-    with open(path_to_urls, 'w') as f:  # Open the json file with the information about the locations
+    with open(get_path_to_csv("Urls.json"), 'w') as f:  # Open the json file with the information about the locations
         json.dump(content, f, indent=4)  # Write the new content to the json file
 
 
@@ -270,7 +270,7 @@ def add_location_to_occ_csv(location: str) -> None:
         The location that should be added.
     """
 
-    with open(path_to_occupancy, 'r') as f, open(path_to_occupancy, 'w') as w:  # Open the csv file in read and write
+    with open(get_path_to_csv("Occupancy.csv"), 'r') as f, open(get_path_to_csv("Occupancy.csv"), 'w') as w:  # Open the csv file in read and write
         reader = csv.reader(f)  # Create a csv reader
         writer = csv.writer(w)  # Create a csv writer
 
