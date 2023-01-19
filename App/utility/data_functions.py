@@ -5,14 +5,14 @@ from datetime import datetime
 from utility.util_functions import *
 from requests import Response
 
+
 username = 'optipark'  # Username for the API
 password = 'Dyb1yoTU4TG8'  # Password for the API
 
-path_to_urls = '../../Data/Urls.json'  # Path to the json file with the API access links
-path_to_csv = '../../Data/Location_Data.csv'  # Path to the csv file containing the location data
-path_to_characteristics = '../../Data/Characteristics.csv'  # Path to the csv file containing the characteristics of the
-# locations
-path_to_occupancy = '../../Data/Occupancy.csv'
+path_to_urls = get_path_to_csv("Urls.json")  # Path to the json file with the API access links
+path_to_csv = get_path_to_csv("Location_Data.csv")  # Path to the csv file containing the location data
+path_to_characteristics = get_path_to_csv("Characteristics.csv")  # Path to the csv file containing the characteristics of the locations
+path_to_occupancy = get_path_to_csv("Occupancy.csv") # Path to the csv file containing the occupancies of the locations
 
 
 # --- General functions --- #
@@ -42,11 +42,16 @@ def add_location(dic, url) -> None:
         __add_url_to_json(location, url)  # Add the link to the json file
 
         # --- Append the location with its characteristics to the csv file --- #
-        with open(get_path_to_csv("Characteristics.csv"), 'a', newline='', encoding='utf-8-sig') as characteristics_file:  # Open the csv file
+        with open(path_to_characteristics, 'a', newline='', encoding='utf-8-sig') as characteristics_file:  # Open the csv file
 
             writer = csv.writer(characteristics_file, delimiter=',')  # Create a csv writer
 
-            writer.writerow([location, __get_lat_lon_from_url(url)] + list(dic.values())[1:])  # Write the location
+            writer.writerow([location
+            #, __get_lat_lon_from_url(url)
+            ]
+            + []
+            + []
+            + list(dic.values())[1:])  # Write the location
             # and its characteristics
 
             characteristics_file.close()  # Close the file
@@ -113,6 +118,7 @@ def __remove_location_from_json(location: str) -> None:
 
     with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
         content = json.load(f)  # Load the content of the json file
+        print(content)
 
     del content[location]  # Delete the link for the location
 
@@ -368,4 +374,4 @@ def __get_response_from_url(url: str) -> Response:
 
 
 if __name__ == '__main__':
-    update_location_occupancy('Zwingenberg')
+    __remove_location_from_json("TestLocation")

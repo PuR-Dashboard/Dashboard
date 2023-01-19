@@ -6,13 +6,11 @@ import numpy as np
 from dash.exceptions import PreventUpdate
 from utility.util_functions import *
 from utility.filter_funktion import *
-from utility.data_functions import add_location, remove_location_from_json
+from utility.data_functions import add_location
 from components.sidebar import get_sidebar
 import plotly.express as px
 import pages.global_vars as glob_vars
 from collections import defaultdict
-
-import fontstyle
 
 
 
