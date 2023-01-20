@@ -33,14 +33,14 @@ def Marker(markers, folium_map, tooltips):
 # Bestimmung der Bildschirmgröße
 def Bildschirmgroesse():
 
-    user32 = ctypes.windll.user32
-    screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
-    return screensize
+    # user32 = ctypes.windll.user32
+    # screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+    # return screensize
     """
     Get the size of the primary monitor
     :return: width, height
     """
-    #return pyautogui.size()  # Returns a tuple of (width, height)
+    return pyautogui.size()  # Returns a tuple of (width, height)
 
 
 # Popup kreiiren

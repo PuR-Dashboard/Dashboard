@@ -4,21 +4,24 @@ import dash_bootstrap_components as dbc
 
 
 # Define the navbar structure
-def Navbar():
+def get_navbar():
+    """
+    This function defines and returns a Dash layout for the navigation bar of the application.
+    :return: A Dash layout for the navigation bar of the application.
+    """
+    layout = html.Div(  # Create a Div element
+        [
+            dbc.NavbarSimple(  # Bootstrap component which creates a simple navigation bar
+                children=[  # Define the links in the navigation bar
+                    dbc.NavItem(dbc.NavLink("Kartenansicht", href="/map_page")),  # Link to the map page
+                    dbc.NavItem(dbc.NavLink("Listenansicht", href="/list_page")),  # Link to the table page
+                ],
+                brand="Park&Ride Dashboard",  # The text displayed as the brand name in the navigation bar
+                brand_href="/map_page",  # The link to which the brand name redirects
+                color="dark",  # The color of the navigation bar
+                dark=True,  # Use the dark theme of the navigation bar
+            ),
+        ]
+    )
 
-    layout = html.Div([
-        dbc.NavbarSimple(
-            children=[
-                dbc.NavItem(dbc.NavLink("Map View", href="/map_page", style = {"color":"white"} )),
-                dbc.NavItem(dbc.NavLink("List View", href="/list_page", style = {"color":"white"})),
-            ] ,
-            brand="Park&Ride Dashboard",
-            brand_href="/map_page",
-            color="black",
-            dark=True,
-        ), 
-    ])
-
-    return layout
-
- 
+    return layout  # Return the layout
