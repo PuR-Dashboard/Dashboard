@@ -205,8 +205,6 @@ def add_new_location(_1, _2, _3, URL_value, *params):
         raise PreventUpdate
 
 
-#---------------------------------------------------------------------
-#Callbacks:
 
 
 #modal filter handling
@@ -337,192 +335,6 @@ def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, occupancy_vals, o
     [Input("placeholder_div_filter" + seitentag, "n_clicks"),
     Input("placeholder_div_adding" + seitentag, "n_clicks"),
     Input("clear_filter_button" + seitentag, "n_clicks"),
-    Input("test_refresh", "n_clicks"),
-    Input("sideboard_name_filter" + seitentag, "value"),
-    Input("sideboard_address_filter" + seitentag, "value"),
-    Input("sideboard_occupancy_filter" + seitentag, "value"),
-    Input("sideboard_price_filter" + seitentag, "value"),],
-    prevent_initial_call=True
-)
-def update_layout(*args):
-
-    triggered_id = ctx.triggered_id
-    #print(triggered_id)
-
-    #manually write characteristics of quick filters
-    sidebar_characs = ["location", "address", "occupancy", "price"]
-
-    #num is amount of sidebar elements that are quickfilter, i.e. the last num inputs of this callback
-    num = 4
-    sidebar_values = args[-num:]
-    print("VALS: ", sidebar_values)
-    # index of callback input for
-    marks = args[-4]
-
-    if triggered_id == "clear_filter_button" + seitentag:
-        reset_data()
-        reset_global_filter()
-        new_lay = reverse_Map()
-
-        return (new_lay,) + tuple(sidebar_values)
-    #elif triggered_id == "sideboard_name_filter" + seitentag or triggered_id == "sideboard_occupancy_filter" + seitentag:
-    elif triggered_id == "test_refresh" or triggered_id == "placeholder_div_filter" + seitentag: #or triggered_id == "placeholder_div_adding" + seitentag:
-        reset_data()
-        filter_data()
-        return (create_html_map(glob_vars.data),) + tuple(sidebar_values)
-
-    else:
-        print()
-        reset_data()
-        #sidebar_characs = ["location", "address", "occupancy", "price"]
-        assert len(sidebar_characs) == len(sidebar_values)
-
-        for s, val in zip(sidebar_characs, sidebar_values):
-
-            if val == None or val == "":
-                glob_vars.current_filter[s] = None
-                continue
-            else:
-                glob_vars.current_filter[s] = val
-        #filter_dict = create_filter_dict(administration=args[-2], parking_lots_range=args[-1])
-        #print(glob_vars.current_filter)
-        filter_data()#glob_vars.current_filter)
-
-        #print(glob_vars.data)
-
-        return (keep_layout_Map(),) + tuple(sidebar_values)
-
-
-
-
-#modal filter handling
-@callback(
-    [Output("placeholder_div_filter" + seitentag, "n_clicks"),
-    Output("modal_filter_window" + seitentag, "is_open"),
-    Output("modal_advanced_filter_occupancy" + seitentag, "value"),
-    Output("modal_advanced_filter_name" + seitentag, "value"),
-    Output("modal_advanced_filter_address" + seitentag, "value"),
-    Output("modal_advanced_filter_administration" + seitentag, "value"),
-    Output("modal_advanced_filter_kind" + seitentag, "value"),
-    Output("modal_advanced_filter_parking_lots" + seitentag, "value"),
-    Output("modal_advanced_filter_price" + seitentag, "value"),
-    Output("modal_advanced_filter_connection" + seitentag, "value"),
-    Output("modal_advanced_filter_num_connections" + seitentag, "value"),
-    Output("modal_advanced_filter_infrastructure" + seitentag, "value"),],
-    [Input("advanced_filter_button" + seitentag, "n_clicks"),
-    Input("modal_filter_submit_button" + seitentag, "n_clicks"),
-    Input("modal_filter_cancel_button" + seitentag, "n_clicks"),
-    Input("modal_advanced_filter_parking_lots" + seitentag, "marks"),
-    Input("modal_advanced_filter_occupancy" + seitentag, "value"),
-    Input("modal_advanced_filter_occupancy" + seitentag, "marks"),
-    Input("modal_advanced_filter_name" + seitentag, "value"),
-    Input("modal_advanced_filter_address" + seitentag, "value"),
-    Input("modal_advanced_filter_administration" + seitentag, "value"),
-    Input("modal_advanced_filter_kind" + seitentag, "value"),
-    Input("modal_advanced_filter_parking_lots" + seitentag, "value"),
-    Input("modal_advanced_filter_price" + seitentag, "value"),
-    Input("modal_advanced_filter_connection" + seitentag, "value"),
-    Input("modal_advanced_filter_num_connections" + seitentag, "value"),
-    Input("modal_advanced_filter_infrastructure" + seitentag, "value"),],
-    [State("modal_filter_window" + seitentag, "is_open")],
-    prevent_initial_call=True
-)
-def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, occupancy_vals, occupancy_marks, *params):
-    """
-    - variables with _ are n_clicks and not important
-    - params is list with characteristics and modal state at the end
-
-    - order of parameters(Input and Output) is important, especially in combination with filter dict handling
-    """
-
-    #global data
-
-    triggered_id = ctx.triggered_id
-    #print(triggered_id)
-    characteristics = list(glob_vars.data.columns.values)
-    #latitude and longitude not given by pop up
-    non_changeable = ["lat", "lon"]
-
-    for n in non_changeable:
-        if n in characteristics:
-            characteristics.remove(n)
-
-    #print(characteristics)
-    #modal state
-    modal_state = params[-1]
-
-    characs = params[:-1]
-    #type_list = [(type(x), x) for x in characs]
-    #print(type_list)
-    assert len(characs) == len(characteristics)
-
-    #make lists with ground value types for characteristics
-    #typical value none
-    #charac_with_none = ["location", "road_network_connection", "administration", "surrounding_infrastructure", "kind", "price", "public_transport"]
-    #two_value_slider = ["number_parking_lots"]
-
-
-    empty_ret_list = [None]
-
-    for c in characteristics:
-        empty_ret_list.append(None)
-
-
-
-    if triggered_id == "modal_filter_cancel_button" + seitentag:
-        return (0, not modal_state,) + tuple(empty_ret_list)
-    elif triggered_id == "modal_filter_submit_button" + seitentag:
-        reset_data()
-        #filter_dict = {}
-
-        glob_vars.current_filter["occupancy"] = occupancy_vals
-
-        for c, chara in zip(characs, characteristics):
-            if c == None:
-                glob_vars.current_filter.pop(chara, None)
-                continue
-            """if chara == "number_parking_lots":
-                if c[0] == 1 and c[1] == 6:
-                    #glob_vars.current_filter.pop(chara, None)
-                    c = None
-                else:
-                    c = make_parking_lot_list(c[0], c[1], parking_lot_marks)"""
-
-            glob_vars.current_filter[chara] = c
-
-
-        #print("Before_filtering: ", glob_vars.current_filter)
-        #filter_dict = create_filter_dict(*characs)
-        filter_data()#glob_vars.current_filter)
-        return (1, not modal_state, occupancy_vals) + tuple(characs)
-    elif triggered_id == "advanced_filter_button" + seitentag:
-        characs = list(characs)
-        #print("characteristics ", characteristics)
-        for i in range(len(characteristics)):
-            key = characteristics[i]
-
-            characs[i] = glob_vars.current_filter[key]
-
-        #print("charac print: ", characs, modal_state)
-        return (dash.no_update, not modal_state, glob_vars.current_filter["occupancy"]) + tuple(characs)
-    else:
-        raise PreventUpdate
-
-#------
-
-
-#layout refresh callback and sidebar handling
-
-
-@callback(
-   [Output("layout_map", "children"),
-    Output("sideboard_name_filter" + seitentag, "value"),
-    Output("sideboard_address_filter" + seitentag, "value"),
-    Output("sideboard_occupancy_filter" + seitentag, "value"),
-    Output("sideboard_price_filter" + seitentag, "value"),],
-    [Input("placeholder_div_filter" + seitentag, "n_clicks"),
-    Input("placeholder_div_adding" + seitentag, "n_clicks"),
-    Input("clear_filter_button" + seitentag, "n_clicks"),
     Input("refresh_page", "n_clicks"),
     Input("sideboard_name_filter" + seitentag, "value"),
     Input("sideboard_address_filter" + seitentag, "value"),
@@ -552,7 +364,7 @@ def update_layout(*args):
 
         return (new_lay,) + tuple(sidebar_values)
     #elif triggered_id == "sideboard_name_filter" + seitentag or triggered_id == "sideboard_occupancy_filter" + seitentag:
-    elif triggered_id == "test_refresh" or triggered_id == "placeholder_div_filter" + seitentag: #or triggered_id == "placeholder_div_adding" + seitentag:
+    elif triggered_id == "refresh_page" or triggered_id == "placeholder_div_filter" + seitentag: #or triggered_id == "placeholder_div_adding" + seitentag:
         reset_data()
         filter_data()
         return (create_html_map(glob_vars.data),) + tuple(sidebar_values)
@@ -633,7 +445,7 @@ def update(nr_clicks):
 
     if nr_clicks == None:
         raise PreventUpdate
-    data = get_data("Characteristics.csv")
+    data = get_data()
     temp_data = data.copy(deep=True)
     #only for testing
     #temp_data.drop(temp_data.loc[temp_data['location'] == "Heidelberg"].index, inplace = True )

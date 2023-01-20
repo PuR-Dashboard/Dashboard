@@ -48,6 +48,7 @@ def Bildschirmgroesse():
 # Popup kreiiren
 # input: Name des Popup
 # output: popup
+# <img src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1" width="200" height="200" align = "right">
 def create_html(data,screensize,colors):
      result = []
 
@@ -59,39 +60,47 @@ def create_html(data,screensize,colors):
          html=f"""
             <!DOCTYPE html>
             <html>
-            <head>
-            <h1 style = "text-align: center"> {one_location[0]}</h1>
-            </head>
-            <body>
-            <hr width="100%" size = "0.1">
-             <p style = "font-size: 18px"><B><font face="Arial">Charkteristika:</font></B></p>
-             <ul style="margin:0px;list-style:none ;">
-                 <li style= "font-size: 15px"><B><font face="Arial">Adress:</font>     </B>&emsp;{one_location[3]}</li>
-                 &thinsp;
-                 <li style= "font-size: 15px"><B><font face="Arial">kind:</font> </B>&emsp;{one_location[5]}</li>
-                 &thinsp;
-                 <li style= "font-size: 15px"><B><font face="Arial">Number of parking lots:</font> </B>&emsp;{one_location[6]}</li>
-                 &thinsp;
-                 <li style= "font-size: 15px"><B><font face="Arial">price: </font></B>&emsp;{one_location[7]}</li>
-                 &thinsp;
-                 <li style= "font-size: 15px"><B><font face="Arial">Public transport:</font> </B>&emsp;{one_location[8]}</li>
-             </ul>
-            &thinsp;
-             <hr width="100%" size = "0.1">
+                   <head>
+                   <h1 style = "text-align: center"><font face="Arial"> {one_location[0]}</font></h1>
+                   </head>
+                   <body>
+                    <p style = "font-size: 18px"><B><u><font face="Arial">Characteristics:</font></u></B></p>
+                   <ul>
+                       <li style= "font-size: 15px"><B><font face="Arial">Address:</B></font></B></font><font face="Arial">&emsp; {one_location[3]}</font></li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">Number of Parking Lots: </font></B></font><font face="Arial">&emsp;{one_location[5]}</font></li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">Type of Facility:</font></B></font><font face="Arial">&emsp;{one_location[6]}</font></li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">Public Transport Connections: </font></B></font><font face="Arial">&emsp;{one_location[7]}</font></li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">Current Occupancy:</font></B> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li>&thinsp;
+                   </ul>
 
-             <h2>Prognose:</h2>
-             <ul style="margin:0px;list-style:none ;">
-                 <li style= "font-size: 15px"> <B><font face="Arial">aktuelle Auslastung:</font></B> <font color = {colors[i]}>&emsp; high  </font>&emsp;{arrow}</li>&thinsp;
+                       <table style= "border:1px solid black; background-color:#E3EFFA; text-align:center; font-size: 14px; width:100%; height:100%">
+                       <caption style= "text-align:center"> <B style= "font-size: 18px"><font face="Arial">Occupancy History Of The Week</font></B> </caption>
+                       <tr>
+                           <th height=30 style=" border-bottom: 1px solid black; border-right: 1px solid black;"><font face="Arial">Monday</font></th>
+                           <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Tuesday</font></th>
+                           <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Wednesday</font></th>
+                           <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Thursday</font></th>
+                           <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Friday</font></th>
+                           <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Saturday</font></th>
+                           <th  style=" border-bottom: 1px solid black;"><font face="Arial">Sunday</font></th>
+                       </tr>
+                       <tr>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       </tr>
+                       </table>
 
-             </ul>
-             </p>
 
-            </body>
-            </html>
-
+                   </p>
+                   </body>
+           </html>
              """
-
-         iframe = folium.IFrame(html=html, width=screensize[0]/3, height=screensize[1]*2/4)
+         iframe = folium.IFrame(html=html, width=screensize[0]/3, height=screensize[1]/2)
          popup = folium.Popup(iframe, max_width=7000)
          result.append(popup)
 

@@ -6,7 +6,7 @@ import numpy as np
 from dash.exceptions import PreventUpdate
 from utility.util_functions import *
 from utility.filter_funktion import *
-from utility.data_functions import add_location, remove_location_from_json
+from utility.data_functions import *
 from components.sidebar import get_sidebar
 import plotly.express as px
 import pages.global_vars as glob_vars
@@ -34,17 +34,6 @@ global sid
 seitentag = "_list"
 
 sid = get_sidebar(seitentag)
-
-FA_icon = html.I(className="fa fa-refresh")
-refr_button = (html.Div(dbc.Button([FA_icon, " Refresh"], color="light", className="me-1",id = "refresh_list", value = 0,
-                    style={
-                        "marginLeft": "0%",
-                        "width": "7%",
-                        "height": "60%",
-                        "fontSize": "1em",
-                        "color": "black",
-                    },
-                    )))
 
 def create_security_window(location:str, index:int):
     return dbc.Modal([dbc.ModalHeader("Deleting Location {}. Are you sure?".format(location)),
@@ -189,6 +178,7 @@ def create_edit_window(index:int):
 #function to create the content of the tables(the content of the collapsibles)
 #will be switched out by table through vuetify library and is not documented further -> soon to be DEPRECATED
 def create_content(df: pd.DataFrame):
+    #print("create data: ", df)
     cols = df.columns
 
     content = []
@@ -215,7 +205,7 @@ def create_content(df: pd.DataFrame):
 def create_table(content:list[str]):
 
     table_header = [
-        html.Thead(html.Tr([html.Th("Charakeristiken"), html.Th("")]))
+        html.Thead(html.Tr([html.Th("Charakeristiken"), html.Th("")]), style = {"marginTop":"5%"})
     ]
     charakter = ["address:","administration:" ,"Kind:","number of parking lots:","price:","public transport:","Road network connection:", "surrounding infrastructure" ]
     rows = [html.Tr([html.Td(charakter[i]), html.Td(content[(i+3)*2])]) for i in range (len(charakter))]
@@ -325,6 +315,7 @@ html_list_for_layout = create_layout(names, content)
 
 layout = html.Div(children=html_list_for_layout, id="list_layout", style = CONTENT_STYLE)
 
+#print(type(glob_vars.data["number_parking_lots"][0]))
 
 #Callbacks:-----------------------------------------------
 
@@ -402,10 +393,30 @@ def toggle_collapses(_butts, stats):
 def edit_data(changed_data:list[str],index):
     #global data, temp_data
 
-    charakteristics = ["price","road_network_connection","number_parking_lots","administration","surrounding_infrastructure","kind","public_transport"]
+    characteristics = ["address","administration","kind","number_parking_lots","price","public_transport","road_network_connection","surrounding_infrastructure"]
 
-    for i in range(len(changed_data)):
-        glob_vars.data.iloc[index][charakteristics[i]] = changed_data[i]
+    location = glob_vars.data.iloc[index]["location"]
+
+    temp_data = get_data("Characteristics.csv")
+
+    for i in range (len(temp_data)):
+        if temp_data.iloc[i]["location"] == location:
+            position = i
+            break
+
+    dic = {}
+    dic["location"] =  temp_data.iloc[position]["location"]
+
+    for i  in range(len(characteristics)):
+
+        if changed_data[i] == None:
+            dic[characteristics[i]] = np.squeeze(temp_data.iloc[position][characteristics[i]])
+
+        else:
+            dic[characteristics[i]] = changed_data[i]
+
+
+    update_characteristics_in_csv(dic)
 
 
 
@@ -425,7 +436,7 @@ def edit_data(changed_data:list[str],index):
     [State({"type": "edit_window", "index": MATCH}, "is_open")],
     prevent_initial_call=True,
 )
-def open_edit_window(n_clicks_edit,n_clicks_submit,adress, parking_lots, accessibility,price, infrastructure, administration,parking_type, connection, edit_state):
+def open_edit_window(n_clicks_edit,n_clicks_submit,adress, parking_lots, accessibility,price, infrastructure, administration,kind, connection, edit_state):
 
     triggered_id = ctx.triggered_id
 
@@ -438,7 +449,7 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,adress, parking_lots, accessi
     # if the apply button was pressed the edit window closes and the data updates
     elif triggered_id["type"] == "edit_submit_button" :
 
-        #edit_data([price,connection,parking_lots, administration, infrastructure, parking_type, accessibility],index)
+        edit_data([adress, administration,kind, parking_lots,price,accessibility, connection,infrastructure],triggered_id.index)
         return(not edit_state)
     else:
         raise PreventUpdate

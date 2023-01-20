@@ -201,11 +201,13 @@ def update_characteristics_in_csv(dic: dict) -> None:
 
     location = dic['location']  # Get the location from the dictionary
 
-    with open(path_to_characteristics, 'r') as f:  # Open the csv file
+    dic.pop('location')
+
+    with open(get_path_to_csv("Characteristics.csv"), 'r',encoding='utf-8-sig') as f:  # Open the csv file
         reader = csv.reader(f)  # Create a csv reader
         lines = list(reader)  # Read the csv file
 
-    with open(path_to_characteristics, 'w', newline='') as f:  # Open the csv file
+    with open(get_path_to_csv("Characteristics.csv"), 'w', newline='',encoding='utf-8-sig') as f:  # Open the csv file
         writer = csv.writer(f)  # Create a csv writer
 
         for line in lines:  # Iterate over the lines
