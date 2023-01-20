@@ -6,20 +6,13 @@ import numpy as np
 from dash.exceptions import PreventUpdate
 from utility.util_functions import *
 from utility.filter_funktion import *
-from utility.data_functions import add_location
+from utility.data_functions import add_location, remove_location_from_json
 from components.sidebar import get_sidebar
 import plotly.express as px
 import pages.global_vars as glob_vars
 from collections import defaultdict
+import fontstyle
 
-
-
-DEL_BUTTON_STYLE = {  # Define the style of the buttons
-    #"width": "8rem",  # Set the width of the buttons to 8rem
-    #"height": "2rem",  # Set the height of the buttons to 2rem
-    "padding": "2rem 1rem",  # Add some padding to the buttons
-    "marginRight": "0%",  # Align the text in the buttons to the right
-}
 FA_icon_trash= html.I(className="fa fa-trash fa-lg")
 FA_icon_pen= html.I(className="fa fa-pencil fa-lg")
 
@@ -31,8 +24,11 @@ ARR_BUTTON_STYLE = { #Define the style of the arrow button
 FA_icon_Arrow = html.I(className="fa fa-chevron-down fa-lg") #arrow icon for the arrow button
 
 CONTENT_STYLE = { #style the content of list_page so that it aligns with the sidebar
-    "margin-right": "18%", #set the distance to the right margin where the sidebar goes
-    "padding": "2rem 1rem"
+    "position": "fixed",
+    "width": "calc(113vw - 250px)",
+    "height": "calc(100vh - 50px)",
+    "flex-grow": "1",
+    "seamless":"True"
 }
 global sid
 seitentag = "_list"
@@ -55,12 +51,18 @@ def create_security_window(location:str, index:int):
                       dbc.ModalBody(
                         [dbc.Button(  # Button to close the modal
                         "Yes!",  # Text of the button
-                        color="primary",  # Set the color of the button to primary
+                        style = {"background-color":"#b3b3b3",
+                                 "border": "black",
+                                 "color": "black",
+                                 "margin-right":"15px"
+                                } ,
                         id={"type":"security_yes_button", "index":index}  # Set the id of the button to modal_submit_button
                         ),
                         dbc.Button(  # Button to close the modal
                         "No.",  # Text of the button
-                        color="primary",  # Set the color of the button to primary
+                        style = {"background-color":"#b3b3b3",
+                                 "border": "black",
+                                 "color": "black"} ,   # Set the color of the button to primary
                         id={"type":"security_no_button", "index":index}  # Set the id of the button to modal_submit_button
                         ),
                         ]
@@ -75,7 +77,7 @@ def create_edit_window(index:int):
             dbc.ModalHeader("Edit"),# Header of the modal
             dbc.ModalBody(  # Body of the modal
                 [
-                    dbc.Label("address"),
+                    dbc.Label("Address"),
                     dbc.Input(
                                     id={"type":"edit_address", "index":index},
                                     type="text",  # Set the type of the input field to text
@@ -95,31 +97,31 @@ def create_edit_window(index:int):
                         id={"type":"edit_administration", "index":index}  # Set the id of the radio buttons to modal_occupancy_filter
                     ),
 
-                    dbc.Label("Parking type",style = {"margin-top":"5%", "weight":"bold"}),
+                    dbc.Label("Type of Facility",style = {"margin-top":"5%", "weight":"bold"}),
                     dcc.Dropdown(
                                     options=[
-                                        {'label': 'Parkhaus', 'value': 'Parkhaus'},
-                                        {'label': 'Separate Fläche', 'value': 'Separate Fläche'},
-                                        {'label': 'Am Fahrbahnrand / an der Straße', 'value': 'Am Fahrbahnrand / an der Straße'},
+                                        {'label': 'Car Park', 'value': 'Car Park'},
+                                        {'label': 'Separate Area', 'value': 'Separate Area'},
+                                        {'label': 'At the edge of the road / on the road', 'value': 'At the edge of the road / on the road'},
                                     ],
-                                    placeholder="edit parking type",
+                                    placeholder="edit type of facility",
                                     id={"type":"edit_parking_type", "index":index},
                                 ),
 
-                    dbc.Label("Number of carports",style = {"margin-top":"5%", "weight":"bold"}),
-                    dcc.RangeSlider(min=1,max=6,step=None,id={"type":"edit_parking_lots", "index":index}, updatemode='drag',
-                                    marks={
-                                        1: '1',
-                                        2: '25',
-                                        3: '50',
-                                        4: '100',
-                                        5: '200',
-                                        6: "1200",
-                                    },
-                                    value=[1, 6],
+                    dbc.Label("Number of Parking spots",style = {"margin-top":"5%", "weight":"bold"}),
+                    dcc.Dropdown(
+                        options=[
+                            {'label': '1-25', 'value': '1-25'},
+                            {'label': '25-50', 'value': '25-50'},
+                            {'label': '50-100', 'value': '50-100'},
+                            {'label': '100-200', 'value': '100-200'},
+                            {'label': '200-1200', 'value': '200-1200'},
+                        ],
+                        placeholder="edit number of parking spots",
+                        id={"type":"edit_parking_lots", "index":index}
                     ),
 
-                    dbc.Label("Max Preis(\u20ac):",style = {"margin-top":"5%"}),
+                    dbc.Label("Max Price(\u20ac):",style = {"margin-top":"5%"}),
                     dbc.Input(
                         id={"type":"edit_price", "index":index},
                         type="number",  # Set the type of the input field to text
@@ -128,37 +130,37 @@ def create_edit_window(index:int):
                         value=None  # Set the value of the input field to an empty string
                     ),
 
-                    dbc.Label("ÖPNV accessibility",style = {"margin-top":"5%"}),
+                    dbc.Label("Public Transport Accessibility",style = {"margin-top":"5%"}),
                     dbc.Input(
                                     id={"type":"edit_accessibility", "index":index},
                                     type="number",  # Set the type of the input field to text
                                     debounce=False,  # Set the debounce-attribute of the input field to True
-                                    placeholder="edit ÖPNV accessibility",
+                                    placeholder="edit public transport accessibility",
                                     value=None  # Set the value of the input field to an empty string
                     ),
 
-                    dbc.Label("Connection:",style = {"margin-top":"5%"}),
+                    dbc.Label("Transport Connection:",style = {"margin-top":"5%"}),
                     dcc.Dropdown(
                         options=[
-                            {'label': 'Übergeordnetes Netz innerorts (Bundesstraßen)', 'value': 'Übergeordnetes Netz innerorts (Bundesstraßen)'},
-                            {'label': 'Übergeordnetes Netz außerorts (Bundesstraßen)', 'value': 'Übergeordnetes Netz außerorts (Bundesstraßen)'},
-                            {'label': 'Nachgeordnetes Netz innerorts', 'value': 'Nachgeordnetes Netz innerorts'},
-                            {'label': 'Nachgeordnetes Netz außerorts', 'value': 'Nachgeordnetes Netz außerorts'},
+                            {'label': 'Superordinate network within the city (interstate)', 'value': 'Superordinate network within the city (interstate)'},
+                            {'label': 'Superordinate network out of town (interstate)', 'value': 'Superordinate network out of town (interstate)'},
+                            {'label': 'Subordinate network in the city', 'value': 'Subordinate network in the city'},
+                            {'label': 'Subordinate network out of town', 'value': 'Subordinate network out of town'},
                         ],
                         placeholder="edit connection",
                         id={"type":"edit_connection", "index":index},
                     ),
 
-                    dbc.Label("surrounding infrastructure",style = {"margin-top":"5%"}),
+                    dbc.Label("Surrounding Infrastructure",style = {"margin-top":"5%"}),
                     dcc.Dropdown(
                         options=[
-                            {'label': 'Grünflächen', 'value': 'Grünflächen'},
-                            {'label': 'Wohnflächen', 'value': 'Wohnflächen'},
-                            {'label': 'Industrieflächen', 'value': 'Industrieflächen'},
-                            {'label': 'Gewerbegebieten', 'value': 'Gewerbegebieten'},
-                            {'label': 'Mischflächen', 'value': 'Mischflächen'},
+                            {'label': 'Green Spaces', 'value': 'Green Spaces'},
+                            {'label': 'Living Spaces', 'value': 'Living Spaces'},
+                            {'label': 'Industrial Areas', 'value': 'Industrial Areas'},
+                            {'label': 'Industrial Parks', 'value': 'Industrial Parks'},
+                            {'label': 'Mixed Areas', 'value': 'Mixed Areas'},
                         ],
-                        placeholder="edit infrastructure",
+                        placeholder="edit surrounding infrastructure",
                         id={"type":"edit_infrastructure", "index":index},
                     ),
 
@@ -215,33 +217,41 @@ def create_table(content:list[str]):
     table_header = [
         html.Thead(html.Tr([html.Th("Charakeristiken"), html.Th("")]))
     ]
-    charakter = ["location:","lat:" ,"lon:","occupancy_tendency:","occupancy_tendency:","occupancy_traffic_light:","occupancy_label:" ]
-    rows = [html.Tr([html.Td(charakter[i]), html.Td(content[i*2])]) for i in range (len(charakter))]
+    charakter = ["address:","administration:" ,"Kind:","number of parking lots:","price:","public transport:","Road network connection:", "surrounding infrastructure" ]
+    rows = [html.Tr([html.Td(charakter[i]), html.Td(content[(i+3)*2])]) for i in range (len(charakter))]
 
     table_body = [html.Tbody(rows)]
 
-    table_1 = dbc.Table(table_header + table_body, borderless=True, hover=False)
+    table_1 = dbc.Table(table_header + table_body, borderless=False, hover=False)
 
     return table_1
+
 
 
 #create plot for the distribution over the week
 #!!!!Fehlen die Daten, um die Verteilung für die Orte individuell zu gestalten
 def create_plot(content:list[str] = [1,2,3,4,5,6]):
 
+    df = pd.DataFrame({
+    "": ["Monday","Tuesday", "Wednesday", "Thursday","Friday", "WE"],
+    "occupancy rate": [content[0],content[1],content[2],content[3],content[4],content[5]]
+    })
 
-    graph = dcc.Graph(
-        figure={
-            'data': [
-                {'x': ["Montag","Dienstag", "Mittwoch", "Donnerstag","Freitag", "WE"], 'y': [content[0],content[1],content[2],content[3],content[4],content[5], ],
-                'type': 'bar','name': 'Auslastung',
-                "marker": {"color": "lightskyblue"}}
-            ],
-            'layout': {
-                'title': 'Prognose über die Woche'
-            }
+    fig = px.bar(df, x="", y="occupancy rate")
+
+    fig.update_layout(
+        title = {
+            'text' : "<b>Prediction over a week</b>",
         }
     )
+    graph = dcc.Graph(
+        figure =  fig,
+        config={
+            'displayModeBar': False
+        }
+        )
+
+
     return graph
 
 
@@ -257,10 +267,10 @@ def create_layout(names:list[str], content:list[str]):
     #currently content is list of strings, datatype will vary in the future
     global sid
 
-    button_refresh = refr_button
+
     #init list of components
     html_list = []
-    html_list.append(button_refresh)
+
 
 
     #iterate through names(names and content must have the same length)
@@ -280,10 +290,21 @@ def create_layout(names:list[str], content:list[str]):
                 #append collapsible content
         html_list.append(dbc.Collapse(
             [dbc.CardBody(create_table(content[i]), style ={"width": "60%", "marginLeft": "3%"}), dbc.CardBody(create_plot(),style ={"width": "50%", "color": "#F0F8FF"}) , create_edit_window(i), create_security_window(names[i], i), html.Div(id={"type":"security_id_transmitter", "index":i}, style={"display":"none"})],
+
             id={"type":"content", "index":i},
             style = {"width":"87%"},
             is_open=False
         ))
+"""
+        [dbc.Row([ #getting the table and picture next to each other
+        dbc.Col(dbc.CardBody(create_table(content[i]), style ={"width": "180%", "marginLeft": "0%"}), width = "auto"),
+        dbc.Col(dbc.CardImg(src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1", style ={"width": "100%", "marginLeft": "90%", "marginTop": "10%"}), width = "auto"),
+        ],
+        style ={"width": "80%", "marginLeft": "1%"}),
+        #plot directly under the table
+        dbc.CardBody(create_plot(),style ={"width": "45%", "color": "#F0F8FF"}),
+        ],
+           #[dbc.CardBody(create_table(content[i]), style ={"width": "60%", "marginLeft": "3%"}), dbc.CardBody(create_plot(),style ={"width": "50%", "color": "#F0F8FF"}) , create_edit_window(i)],"""
 
     #in case no name sare given(normally means filtering was unsuccessful)
     if len(names) == 0:
@@ -302,7 +323,7 @@ names, content = create_content(glob_vars.data)
 #create new layout
 html_list_for_layout = create_layout(names, content)
 
-layout = html.Div(children=html_list_for_layout, id="list_layout")
+layout = html.Div(children=html_list_for_layout, id="list_layout", style = CONTENT_STYLE)
 
 
 #Callbacks:-----------------------------------------------
@@ -630,7 +651,7 @@ def add_new_location(_1, _2, _3, URL_value, *params):
     Input("placeholder_div_filter" + seitentag, "n_clicks"),
     Input("placeholder_div_adding" + seitentag, "n_clicks"),
     Input("clear_filter_button" + seitentag, "n_clicks"),
-    Input("refresh_list", "n_clicks"),
+    Input("refresh_page", "n_clicks"),
     Input("sideboard_name_filter" + seitentag, "value"),
     Input("sideboard_address_filter" + seitentag, "value"),
     Input("sideboard_occupancy_filter" + seitentag, "value"),

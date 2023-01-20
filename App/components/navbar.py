@@ -1,27 +1,63 @@
-# Import necessary libraries
-from dash import html
 import dash_bootstrap_components as dbc
+#import dash_html_components as html
+from dash import html
+#from app import app
+from dash.dependencies import Input, Output, State
+import dash
 
+FA_icon = html.I(className="fa fa-refresh")
+refr_button = (html.Div(dbc.Button([FA_icon, " Refresh"], color="light", className="ms-2",id = "refresh_page", value = 0,
+                    style={
+                        "marginRight": "0%",
+                        "width": "auto",
+                        "height": "40%",
+                        "fontSize": "1em",
+                        "color": "white",
+                        "background-color":"transparent", #set the background color to transparent
+                        "border": "transparent", #set the border color to transparent
+                    },
+                    )))
 
-# Define the navbar structure
 def get_navbar():
-    """
-    This function defines and returns a Dash layout for the navigation bar of the application.
-    :return: A Dash layout for the navigation bar of the application.
-    """
-    layout = html.Div(  # Create a Div element
-        [
-            dbc.NavbarSimple(  # Bootstrap component which creates a simple navigation bar
-                children=[  # Define the links in the navigation bar
-                    dbc.NavItem(dbc.NavLink("Kartenansicht", href="/map_page")),  # Link to the map page
-                    dbc.NavItem(dbc.NavLink("Listenansicht", href="/list_page")),  # Link to the table page
+    navbar = dbc.Navbar(
+            dbc.Container(
+                [
+                    dbc.Row([
+                        dbc.Col([
+
+                            dbc.NavbarBrand("Park&Ride Dashboard", className="font-weight-bold")
+                        ],
+                        width={"size":"auto"})
+                    ],
+                    align="center",
+                    className="g-0"),
+
+                    dbc.Row([
+                        dbc.Col([
+                            dbc.Nav([
+                                dbc.NavItem(dbc.NavLink("Map View", href="/map_page",style={"color":"white"})),
+                                dbc.NavItem(dbc.NavLink("List View", href="/list_page",style={"color":"white"})),
+                            ],
+                            navbar=True
+                            )
+                        ],
+                        width={"size":"auto"})
+                    ],
+                    align="center"),
+                    dbc.Col(dbc.NavbarToggler(id="navbar-toggler", n_clicks=0)),
+
+                    dbc.Row([
+                        dbc.Col(
+                           dbc.NavItem(refr_button),
+                        )
+                    ],
+                    align="center")
                 ],
-                brand="Park&Ride Dashboard",  # The text displayed as the brand name in the navigation bar
-                brand_href="/map_page",  # The link to which the brand name redirects
-                color="dark",  # The color of the navigation bar
-                dark=True,  # Use the dark theme of the navigation bar
+            fluid=True
             ),
-        ]
+    color="#333333",
+    dark=True
+
     )
 
-    return layout  # Return the layout
+    return navbar
