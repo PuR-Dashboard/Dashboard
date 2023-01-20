@@ -11,6 +11,8 @@ import pandas as pd
 from pandas import read_csv
 import csv
 import ctypes
+import dash_bootstrap_components as dbc
+from dash import Input, Output, State, html
 
 
 import branca
@@ -52,38 +54,52 @@ def create_html(data,screensize,colors):
      for i in range (len(data)):
 
          one_location_previous = data.iloc[i]
-         one_location = ["keine Angabe" if (one_location_previous[i] == "") else one_location_previous[i] for i in range (len(one_location_previous)) ]
+         one_location = ["not specified" if (one_location_previous[i] == None) else one_location_previous[i] for i in range (len(one_location_previous)) ]
          arrow = "&#x2B06;" if (one_location[3] == "increasing") else ("&#x2B07;" if (one_location[3] == "decreasing")else "&#x2B05;")
          html=f"""
-             <h1> {one_location[0]}</h1>
-             <img src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1" width="250" height="250" align = "right">
-             &thinsp;
-             <p><B><u>Charkteristika:</u></B></p>
-             <ul>
-                 <li><B>Adresse: </B>:</li>
+            <!DOCTYPE html>
+            <html>
+            <head>
+            <h1 style = "text-align: center"> {one_location[0]}</h1>
+            </head>
+            <body>
+            <hr width="100%" size = "0.1">
+             <p style = "font-size: 18px"><B><font face="Arial">Charkteristika:</font></B></p>
+             <ul style="margin:0px;list-style:none ;">
+                 <li style= "font-size: 15px"><B><font face="Arial">Adress:</font>     </B>&emsp;{one_location[3]}</li>
                  &thinsp;
-                 <li><B>Anzahl der Stellplätze</B>:</li>
+                 <li style= "font-size: 15px"><B><font face="Arial">kind:</font> </B>&emsp;{one_location[5]}</li>
                  &thinsp;
-                 <li><B>Art der Parkgelegenheit</B>:</li>
+                 <li style= "font-size: 15px"><B><font face="Arial">Number of parking lots:</font> </B>&emsp;{one_location[6]}</li>
                  &thinsp;
-                 <li><B>ÖPNV-Anbindung</a></B>: S3, S4, Bus</li>
+                 <li style= "font-size: 15px"><B><font face="Arial">price: </font></B>&emsp;{one_location[7]}</li>
+                 &thinsp;
+                 <li style= "font-size: 15px"><B><font face="Arial">Public transport:</font> </B>&emsp;{one_location[8]}</li>
              </ul>
-             &thinsp;
-             <p><B><u>Prognose:</u></B></p>
-             <ul>
-                 <li> <B>aktuelle Auslastung:</B> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li>&thinsp;
-                 <li> <B>Auslastungshistorie der Woche</B> </li>&thinsp;
+            &thinsp;
+             <hr width="100%" size = "0.1">
+
+             <h2>Prognose:</h2>
+             <ul style="margin:0px;list-style:none ;">
+                 <li style= "font-size: 15px"> <B><font face="Arial">aktuelle Auslastung:</font></B> <font color = {colors[i]}>&emsp; high  </font>&emsp;{arrow}</li>&thinsp;
 
              </ul>
              </p>
-             <body><py-script output="plot">
-         </py-script></body>
+
+            </body>
+            </html>
 
              """
-         iframe = folium.IFrame(html=html, width=screensize[0]/2, height=screensize[1]*2/3)
+
+         iframe = folium.IFrame(html=html, width=screensize[0]/3, height=screensize[1]*2/4)
          popup = folium.Popup(iframe, max_width=7000)
          result.append(popup)
+
      return result
+
+
+
+
 
 #Einzugsgebiete kreiiern und zum Cluster hinzufügen
 # Input: liste an Positionen der Gebiete, Cluster

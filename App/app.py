@@ -1,12 +1,13 @@
 import dash
 import dash_bootstrap_components as dbc
 
-
+import pages.global_vars as glob_vars
 """
 This is the main app object. It is used to create the dash app and to run the app.
 Further, it defines some external stylesheets and scripts that are used in the app.
 """
-
+#initialise data, etc; gloabl variables
+glob_vars.init()
 
 external_stylesheets_list = [  # Define list of external stylesheets to style the Dash application
     dbc.themes.BOOTSTRAP,  # Toolkit for building responsive, mobile-first sites
