@@ -1,0 +1,3 @@
+﻿location,lat,lon,address,administration,kind,number_parking_lots,price,public_transport,road_network_connection,surrounding_infrastructure
+Schmeidelberg,8.675259999999998,49.40572,Wiese 5,yes,Separate Fläche,"[1, 6]",6.0,1,Nachgeordnetes Netz innerorts,Wohnflächen
+Zwungus,8.98316,49.46584,Ich habe keine Ahnung 56,None,Parkhaus,12000.0,0.0,None,None,Gewerbegebiete

@@ -1,0 +1,9 @@
+location,lat,lon,price,road_network_connection,number_parking_lots,administration,surrounding_infrastructure,kind,public_transport
+Heidelberg,1,1,,1.0,1-25,Yes,None,None,None
+Zweidelberg,1,1,,1.0,1-25,Yes,None,None,None
+Dreidelberg,1,1,,1.0,1-25,Yes,None,None,None
+Veidelberg,1,1,,1.0,1-25,Yes,None,None,None
+a,0,0,asdasd,,,,,,,
+a,0,0,a,,,,,,,
+tewst,0,0,,,,,,Übergeordnetes Netz außerorts (Bundesstraßen),,
+a,0,0,a,,,,,,,
