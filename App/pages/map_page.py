@@ -53,7 +53,7 @@ def create_html_map(data):
     html_list.append(  # Append the map tp the map_page
                     html.Iframe( #Create an Iframe element to get an interactive map
                     id="page-layout", # Set the id of the Iframe element
-                    srcDoc=open(os.path.join(os.path.dirname(__file__), '../P&R_Karte.html'), "r").read(),# Set the source of the Iframe element to be the previously created map
+                    srcDoc=open(os.path.join(os.path.dirname(__file__), '../../P&R_Karte.html'), "r").read(),# Set the source of the Iframe element to be the previously created map
                      #width="87%", height="800", # set the width and the height of the IFrame Element
                      style = CONTENT_STYLE
 

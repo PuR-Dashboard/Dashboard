@@ -46,11 +46,10 @@ def add_location(dic, url) -> None:
 
             writer = csv.writer(characteristics_file, delimiter=',')  # Create a csv writer
 
-            writer.writerow([location
+            writer.writerow([location, 8, 8
             #, __get_lat_lon_from_url(url)
             ]
-            + []
-            + []
+            
             + list(dic.values())[1:])  # Write the location
             # and its characteristics
 

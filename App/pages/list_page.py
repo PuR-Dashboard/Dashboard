@@ -25,7 +25,7 @@ FA_icon_Arrow = html.I(className="fa fa-chevron-down fa-lg") #arrow icon for the
 
 CONTENT_STYLE = { #style the content of list_page so that it aligns with the sidebar
     "position": "fixed",
-    "width": "calc(113vw - 250px)",
+    "width": "calc(100vw - 50px)",
     "height": "calc(100vh - 50px)",
     "flex-grow": "1",
     "seamless":"True"
