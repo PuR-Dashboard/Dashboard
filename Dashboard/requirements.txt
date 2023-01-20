@@ -1,7 +1,0 @@
-dash~=2.7.0
-folium~=0.14.0
-numpy~=1.23.4
-pyautogui~=0.9.53
-branca~=0.6.0
-pandas~=1.5.2
-requests~=2.28.1

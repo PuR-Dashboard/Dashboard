@@ -21,18 +21,25 @@ def filter_all(df: pd.DataFrame, filter_df: dict[str:str], negative=False)-> pd.
         return df
 
 def filter_max_value(df, category, max_value):
-    df2 = df.df.drop(df.loc[df[category] > max_value].index)
+    if max_value == None:
+        return df
+
+    df2 = df.drop(df.loc[df[category] > str(max_value)].index)
     df2 = df2.reset_index(drop = True)
     return df2
 
 
 def filter_for_value(df:pd.DataFrame, category:str, set_value:str):
+    if set_value == None:
+        return df
 
     df2 = df.drop(df.loc[df[category] != set_value].index)
     df2 = df2.reset_index(drop = True)
     return df2
 
 def filter_for_list(df:pd.DataFrame, category:str, set_list:list):
+    if set_list == None or len(set_list) == 0:
+        return df
 
     df2 = df.drop(df.loc[~df[category].isin(set_list)].index)
     df2 = df2.reset_index(drop = True)

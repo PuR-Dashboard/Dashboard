@@ -33,46 +33,54 @@ def Marker(markers, folium_map, tooltips):
 # Bestimmung der Bildschirmgröße
 def Bildschirmgroesse():
 
-    user32 = ctypes.windll.user32
-    screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
-    return screensize
+    #user32 = ctypes.windll.user32
+    ##screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+    #return screensize
     """
     Get the size of the primary monitor
     :return: width, height
     """
-    #return pyautogui.size()  # Returns a tuple of (width, height)
+    return pyautogui.size()  # Returns a tuple of (width, height)
 
 
 # Popup kreiiren
 # input: Name des Popup
 # output: popup
+# <img src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1" width="200" height="200" align = "right">
 def create_html(data,screensize,colors):
      result = []
 
      for i in range (len(data)):
 
          one_location_previous = data.iloc[i]
-         one_location = ["keine Angabe" if (one_location_previous[i] == "") else one_location_previous[i] for i in range (len(one_location_previous)) ]
+         one_location = ["not specified" if (one_location_previous[i] == None) else one_location_previous[i] for i in range (len(one_location_previous)) ]
          arrow = "&#x2B06;" if (one_location[3] == "increasing") else ("&#x2B07;" if (one_location[3] == "decreasing")else "&#x2B05;")
          html=f"""
              <h1> {one_location[0]}</h1>
-             <img src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1" width="250" height="250" align = "right">
-             &thinsp;
-             <p><B><u>Charkteristika:</u></B></p>
-             <ul>
-                 <li><B>Adresse: </B>:</li>
+             <hr width="100%" size = "0.1">
+              &thinsp;
+
+
+             <h2>
+             Charkteristika:
+             </h2>
+             <ul style="margin:0px;list-style:none ;">
+                 <li><B>Adress:     </B>&emsp;{one_location[3]}</li>
                  &thinsp;
-                 <li><B>Anzahl der Stellplätze</B>:</li>
+                 <li><B>kind: </B>&emsp;{one_location[5]}</li>
                  &thinsp;
-                 <li><B>Art der Parkgelegenheit</B>:</li>
+                 <li><B>Number of parking lots: </B>&emsp;{one_location[6]}</li>
                  &thinsp;
-                 <li><B>ÖPNV-Anbindung</a></B>: S3, S4, Bus</li>
+                 <li><B>price: </B>&emsp;{one_location[7]}</li>
+                 &thinsp;
+                 <li><B>Public transport: </B>&emsp;{one_location[8]}</li>
              </ul>
+            &thinsp;
+             <hr width="100%" size = "0.1">
              &thinsp;
-             <p><B><u>Prognose:</u></B></p>
-             <ul>
-                 <li> <B>aktuelle Auslastung:</B> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li>&thinsp;
-                 <li> <B>Auslastungshistorie der Woche</B> </li>&thinsp;
+             <h2>Prognose:</h2>
+             <ul style="margin:0px;padding:30px;list-style:none ;">
+                 <li> <B>aktuelle Auslastung:</B> <font color = {colors[i]}>&emsp; high  </font>&emsp;{arrow}</li>&thinsp;
 
              </ul>
              </p>
@@ -80,7 +88,7 @@ def create_html(data,screensize,colors):
          </py-script></body>
 
              """
-         iframe = folium.IFrame(html=html, width=screensize[0]/2, height=screensize[1]*2/3)
+         iframe = folium.IFrame(html=html, width=screensize[0]/3, height=screensize[1]/2)
          popup = folium.Popup(iframe, max_width=7000)
          result.append(popup)
      return result

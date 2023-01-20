@@ -2,7 +2,7 @@ import csv
 import requests
 import json
 from datetime import datetime
-
+from utility.util_functions import *
 from requests import Response
 
 username = 'optipark'  # Username for the API
@@ -59,7 +59,7 @@ def update_csv() -> None:
             writer.writerow([location, lat, lon] + values)  # Write the row to the csv file
 
 
-def get_locations_and_urls() -> (list, list):
+def get_locations_and_urls():
     """
     This function returns the list of all locations and their corresponding urls.
 
@@ -103,22 +103,22 @@ def add_location(dic, url) -> None:
 
     location = dic['location']  # Get the location from the dictionary
 
-    if not check_location_exists(location):  # If the location does not exist yet
+    if True:#if not check_location_exists(location):  # If the location does not exist yet
         # --- Add the location and its api-access to the Urls.json file --- #
-        add_url_to_json(location, url)  # Add the link to the json file
+        #add_url_to_json(location, url)  # Add the link to the json file
 
         # --- Append the location with its characteristics to the csv file --- #
-        with open(path_to_characteristics, 'a', newline='') as characteristics_file:  # Open the csv file
+        with open(get_path_to_csv("Characteristics.csv"), 'a', newline='', encoding='utf-8-sig') as characteristics_file:  # Open the csv file
 
             writer = csv.writer(characteristics_file, delimiter=',')  # Create a csv writer
-
-            writer.writerow([location, get_lat_lon_from_url(url)] + list(dic.values())[1:])  # Write the location
+                                        #get_lat_lon_from_url(url)
+            writer.writerow([location, 0, 0] + list(dic.values())[1:])  # Write the location
             # and its characteristics
 
             characteristics_file.close()  # Close the file
 
         # --- Append the location to the csv file containing the occupancies --- #
-        add_location_to_occ_csv(location)  # Add the location to the csv file containing the occupancies
+        #add_location_to_occ_csv(location)  # Add the location to the csv file containing the occupancies
 
     else:  # If the location already exists
         raise Exception('The location {} already exists'.format(location))  # Raise an exception
@@ -214,12 +214,12 @@ def add_url_to_json(location: str, url: str) -> None:
         The url for the location.
     """
 
-    with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
+    with open(get_path_to_csv("Urls.json"), 'r') as f:  # Open the json file with the information about the locations
         content = json.load(f)  # Load the content of the json file
 
     content[location] = url  # Add the link for the location
 
-    with open(path_to_urls, 'w') as f:  # Open the json file with the information about the locations
+    with open(get_path_to_csv("Urls.json"), 'w') as f:  # Open the json file with the information about the locations
         json.dump(content, f, indent=4)  # Write the new content to the json file
 
 
@@ -259,11 +259,13 @@ def update_characteristics_in_csv(dic: dict) -> None:
 
     location = dic['location']  # Get the location from the dictionary
 
-    with open(path_to_characteristics, 'r') as f:  # Open the csv file
+    dic.pop('location')
+
+    with open(get_path_to_csv("Characteristics.csv"), 'r',encoding='utf-8-sig') as f:  # Open the csv file
         reader = csv.reader(f)  # Create a csv reader
         lines = list(reader)  # Read the csv file
 
-    with open(path_to_characteristics, 'w', newline='') as f:  # Open the csv file
+    with open(get_path_to_csv("Characteristics.csv"), 'w', newline='',encoding='utf-8-sig') as f:  # Open the csv file
         writer = csv.writer(f)  # Create a csv writer
 
         for line in lines:  # Iterate over the lines
@@ -334,7 +336,7 @@ def add_location_to_occ_csv(location: str) -> None:
         The location that should be added.
     """
 
-    with open(path_to_occupancy, 'r') as f, open(path_to_occupancy, 'w') as w:  # Open the csv file in read and write
+    with open(get_path_to_csv("Occupancy.csv"), 'r') as f, open(get_path_to_csv("Occupancy.csv"), 'w') as w:  # Open the csv file in read and write
         reader = csv.reader(f)  # Create a csv reader
         writer = csv.writer(w)  # Create a csv writer
 
