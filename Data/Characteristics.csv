@@ -1,3 +1,3 @@
-location,lat,lon,address,administration,kind,number_parking_lots,price,public_transport,road_network_connection,surrounding_infrastructure
+﻿location,lat,lon,address,administration,kind,number_parking_lots,price,public_transport,road_network_connection,surrounding_infrastructure
 Schmeidelberg,8.675259999999998,49.40572,An der tauben Wiese 23,yes,Separate Fläche,1.0,2000000.0,70,Übergeordnetes Netz innerorts (Bundesstraßen),Nicht eindeutig zuzuordnen
-Zwungus,8.98316,49.46584,Ich habe keine Ahnung 56,None,Parkhaus,12000.0,0.0,None,None,Gewerbegebiete
+Zwungus,8.98316,49.46584,"('address', 'Test')","('administration', array('None', dtype='<U4'))","('kind', array('Parkhaus', dtype='<U8'))","('location', 'Zwungus')","('number_parking_lots', 12000.0)","('price', 0.0)","('public_transport', array('None', dtype='<U4'))","('road_network_connection', array('None', dtype='<U4'))","('surrounding_infrastructure', array('Gewerbegebiete', dtype='<U14'))"

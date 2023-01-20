@@ -285,7 +285,7 @@ def create_layout(names:list[str], content:list[str]):
             style = {"width":"87%"},
             is_open=False
         ))
-"""
+        """
         [dbc.Row([ #getting the table and picture next to each other
         dbc.Col(dbc.CardBody(create_table(content[i]), style ={"width": "180%", "marginLeft": "0%"}), width = "auto"),
         dbc.Col(dbc.CardImg(src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1", style ={"width": "100%", "marginLeft": "90%", "marginTop": "10%"}), width = "auto"),
@@ -303,8 +303,8 @@ def create_layout(names:list[str], content:list[str]):
 
     html_list.append(sid)
     html_list.append(
-                    #placeholder div for output of location delete
-                    html.Div(id="placeholder_div_delete_list", style={"display":"none"}))
+                #placeholder div for output of location delete
+                html.Div(id="placeholder_div_delete_list", style={"display":"none"}))
 
     return html_list
 
