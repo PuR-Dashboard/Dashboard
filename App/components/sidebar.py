@@ -49,15 +49,6 @@ def get_sidebar(distinction: str) -> html.Div:
                         placeholder="Location Name",  # Set the placeholder of the input field to Location Name
                         autofocus=True  # Set the autofocus-attribute of the input field to True
                     ),
-                    html.H5("Address",style={'color': 'white'}),  # Label of the name search bar
-                    dbc.Input(  # Input field
-                        id="sideboard_address_filter" + distinction,
-                        type="text",  # Set the type of the input field to text
-                        debounce=False,  # Set the debounce-attribute of the input field to False
-                        value=None,  # Set the value of the input field
-                        placeholder="Address",  # Set the placeholder of the input field to Location Name
-                        autofocus=False
-                    ),
                     html.Hr(),
                        html.H5("Address",style={'color': 'white'}),  # Label of the name search bar
                     dbc.Input(  # Input field
@@ -68,7 +59,7 @@ def get_sidebar(distinction: str) -> html.Div:
                         placeholder="Address",  # Set the placeholder of the input field to Location Name
                         autofocus=False
                     ),
- html.Hr(),
+                    html.Hr(),
                     html.H5("Occupancy:",style={'color': 'white'}),  # Label for the occupancy input field
                     dbc.RadioItems(  # Radio buttons to select the occupancy
                         options=[  # Define the options of the radio buttons

@@ -52,8 +52,6 @@ def Bildschirmgroesse():
 def create_html(data,screensize,colors):
      result = []
 
-     print(":))")
-
      for i in range (len(data)):
 
          one_location_previous = data.iloc[i]

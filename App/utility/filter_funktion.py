@@ -54,7 +54,7 @@ def filter_for_index(df, index):
     return df
 
 
-def filter_names(df, filteraspect):
+def filter_names(df, filteraspect, key):
 
     to_delete = []
     index = []
@@ -63,11 +63,11 @@ def filter_names(df, filteraspect):
     filterchar = [char for char in filteraspect]
 
     index = 0
-    while (index < len(df['location'])):
+    while (index < len(df[key])):
 
         Deleted = False
 
-        location = df.iloc[index]['location']
+        location = df.iloc[index][key]
         locationchar =  [char for char in location]
 
         #einzelnen Buchstaben vergleichen
@@ -76,7 +76,7 @@ def filter_names(df, filteraspect):
             #wenn filterwort zu lang ist
             if ( i >= (len(locationchar))):
                 Deleted = True
-                df.drop(df.loc[df['location']== location].index, inplace = True )
+                df.drop(df.loc[df[key]== location].index, inplace = True )
                 df.reset_index(drop = True, inplace = True)
                 break
                 #z = z-1
@@ -84,7 +84,7 @@ def filter_names(df, filteraspect):
             #wenn eins nicht identisch ist -> raus löschen
             elif (filterchar[i] != locationchar[i]):
                 Deleted = True
-                df.drop(df.loc[df['location']== location].index, inplace = True )
+                df.drop(df.loc[df[key]== location].index, inplace = True )
                 df.reset_index(drop = True, inplace = True)
                 break
                 #z = z-1
@@ -136,15 +136,16 @@ def filter_content(df: pd.DataFrame, filter_dict:defaultdict):
 
     returns: filtered dataframe by standards of filter_dict
     """
-    
+    print(filter_dict)
 
     #if none then no location name was given the filter, so no filtering
     keys = df.columns.values
     for key in keys:
         if filter_dict[key] == None:
             continue
-        elif key == "location":
-            df = filter_names(df, filter_dict[key])
+        elif key == "location" or key == "address":
+            print("check")
+            df = filter_names(df, filter_dict[key], key)
         #value for occupation key is a list of location names that fulfill occupancy filter criteria
         elif key == "occupancy":
             df = df = filter_for_list(df, "location", get_occupancy_list_from_vals(filter_dict[key]))

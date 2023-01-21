@@ -29,7 +29,7 @@ def get_path_to_csv(name_of_csv="Characteristics.csv", app_name="App"):
 
 
 #get data stored in our Location Data and return DataFrame
-def get_data(name_of_csv="Characteristics.csv", app_name="App"):
+def get_data(name_of_csv="Location_Data.csv", app_name="App"):
     #data_path = get_root_dir(app_name)
     #print(os.path.join(data_path, os.path.join("Data", name_of_csv)))
     df = pd.read_csv(get_path_to_csv(name_of_csv, app_name))

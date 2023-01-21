@@ -25,7 +25,7 @@ FA_icon_Arrow = html.I(className="fa fa-chevron-down fa-lg") #arrow icon for the
 
 CONTENT_STYLE = { #style the content of list_page so that it aligns with the sidebar
     "position": "fixed",
-    "width": "calc(100vw - 50px)",
+    "width": "calc(113vw - 250px)",
     "height": "calc(100vh - 50px)",
     "flex-grow": "1",
     "seamless":"True"
@@ -33,9 +33,18 @@ CONTENT_STYLE = { #style the content of list_page so that it aligns with the sid
 global sid
 seitentag = "_list"
 
+#generate sidebar for this page
 sid = get_sidebar(seitentag)
 
-def create_security_window(location:str, index:int):
+#function to generate the modal for the delete security question("do you really want do delete xy...?")
+def create_security_window(location:str, index:int) -> dbc.Modal:
+    """
+    location: name of location to be deleted
+    index: index of row in the currently displayed data that shall be deleted
+
+    returns: Modal with security question
+    """
+
     return dbc.Modal([dbc.ModalHeader("Deleting Location {}. Are you sure?".format(location)),
                       dbc.ModalBody(
                         [dbc.Button(  # Button to close the modal
@@ -60,7 +69,14 @@ def create_security_window(location:str, index:int):
                         centered=True,  # Set the centered-attribute of the modal to True
                         )
 
-def create_edit_window(index:int):
+#function to create modal for editing data
+def create_edit_window(index:int) -> dbc.Modal:
+    """
+    index: index of row that should be edited if the window is called
+
+    returns: modal to edit data
+    """
+    
     edit_popUp = dbc.Modal(  # Modal to display the advanced filter
         [
             dbc.ModalHeader("Edit"),# Header of the modal
@@ -176,8 +192,9 @@ def create_edit_window(index:int):
 
 
 #function to create the content of the tables(the content of the collapsibles)
-#will be switched out by table through vuetify library and is not documented further -> soon to be DEPRECATED
-def create_content(df: pd.DataFrame):
+#will be switched out by table through vuetify library and is not documented further
+#DEPRECATED??!!
+def create_content(df: pd.DataFrame) -> tuple(list[str], list[str]):
     #print("create data: ", df)
     cols = df.columns
 
@@ -200,9 +217,12 @@ def create_content(df: pd.DataFrame):
 
     return names, content
 
-#table for characteristics
 
-def create_table(content:list[str]):
+#table for characteristics
+def create_table(content:list[str]) -> dbc.Table:
+    """
+    content: list of strings to be written into the table
+    """
 
     table_header = [
         html.Thead(html.Tr([html.Th("Charakeristiken"), html.Th("")]), style = {"marginTop":"5%"})
@@ -247,7 +267,7 @@ def create_plot(content:list[str] = [1,2,3,4,5,6]):
 
 #function to dynamically create the dash components of the new layout, will always be used after filtering or refreshing
 #----!!! Names and content is at the moment created through the create_content() def, will need new creation function after create_content() is DEPRECATED
-def create_layout(names:list[str], content:list[str]):
+def create_layout(names:list[str], content:list[str]) -> list:
     """
     names: list of headlines for the list of locations. typically the name of the location
     content: list of content to be given to the collapsibles
@@ -312,34 +332,37 @@ def create_layout(names:list[str], content:list[str]):
 names, content = create_content(glob_vars.data)
 #create new layout
 html_list_for_layout = create_layout(names, content)
-
+#assign layout of this page to the one above
 layout = html.Div(children=html_list_for_layout, id="list_layout", style = CONTENT_STYLE)
-
-#print(type(glob_vars.data["number_parking_lots"][0]))
 
 #Callbacks:-----------------------------------------------
 
+#callback to observe if the delete button has been pressed
+#open security question window as response
 @callback(
     Output({"type":"security_window", "index":MATCH}, "is_open"),
     [Input({"type":"button_control", "index":MATCH}, "n_clicks")],
     prevent_initial_call=True
 )
 def security_observer(_n):
+    #if n_clicks is set to 0 close window
     if _n == 0:
         return False
     return True
 
-
+#callback to trigger the placeholder for deleting the row
+#is necessary because in the delete_location() callback placeholder_div_delete_list cant be called due to no wildcard id(no MATCH index)
 @callback(
     Output("placeholder_div_delete_list", "n_clicks"),
-    [Input({"type":"security_id_transmitter", "index":2}, "n_clicks")],
+    [Input({"type":"security_id_transmitter", "index":ALL}, "n_clicks")],
     prevent_initial_call=True
 )
 def delete_observer(_n):
     return 1
 
 
-
+#callback to delete row from csv and give deletion confirmation to placeholder div
+#checks if yes or no was pressed on security question
 @callback(
     [Output({"type":"security_id_transmitter", "index":MATCH}, "n_clicks"),
     Output({"type":"button_control", "index":MATCH}, "n_clicks"),],
@@ -348,31 +371,38 @@ def delete_observer(_n):
     prevent_initial_call=True,
 )
 def delete_location(yes, no):
-
+    #id of row to be deleted => only in currently displayed data, not necessarily global row id!!!
     triggered_id = ctx.triggered_id["index"]
 
+    #abort if no was pressed on security button
     if ctx.triggered_id["type"] == "security_no_button":
+        #dont update confirmation and 0 for closing security window
         return dash.no_update, 0
 
+    #get location of row to delete -> to figure out position of row in global data
     row_to_delete = glob_vars.data.iloc[[triggered_id]]
     location_to_delete = row_to_delete["location"].values[0]
 
-
+    #get path of csv
     path = get_path_to_csv(name_of_csv="Characteristics.csv")
 
+    #make temporary data and delete row
     temp_data = get_data(name_of_csv="Characteristics.csv")
     temp_data = temp_data[temp_data["location"] != location_to_delete]
 
+    #save to csv again
     temp_data.to_csv(path, index=False)
     #remove_location_from_json(location=location_to_delete)
 
+    #renew global data
     reset_data()
     filter_data()
 
+    #return confirmation of deletion and second return 0 to close security window
     return 1, 0
 
 
-#function to collapse and expand the list items
+#function to collapse and expand the list items/collapsibles
 #takes all dash objects with id type content and header, and then outputs the result to the content type with matching id index
 @callback(
     Output({"type": "content", "index": MATCH}, "is_open"),
@@ -380,8 +410,10 @@ def delete_location(yes, no):
     [State({"type": "content", "index": MATCH}, "is_open")],
 )
 def toggle_collapses(_butts, stats):
+    
     ctxx = dash.callback_context
 
+    #if callback is not triggered by inputs dont expand
     if not ctxx.triggered:
         raise PreventUpdate
     else:
@@ -454,9 +486,10 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,adress, parking_lots, accessi
     else:
         raise PreventUpdate
 
-#---------testing------------
 
-#modal filter handling
+
+#callback to handle everything about the advanced filter
+#gets input from the button on the sidebar, the buttons in the modal footer and the input elements in the modal
 @callback(
     [Output("placeholder_div_filter" + seitentag, "n_clicks"),
     Output("modal_filter_window" + seitentag, "is_open"),
@@ -496,66 +529,74 @@ def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, occupancy_vals, o
     - order of parameters(Input and Output) is important, especially in combination with filter dict handling
     """
 
-    #global data
-
+    #get origin of callback
     triggered_id = ctx.triggered_id
+
+    #list of characteristics according to data
     characteristics = list(glob_vars.data.columns.values)
     #latitude and longitude not given by pop up
     non_changeable = ["lat", "lon"]
-
+    #remove lat and lon from characteristics
     for n in non_changeable:
         if n in characteristics:
             characteristics.remove(n)
 
-    #modal state
+    #extract modal state and characteristics
     modal_state = params[-1]
-
     characs = params[:-1]
 
-    assert len(characs) == len(characteristics)
+    #check for possible error
+    assert len(characs) == len(characteristics), "Number of characteristic inputs and characteristics in data must be the same"
 
-
-
+    #create list in case of filter reset
     empty_ret_list = [None]
 
     for c in characteristics:
         empty_ret_list.append(None)
 
-
+    #if cancel filter of modal, renew all inputs in advanced filter
     if triggered_id == "modal_filter_cancel_button" + seitentag:
         return (0, not modal_state,) + tuple(empty_ret_list)
+    #if apply button of modal, apply filters and keep values in input fields
     elif triggered_id == "modal_filter_submit_button" + seitentag:
+        #rest data to filter on all data available
         reset_data()
-
+        #insert occupancy values to filter dict
+        #occupancy not in characteristics csv therefore seperate assignment
         glob_vars.current_filter["occupancy"] = occupancy_vals
 
+        #if characteristic is None, remove from filter dict(so no residual values from previous filters are used)
         for c, chara in zip(characs, characteristics):
             if c == None:
                 glob_vars.current_filter.pop(chara, None)
                 continue
-
+            #assign values to filter dictionary
             glob_vars.current_filter[chara] = c
 
-
+        #filter data with filter dictionary
         filter_data()
+        #return confirmation to filter placeholder, modal state and input values
         return (1, not modal_state, occupancy_vals) + tuple(characs)
+    #if button to open modal was pressed
     elif triggered_id == "advanced_filter_button" + seitentag:
         characs = list(characs)
 
+        #assign existing characteristics from filter dictionary to the input fields to "keep" existing filters
         for i in range(len(characteristics)):
             key = characteristics[i]
 
             characs[i] = glob_vars.current_filter[key]
 
+        #return no confirmation, open modal and existing input values
         return (dash.no_update, not modal_state, glob_vars.current_filter["occupancy"]) + tuple(characs)
     else:
         raise PreventUpdate
 
 #------
-#modal add handling
 
 
-#open adding module, add location etc
+#callback for adding new locations
+#receives button inputs and inputs from the modal input fields
 @callback(
     [Output("placeholder_div_adding" + seitentag, "n_clicks"),
     Output("modal_add_location" + seitentag, "is_open"),
@@ -598,27 +639,29 @@ def add_new_location(_1, _2, _3, URL_value, *params):
     Also order of putputs is depending on order of input
     """
 
+    #get characteristics from data
     characteristics = list(glob_vars.data.columns.values)
 
     #latitude and longitude not given by pop up
     non_changeable = ["lat", "lon"]
-
+    #remvove lat and lon
     for n in non_changeable:
         if n in characteristics:
             characteristics.remove(n)
 
-    #state of pop up
+    #extract state of pop up and characteristics
     modal_state = params[-1]
-
-    #characteristics
     characs = params[:-1]
-    #there has to be equally as much input as there are characteristics
-    assert len(characs) == len(characteristics)
+
+    #check for error
+    assert len(characs) == len(characteristics), "Number of characteristic inputs and characteristics in data must be the same"
 
     triggered_id = ctx.triggered_id
 
+    #if cancel button was pressed return refresh confirmation, invisible style for error warning and list with empty values
     if triggered_id == "modal_add_location_cancel_button" + seitentag:
         return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
+    #if open modal button was pressed
     elif triggered_id == "open_modal_add_location_button" + seitentag:
         return (dash.no_update, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
     elif triggered_id == "modal_add_location_submit_button" + seitentag:
@@ -651,7 +694,7 @@ def add_new_location(_1, _2, _3, URL_value, *params):
 
 #-----
 #layout refresh callback and sidebar handling
-#ANMERKUNGEN: Maybe braucht man hier keine args liste sondern kann einfach feste parameter machen? kommt drauf an wie viele parameter am ende
+#gets confirmation of deletion, update filter etc through placeholder, also inputs from sidebar
 @callback(
     [Output("list_layout", "children"),
     Output("sideboard_name_filter" + seitentag, "value"),
@@ -670,7 +713,10 @@ def add_new_location(_1, _2, _3, URL_value, *params):
     prevent_initial_call=True
 )
 def update_layout(*args):
-
+    """
+    last x args are input values from sidebar
+    order important according to sidebar_characs list
+    """
     triggered_id = ctx.triggered_id
 
     #manually write characteristics of quick filters
@@ -681,20 +727,28 @@ def update_layout(*args):
     sidebar_values = args[-num:]
     # index of callback input for
 
+    #if clear filter was pressed reset all filters
     if triggered_id == "clear_filter_button" + seitentag:
+        #reet data and filter dictionary
         reset_data()
         reset_global_filter()
+        #return refreshed layout with new data and empty value list for inputs
         sidebar_values = [None for x in sidebar_values]
         return (refresh_layout(),) + tuple(sidebar_values)
-    elif triggered_id == "refresh_list":
+    #if refresh button pressed
+    elif triggered_id == "refresh_page":
         return (refresh_layout(),) + tuple(sidebar_values)
+    #if confirmation of successful filtering, deleting, etc is given refresh the page
     elif triggered_id == "placeholder_div_filter" + seitentag or triggered_id == "placeholder_div_adding" + seitentag or triggered_id == "placeholder_div_delete_list":
         return (refresh_layout(),) + tuple(sidebar_values)
     else:
-        #print("im in")
+        #sidebar filter triggered
+        #first reset data
         reset_data()
-        assert len(sidebar_characs) == len(sidebar_values)
+        #check for error
+        assert len(sidebar_characs) == len(sidebar_values), "Number of filter inputs in sidebar and hardcoded characteristics must be equal"
 
+        #add filter values to dictionary
         for s, val in zip(sidebar_characs, sidebar_values):
 
             if val == "":
@@ -702,19 +756,20 @@ def update_layout(*args):
 
             glob_vars.current_filter[s] = val
 
-        #print(glob_vars.current_filter)
-        filter_data()#glob_vars.current_filter)
-
-
+        #filter with new filter dictionary
+        filter_data()
 
         return (refresh_layout(),) + tuple(sidebar_values)
 
 
-def refresh_layout():
+#function to reapply the filters to the data and create new layout to display
+def refresh_layout() -> list:
+    #filter on renewed data
     reset_data()
     filter_data()
+    #create names and content of collapsibles
     names, content = create_content(glob_vars.data)
-
+    #make new layout
     layout = create_layout(names, content)
 
     return layout
