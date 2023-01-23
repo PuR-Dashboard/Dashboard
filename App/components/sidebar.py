@@ -2,6 +2,7 @@
 from dash import html, dcc
 import dash_bootstrap_components as dbc
 
+#style options of the sidebar
 SIDEBAR_STYLE = {
     "position": "fixed",
     "top": "3.5rem",
@@ -11,10 +12,9 @@ SIDEBAR_STYLE = {
     "padding": "2rem 1rem",
     "background-color": "#333333",
     "overflow": "scroll",
-
-
 }
 
+#style of the buttons in the sidebar
 BUTTON_STYLE = {
     "width": "10rem",
     "height": "3.5rem",
@@ -22,19 +22,24 @@ BUTTON_STYLE = {
     "background-color":"#b3b3b3",
     "border": "black",
     "color": "black"
-
 }
 
+#symbols for the buttons:
+#trash icon for clearing all filters(?)
 FA_icon_Trash = html.I(className="fa fa-trash fa-lg")
+#plus icon for adding a location
 FA_icon_Plus = html.I(className="fa fa-plus fa-lg")
 
 
 def get_sidebar(distinction: str) -> html.Div:
     """
     This function defines and returns a Dash layout for the sidebar of the page given by the distinction.
-    :return: The layout of the sidebar of the page.
+
+    distinction: string name of the page the sidebar is for. string will be appended to all IDs
+    return: The layout of the sidebar of the page.
     """
 
+    #documentation for the attributes of single components gets lesser the further down, since its always the same pattern
     sidebar = html.Div(  # Create a div element for the sidebar
         [
             #sidebar visible components
@@ -49,15 +54,15 @@ def get_sidebar(distinction: str) -> html.Div:
                         placeholder="Location Name",  # Set the placeholder of the input field to Location Name
                         autofocus=True  # Set the autofocus-attribute of the input field to True
                     ),
-                    html.Hr(),
-                       html.H5("Address",style={'color': 'white'}),  # Label of the name search bar
+                    html.Hr(), #method to leave space between elements
+                       html.H5("Address",style={'color': 'white'}),  # Label of the address search bar
                     dbc.Input(  # Input field
-                        id="sideboard_address_filter" + distinction,
+                        id="sideboard_address_filter" + distinction, #ID
                         type="text",  # Set the type of the input field to text
                         debounce=False,  # Set the debounce-attribute of the input field to False
                         value=None,  # Set the value of the input field
-                        placeholder="Address",  # Set the placeholder of the input field to Location Name
-                        autofocus=False
+                        placeholder="Address",  # Set the placeholder of the input field
+                        autofocus=False #no autofocus to not clash with name filter
                     ),
                     html.Hr(),
                     html.H5("Occupancy:",style={'color': 'white'}),  # Label for the occupancy input field
@@ -70,21 +75,21 @@ def get_sidebar(distinction: str) -> html.Div:
                                 ],
                         value=None,  # Set the value of the radio buttons to None
                         inline=False,  # Set the inline-attribute of the radio buttons to False
-                        id="sideboard_occupancy_filter" + distinction,  # Set the id of the radio buttons to modal_occupancy_filter
-                        style={'color': 'white'}
+                        id="sideboard_occupancy_filter" + distinction,  # Set the id of the radio buttons to sideboard_occupancy_filter
+                        style={'color': 'white'} #style of the buttons
                     ),
                     html.Hr(),
-                    html.H5("Price",style={'color': 'white'}),  # Label of the name search bar
+                    html.H5("Price",style={'color': 'white'}),  # Label of the price filter
                     dbc.Input(  # Input field
-                        id="sideboard_price_filter" + distinction,
-                        type="number",  # Set the type of the input field to text
-                        debounce=False,  # Set the debounce-attribute of the input field to False
+                        id="sideboard_price_filter" + distinction, #ID
+                        type="number",  # Set the type of the input field to number
+                        debounce=False,  # Set the debounce-attribute of the input field
                         value=None,  # Set the value of the input field
-                        placeholder="Price",  # Set the placeholder of the input field to Location Name
+                        placeholder="Price",  # Set the placeholder of the input field 
 
                     ),
                     html.Hr(),
-                    dbc.Button(  # Button to filter the locations With all filters
+                    dbc.Button(  # Button to filter the locations With all filters / open the advanced filter pop up
                         "Advanced",  # Text of the button
                         id="advanced_filter_button" + distinction,  # Set the id of the button to advanced_filter_button
                         value=999,
@@ -93,22 +98,22 @@ def get_sidebar(distinction: str) -> html.Div:
                     ),
                     html.Br(),  # Line break
                     dbc.Button(  # Button to clear all filters
-                        [FA_icon_Trash, " Clear Filter"],  # Text of the button
+                        [FA_icon_Trash, " Clear Filter"],  # Icon + Text of the button
                         id="clear_filter_button" + distinction,  # Set the id of the button to clear_filter_button
                         size= "md",
                         style=BUTTON_STYLE  # Set the style of the button to BUTTON_STYLE
                     ),
                     html.Br(),  # Line break
                     dbc.Button(  # Button to add a new location
-                        [FA_icon_Plus, " Add Location"],  # Text of the button
-                        id="open_modal_add_location_button" + distinction,  # Set the id of the button to clear_filter_button
+                        [FA_icon_Plus, " Add Location"],  # icon + Text of the button
+                        id="open_modal_add_location_button" + distinction,  # Set the id of the button to open_modal_add_location_button
                         size= "md",
                         class_name= "outline-dark",
                         style=BUTTON_STYLE  # Set the style of the button to BUTTON_STYLE
                     ),
                 ],
                 vertical=True, # allign elements vertically
-                pills=True,
+                pills=True, # "pill" style for components
             ),
             dbc.Modal(  # Modal to display the advanced filter
                         # filters in advanced filter mostly drop down to allow multiple value filtering
@@ -122,7 +127,7 @@ def get_sidebar(distinction: str) -> html.Div:
                                 type="text",  # Set the type of the input field to text
                                 debounce=True,  # Set the debounce-attribute of the input field to True
                                 placeholder="Specify location name",
-                                value=None  # Set the value of the input field to an empty string
+                                value=None  # Set the value of the input field
                             ),
                            dbc.Label("Occupancy:",style = {"margin-top":"2%"}), # occupancy filter
                             dcc.Dropdown(
@@ -133,7 +138,7 @@ def get_sidebar(distinction: str) -> html.Div:
                                 ],
                                 placeholder="Specify occupancy",
                                 id="modal_advanced_filter_occupancy" + distinction,
-                                multi=True,
+                                multi=True,#multiple values can be selected
                             ),
                             dbc.Label("Address:",style = {"margin-top":"2%"}), # adress filter
                             dbc.Input(
@@ -143,18 +148,18 @@ def get_sidebar(distinction: str) -> html.Div:
                                 placeholder="Specify address",
                                 value=None  # Set default value
                             ),
-                            dbc.Label("Administration:",style = {"margin-top":"2%"}),
-                            dbc.RadioItems(  # Radio buttons to select the occupancy
+                            dbc.Label("Administration:",style = {"margin-top":"2%"}), #administration filter, no dropdown since only two options
+                            dbc.RadioItems(  # Radio buttons
                                 options=[  # Define the options of the radio buttons
-                                            {'label': 'Yes', 'value': 'yes'},  # Option for high occupancy
-                                            {'label': 'No', 'value': 'no'},  # Option for medium occupancy
-                                            {'label': 'Not Specified', 'value': None}  # Option for no occupancy
+                                            {'label': 'Yes', 'value': 'yes'},  # administration
+                                            {'label': 'No', 'value': 'no'},  # no administration
+                                            {'label': 'Not Specified', 'value': None}  # not specified
                                         ],
                                 value=None,  # Set the value of the radio buttons to None
                                 inline=True,  # Set the inline-attribute of the radio buttons
                                 id="modal_advanced_filter_administration" + distinction  # Set the id
                             ),
-                            dbc.Label("Type of Facility:",style = {"margin-top":"2%"}),
+                            dbc.Label("Type of Facility:",style = {"margin-top":"2%"}), #kind filter
                             dcc.Dropdown(
                                 options=[
                                     {'label': 'Car Park', 'value': 'Car Park'},
@@ -166,7 +171,7 @@ def get_sidebar(distinction: str) -> html.Div:
                                 multi=True,
                             ),
 
-                            dbc.Label("Number of Parking Lots:",style = {"margin-top":"2%"}), # parking lot filter(no slider like in sidebar above, this time dropdown)
+                            dbc.Label("Number of Parking Lots:",style = {"margin-top":"2%"}), # parking lot filter
                              dcc.Dropdown(
                                  options=[
                                      {'label': '1-25', 'value': '1-25'},
@@ -179,24 +184,24 @@ def get_sidebar(distinction: str) -> html.Div:
                                  id='modal_advanced_filter_parking_lots' + distinction,
                                  multi=True,
                              ),
-                             dbc.Label("Max. price(\u20ac):",style = {"margin-top":"2%"}),
+                             dbc.Label("Max. price(\u20ac):",style = {"margin-top":"2%"}),#price filter, unicode symbol for euro sign
                              dbc.Input(
                                  id="modal_advanced_filter_price" + distinction,
-                                 type="number",  # Set the type of the input field to text
-                                 debounce=False,  # Set the debounce-attribute of the input field to True
-                                 placeholder="Price in \u20ac",
-                                 value=None  # Set the value of the input field to an empty string
+                                 type="number",  # Set the type of the input field
+                                 debounce=False,  # Set the debounce-attribute of the input field
+                                 placeholder="Price in \u20ac", #unicode symbol for euro sign
+                                 value=None  # Set the value of the input field
                              ),
-                             dbc.Label("Public Transport Accessibility",style = {"margin-top":"2%"}),
+                             dbc.Label("Public Transport Accessibility",style = {"margin-top":"2%"}), #number of tram connections filter
                              dbc.Input(
                                  id="modal_advanced_filter_num_connections" + distinction,
-                                 type="number",  # Set the type of the input field to text
-                                 debounce=False,  # Set the debounce-attribute of the input field to True
+                                 type="number",  # Set the type of the input field
+                                 debounce=False,  # Set the debounce-attribute of the input field
                                  placeholder="Specify the public transport accessibility",
-                                 value=None  # Set the value of the input field to an empty string
+                                 value=None  # Set the value of the input field
                              ),
 
-                            dbc.Label("Transport Connection:",style = {"margin-top":"2%"}),
+                            dbc.Label("Transport Connection:",style = {"margin-top":"2%"}),#tram connection filter
                             dcc.Dropdown(
                                 options=[
                                     {'label': 'Superordinate network within the city (interstate)', 'value': 'Superordinate network within the city (interstate)'},
@@ -210,7 +215,7 @@ def get_sidebar(distinction: str) -> html.Div:
                             ),
 
 
-                            dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"2%"}),
+                            dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"2%"}), #infrastructure filter
                             dcc.Dropdown(
                                 options=[
                                     {'label': 'Green Spaces', 'value': 'Green Spaces'},
@@ -223,20 +228,16 @@ def get_sidebar(distinction: str) -> html.Div:
                                 id="modal_advanced_filter_infrastructure" + distinction,
                                 multi=True,
                             ),
-
-
-
-
                         ]
                     ),
                     dbc.ModalFooter(  # Footer of the modal
                         [
-                            dbc.Button(  # Button to apply the filter and close the modal
+                            dbc.Button(  # Button to apply the filter and close the modal, will keep/save the selected filters
                                 "Apply",  # Text of the button
                                 color="primary",  # Set the color of the button to primary
                                 id="modal_filter_submit_button" + distinction  # Set the id of the button to modal_submit_button
                             ),
-                            dbc.Button(  # Button to discard the changes and close the the modal
+                            dbc.Button(  # Button to discard the changes and close the the modal, will delete the filters
                                 "Discard",  # Text of the button
                                 id="modal_filter_cancel_button" + distinction  # Set the id of the button to modal_cancel_button
                             ),
@@ -248,7 +249,7 @@ def get_sidebar(distinction: str) -> html.Div:
             ),
 
             dbc.Modal(  # Modal to display the pop up for adding a location
-                        # mostly uses single option dropdowns since only one value can be set per cahracteristic
+                        # uses single option dropdowns since only one value can be set per cahracteristic
                 [
                     dbc.ModalHeader(dbc.ModalTitle("Add Location")),  # Header of the modal
                      dbc.ModalBody(  # Body of the modal
@@ -270,7 +271,7 @@ def get_sidebar(distinction: str) -> html.Div:
                                 debounce=True,  # Set the debounce-attribute of the input field to True
                                 value=None  # Set the value of the input field
                             ),
-                            html.H4("Optional Fields",style = {"margin-top":"5%"}), # nice to have aber none of these attributes are necessary to add location
+                            html.H4("Optional Fields",style = {"margin-top":"5%"}), # nice to have but none of these attributes are necessary to add location
                             dbc.Label("Address:",style = {"margin-top":"2%"}), # adress
                             dbc.Input(
                                 placeholder="Specify the address",
@@ -279,7 +280,7 @@ def get_sidebar(distinction: str) -> html.Div:
                                 debounce=True,  # Set the debounce-attribute of the input field to True
                                 value=None  # Set the value of the input field
                             ),
-                            dbc.Label("Administration:",style = {"margin-top":"2%"}),
+                            dbc.Label("Administration:",style = {"margin-top":"2%"}), #administration
                             dcc.Dropdown(
                                 options=[
                                     {'label': 'Yes', 'value': 'Yes'},
@@ -288,7 +289,7 @@ def get_sidebar(distinction: str) -> html.Div:
                                 placeholder="Specify administration",
                                 id="modal_add_location_administration" + distinction
                             ),
-                            dbc.Label("Type of Facility:",style = {"margin-top":"2%"}),
+                            dbc.Label("Type of Facility:",style = {"margin-top":"2%"}), #kind
                             dcc.Dropdown(
                                 options=[
                                     {'label': 'Car Park', 'value': 'Car Park'},
@@ -299,7 +300,7 @@ def get_sidebar(distinction: str) -> html.Div:
                                 id="modal_add_location_kind" + distinction
                             ),
 
-                            dbc.Label("Number of Parking Spots:",style = {"margin-top":"2%"}),
+                            dbc.Label("Number of Parking Spots:",style = {"margin-top":"2%"}), #number of parking lots
                             dcc.Dropdown(
                                 options=[
                                     {'label': '1-25', 'value': '1-25'},
@@ -311,7 +312,7 @@ def get_sidebar(distinction: str) -> html.Div:
                                 placeholder="Specify Number of parking spots",
                                 id="modal_add_location_parking_lots" + distinction
                             ),
-                            dbc.Label("Max Price:(\u20ac)",style = {"margin-top":"2%"}),
+                            dbc.Label("Price:(\u20ac)",style = {"margin-top":"2%"}), #price
                             dbc.Input(
                                 placeholder="Specify the max price in \u20ac",
                                 id="modal_add_location_price" + distinction,
@@ -320,7 +321,7 @@ def get_sidebar(distinction: str) -> html.Div:
                                 value=None  # Set the value of the input field
                             ),
 
-                            dbc.Label("Public Transport Accessibility:",style = {"margin-top":"2%"}),
+                            dbc.Label("Public Transport Accessibility:",style = {"margin-top":"2%"}), #number of tram connections
                             dbc.Input(
                                 placeholder="Specify the public transport accessibility",
                                 id="modal_add_location_num_connections" + distinction,
@@ -342,7 +343,7 @@ def get_sidebar(distinction: str) -> html.Div:
                             ),
 
 
-                            dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"2%"}),
+                            dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"2%"}), #infrastruture
                             dcc.Dropdown(
                                 options=[
                                     {'label': 'Green Spaces', 'value': 'Green Spaces'},
@@ -368,7 +369,7 @@ def get_sidebar(distinction: str) -> html.Div:
                                 color="primary",  # Set the color of the button to primary
                                 id="modal_add_location_submit_button" + distinction  # Set the id of the button
                             ),
-                            dbc.Button(  # Button to close the modal
+                            dbc.Button(  # Button to close the modal, changes will be discarded
                                 "Discard",  # Text of the button
                                 id="modal_add_location_cancel_button" + distinction  # Set the id of the button
                             ),
@@ -380,12 +381,13 @@ def get_sidebar(distinction: str) -> html.Div:
                 #scrollable=True,
                 centered=True,  # Set the centered-attribute of the modal to True
             ),
-            #placeholder div for output of advanced filter
+            #placeholder div for signal of advanced filter
             html.Div(id="placeholder_div_filter" + distinction, style={"display":"none"}),
-            #placeholder div for output of location addition
+            #placeholder div for signal of location addition
             html.Div(id="placeholder_div_adding" + distinction, style={"display":"none"}),
 
         ],
+        #set the style of the sidebar
         style=SIDEBAR_STYLE,
     )
 
