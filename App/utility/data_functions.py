@@ -1,6 +1,7 @@
 import csv
 import requests
 import json
+import validators
 from datetime import datetime
 
 from requests import Response
@@ -35,9 +36,14 @@ def add_location(dic, url) -> None:
         If the location already exists.
     """
 
+    check_url(url)  # Check if the url is valid
+
+    if not type(dic) == dict:  # If the dictionary is not a dictionary
+        raise Exception('The given dictionary is not a dictionary')  # Raise an exception
+
     location = dic['location']  # Get the location from the dictionary
 
-    if not __check_location_exists(location):  # If the location does not exist yet
+    if not check_location_exists(location):  # If the location does not exist yet
         # --- Add the location and its api-access to the Urls.json file --- #
         __add_url_to_json(location, url)  # Add the link to the json file
 
@@ -58,6 +64,25 @@ def add_location(dic, url) -> None:
         raise Exception('The location {} already exists'.format(location))  # Raise an exception
 
 
+def check_url(url: str) -> bool:
+    """
+    This function checks if the url is valid.
+
+    Parameters
+    ----------
+    url : str
+        The url that should be checked.
+
+    Returns
+    -------
+    valid : bool
+        Boolean indicating if the url is valid.
+    """
+
+    if not validators.url(url):
+        raise Exception(f'The url {url} is not valid')  # Raise an exception
+
+
 def remove_location(location: str) -> None:
     """
     This function removes the location from the json file and the csv file.
@@ -68,7 +93,7 @@ def remove_location(location: str) -> None:
         The location that should be removed.
     """
 
-    if __check_location_exists(location):  # If the location exists
+    if check_location_exists(location):  # If the location exists
         __remove_location_from_json(location)  # Remove the location from the json file
 
         __remove_location_from_csv(location)  # Remove the location from the csv file
@@ -77,7 +102,7 @@ def remove_location(location: str) -> None:
         raise Exception('The location {} does not exist'.format(location))  # Raise an exception
 
 
-def __check_location_exists(location: str) -> bool:
+def check_location_exists(location: str) -> bool:
     """
     This function checks if the location exists in the json file. If there is an entry in the Urls.json file for the
     location, the function returns True. Otherwise, it returns False.
@@ -225,7 +250,7 @@ def update_location_occupancy(location: str) -> None:
         The location for which the occupancy should be updated.
     """
 
-    if not __check_location_exists(location):  # If the location does not exist
+    if not check_location_exists(location):  # If the location does not exist
         raise Exception('The location {} does not exist'.format(location))  # Raise an exception
 
     with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations

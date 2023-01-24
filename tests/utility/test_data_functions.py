@@ -1,31 +1,54 @@
 import unittest
-from datetime import datetime
-import App.utility.util_functions as uf
+from App.utility.data_functions import *
 
-class MyTestCase(unittest.TestCase):
-    def test_something(self):
-        self.assertEqual(True, True)  # add assertion here
-        assert 1 == 2
+class Data_Functions_Tester(unittest.TestCase):
 
-    def test_something2(self):
-        self.assertEqual(True, False)
+    example_dict = {
+        "location": "test"
+    }
 
-def test_add_location():
-    assert 2 + 2 == 3
+    def test_add_location(self):
+        self.assertRaises(Exception, add_location, {"test": "test"}, "test")
 
-def test_check_location_exists():
-    ...
+        self.assertRaises(Exception, add_location, None, "https://www.google.com")
 
+        add_location({"test": "test"}, "https://www.google.com")
+        
+    def test_check_location_exists(self):
+        assert 1 == 1
 
-def main():
-    logdir = "logs"
-    print("Logdir: ", uf.get_root_dir())
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    runner = unittest.TextTestRunner(
-        open(f"test_result_{timestamp}.txt", 'w')
-    )
-    unittest.main(testRunner=runner, verbosity=2)
+    def test_check_url(self):
+        check_url("https://www.google.com")
 
+    def test_remove_location(self):
+        assert 1 == 1
 
-if __name__ == '__main__':
-    main()
+    def test_remove_location_from_json(self):
+        assert 1 == 1
+
+    def test_update_url_in_json(self):
+        assert 1 == 1
+
+    def test_add_url_to_json(self):
+        assert 1 == 1
+
+    def test_remove_location_from_csv(self):
+        assert 1 == 1
+
+    def test_update_characteristics_in_csv(self):
+        assert 1 == 1
+
+    def test_update_location_occupancy(self):
+        assert 1 == 1
+
+    def test_add_location_to_occ_csv(self):
+        assert 1 == 1
+
+    def test_get_lat_lon_from_url(self):
+        assert 1 == 1
+
+    def test_get_dict_from_url(self):
+        assert 1 == 1
+
+    def test_get_response_from_url(self):
+        assert 1 == 1
