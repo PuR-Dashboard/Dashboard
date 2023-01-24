@@ -3,17 +3,17 @@ import requests
 import json
 import validators
 from datetime import datetime
-
+from utility.util_functions import *
 from requests import Response
+
 
 username = 'optipark'  # Username for the API
 password = 'Dyb1yoTU4TG8'  # Password for the API
 
-path_to_urls = '../../Data/Urls.json'  # Path to the json file with the API access links
-path_to_csv = '../../Data/Location_Data.csv'  # Path to the csv file containing the location data
-path_to_characteristics = '../../Data/Characteristics.csv'  # Path to the csv file containing the characteristics of the
-# locations
-path_to_occupancy = '../../Data/Occupancy.csv'
+path_to_urls = get_path_to_csv("Urls.json")  # Path to the json file with the API access links
+path_to_csv = get_path_to_csv("Location_Data.csv")  # Path to the csv file containing the location data
+path_to_characteristics = get_path_to_csv("Characteristics.csv")  # Path to the csv file containing the characteristics of the locations
+path_to_occupancy = get_path_to_csv("Occupancy.csv") # Path to the csv file containing the occupancies of the locations
 
 
 # --- General functions --- #
@@ -48,17 +48,21 @@ def add_location(dic, url) -> None:
         __add_url_to_json(location, url)  # Add the link to the json file
 
         # --- Append the location with its characteristics to the csv file --- #
-        with open(path_to_characteristics, 'a', newline='') as characteristics_file:  # Open the csv file
+        with open(path_to_characteristics, 'a', newline='', encoding='utf-8-sig') as characteristics_file:  # Open the csv file
 
             writer = csv.writer(characteristics_file, delimiter=',')  # Create a csv writer
 
-            writer.writerow([location, __get_lat_lon_from_url(url)] + list(dic.values())[1:])  # Write the location
+            writer.writerow([location, 8, 8
+            #, __get_lat_lon_from_url(url)
+            ]
+            
+            + list(dic.values())[1:])  # Write the location
             # and its characteristics
 
             characteristics_file.close()  # Close the file
 
         # --- Append the location to the csv file containing the occupancies --- #
-        add_location_to_occ_csv(location)  # Add the location to the csv file containing the occupancies
+        #add_location_to_occ_csv(location)  # Add the location to the csv file containing the occupancies
 
     else:  # If the location already exists
         raise Exception('The location {} already exists'.format(location))  # Raise an exception
@@ -138,6 +142,7 @@ def __remove_location_from_json(location: str) -> None:
 
     with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
         content = json.load(f)  # Load the content of the json file
+        print(content)
 
     del content[location]  # Delete the link for the location
 
@@ -173,12 +178,12 @@ def __add_url_to_json(location: str, url: str) -> None:
         The url for the location.
     """
 
-    with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
+    with open(get_path_to_csv("Urls.json"), 'r') as f:  # Open the json file with the information about the locations
         content = json.load(f)  # Load the content of the json file
 
     content[location] = url  # Add the link for the location
 
-    with open(path_to_urls, 'w') as f:  # Open the json file with the information about the locations
+    with open(get_path_to_csv("Urls.json"), 'w') as f:  # Open the json file with the information about the locations
         json.dump(content, f, indent=4)  # Write the new content to the json file
 
 
@@ -220,11 +225,13 @@ def update_characteristics_in_csv(dic: dict) -> None:
 
     location = dic['location']  # Get the location from the dictionary
 
-    with open(path_to_characteristics, 'r') as f:  # Open the csv file
+    dic.pop('location')
+
+    with open(get_path_to_csv("Characteristics.csv"), 'r',encoding='utf-8-sig') as f:  # Open the csv file
         reader = csv.reader(f)  # Create a csv reader
         lines = list(reader)  # Read the csv file
 
-    with open(path_to_characteristics, 'w', newline='') as f:  # Open the csv file
+    with open(get_path_to_csv("Characteristics.csv"), 'w', newline='',encoding='utf-8-sig') as f:  # Open the csv file
         writer = csv.writer(f)  # Create a csv writer
 
         for line in lines:  # Iterate over the lines
@@ -295,7 +302,7 @@ def add_location_to_occ_csv(location: str) -> None:
         The location that should be added.
     """
 
-    with open(path_to_occupancy, 'r') as f, open(path_to_occupancy, 'w') as w:  # Open the csv file in read and write
+    with open(get_path_to_csv("Occupancy.csv"), 'r') as f, open(get_path_to_csv("Occupancy.csv"), 'w') as w:  # Open the csv file in read and write
         reader = csv.reader(f)  # Create a csv reader
         writer = csv.writer(w)  # Create a csv writer
 
@@ -393,4 +400,4 @@ def __get_response_from_url(url: str) -> Response:
 
 
 if __name__ == '__main__':
-    update_location_occupancy('Zwingenberg')
+    __remove_location_from_json("TestLocation")
