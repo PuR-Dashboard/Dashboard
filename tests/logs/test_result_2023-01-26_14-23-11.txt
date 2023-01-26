@@ -1,5 +1,5 @@
-Tests run by: H
-Tests run at: 2023-01-24_18-08-14
+Tests run by: Tim K
+Tests run at: 2023-01-26_14-23-11
 Test suite: 
 <unittest.suite.TestSuite tests=[<tests.utility.test_data_functions.Data_Functions_Tester testMethod=test_add_location>, <tests.utility.test_data_functions.Data_Functions_Tester testMethod=test_add_location_to_occ_csv>, <tests.utility.test_data_functions.Data_Functions_Tester testMethod=test_add_url_to_json>, <tests.utility.test_data_functions.Data_Functions_Tester testMethod=test_check_location_exists>, <tests.utility.test_data_functions.Data_Functions_Tester testMethod=test_check_url>, <tests.utility.test_data_functions.Data_Functions_Tester testMethod=test_get_dict_from_url>, <tests.utility.test_data_functions.Data_Functions_Tester testMethod=test_get_lat_lon_from_url>, <tests.utility.test_data_functions.Data_Functions_Tester testMethod=test_get_response_from_url>, <tests.utility.test_data_functions.Data_Functions_Tester testMethod=test_remove_location>, <tests.utility.test_data_functions.Data_Functions_Tester testMethod=test_remove_location_from_csv>, <tests.utility.test_data_functions.Data_Functions_Tester testMethod=test_remove_location_from_json>, <tests.utility.test_data_functions.Data_Functions_Tester testMethod=test_update_characteristics_in_csv>, <tests.utility.test_data_functions.Data_Functions_Tester testMethod=test_update_location_occupancy>, <tests.utility.test_data_functions.Data_Functions_Tester testMethod=test_update_url_in_json>]>
 
@@ -9,9 +9,9 @@ E.............
 ERROR: test_add_location (tests.utility.test_data_functions.Data_Functions_Tester)
 ----------------------------------------------------------------------
 Traceback (most recent call last):
-  File "/home/timmaster/Uni/Bachelor Praktikum/Dashboard/tests/utility/test_data_functions.py", line 11, in test_add_location
+  File "S:\Dashboard\tests\utility\test_data_functions.py", line 15, in test_add_location
     add_location({"test": "test"}, "https://www.google.com")
-  File "/home/timmaster/Uni/Bachelor Praktikum/Dashboard/App/utility/data_functions.py", line 44, in add_location
+  File "S:\Dashboard\App\utility\data_functions.py", line 44, in add_location
     location = dic['location']  # Get the location from the dictionary
 KeyError: 'location'
 

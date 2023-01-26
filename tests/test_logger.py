@@ -1,4 +1,5 @@
 import unittest
+import os
 from datetime import datetime
 from App.utility.util_functions import get_root_dir
 from tests.utility.test_data_functions import Data_Functions_Tester
@@ -13,7 +14,10 @@ when the tests were run.
 """
 
 def run_tests():
+    # Create log directory if it doesn't exist
+
     path_to_logdir = get_root_dir() / "tests/logs"  # Path to the logs directory
+    os.mkdir(path_to_logdir) if not os.path.exists(path_to_logdir) else None  # Create the logs directory if it doesn't exist
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")  # Timestamp for the log file
 

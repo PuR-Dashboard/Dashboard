@@ -3,7 +3,7 @@ import requests
 import json
 import validators
 from datetime import datetime
-from utility.util_functions import *
+from App.utility.util_functions import *
 from requests import Response
 
 

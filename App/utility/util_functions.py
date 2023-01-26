@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import pathlib
 from collections import defaultdict
-import pages.global_vars as glob_vars
+#import pages.global_vars as glob_vars
 
 
 #get the top directory of our app, regardless of depth
