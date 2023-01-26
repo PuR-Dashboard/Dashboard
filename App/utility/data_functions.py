@@ -45,7 +45,7 @@ def add_location(dic, url) -> None:
 
     if not check_location_exists(location):  # If the location does not exist yet
         # --- Add the location and its api-access to the Urls.json file --- #
-        __add_url_to_json(location, url)  # Add the link to the json file
+        add_url_to_json(location, url)  # Add the link to the json file
 
         # --- Append the location with its characteristics to the csv file --- #
         with open(path_to_characteristics, 'a', newline='', encoding='utf-8-sig') as characteristics_file:  # Open the csv file
@@ -83,6 +83,9 @@ def check_url(url: str) -> bool:
         Boolean indicating if the url is valid.
     """
 
+    if not type(url) == str:  # If the url is not a string
+        raise Exception('The given url is not a string')  # Raise an exception
+
     if not validators.url(url):
         raise Exception(f'The url {url} is not valid')  # Raise an exception
 
@@ -97,10 +100,13 @@ def remove_location(location: str) -> None:
         The location that should be removed.
     """
 
-    if check_location_exists(location):  # If the location exists
-        __remove_location_from_json(location)  # Remove the location from the json file
+    if not type(location) == str:  # If the location is not a string
+        raise Exception('The given location is not a string')  # Raise an exception
 
-        __remove_location_from_csv(location)  # Remove the location from the csv file
+    if check_location_exists(location):  # If the location exists
+        remove_location_from_json(location)  # Remove the location from the json file
+
+        remove_location_from_csv(location)  # Remove the location from the csv file
 
     else:  # If the location does not exist
         raise Exception('The location {} does not exist'.format(location))  # Raise an exception
@@ -122,6 +128,9 @@ def check_location_exists(location: str) -> bool:
         Boolean indicating if the location exists.
     """
 
+    if not type(location) == str:  # If the location is not a string
+        raise Exception('The given location is not a string')  # Raise an exception
+
     with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
         content = json.load(f)  # Load the content of the json file
 
@@ -130,7 +139,7 @@ def check_location_exists(location: str) -> bool:
 
 # --- Functions for the Urls.json file --- #
 
-def __remove_location_from_json(location: str) -> None:
+def remove_location_from_json(location: str) -> None:
     """
     This function deletes the link for the location from the json file.
 
@@ -140,9 +149,14 @@ def __remove_location_from_json(location: str) -> None:
         The location for which the link should be deleted.
     """
 
+    if not type(location) == str:  # If the location is not a string
+        raise Exception('The given location is not a string')  # Raise an exception
+
+    if not check_location_exists(location):  # If the location does not exist
+        raise Exception('The location {} does not exist'.format(location))  # Raise an exception
+
     with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
         content = json.load(f)  # Load the content of the json file
-        print(content)
 
     del content[location]  # Delete the link for the location
 
@@ -150,7 +164,7 @@ def __remove_location_from_json(location: str) -> None:
         json.dump(content, f, indent=4)  # Write the new content to the json file
 
 
-def __update_url_in_json(location: str, url: str) -> None:
+def update_url_in_json(location: str, url: str) -> None:
     """
     This function updates the link for the location in the json file.
 
@@ -162,10 +176,19 @@ def __update_url_in_json(location: str, url: str) -> None:
         The new url for the location.
     """
 
-    __add_url_to_json(location, url)  # Update the link in the json file by calling the add_link_to_json function
+    if not type(location) == str:
+        raise Exception('The given location is not a string')
+
+    if not type(url) == str:
+        raise Exception('The given url is not a string')
+
+    if not check_location_exists(location):
+        raise Exception('The location {} does not exist'.format(location))
+
+    add_url_to_json(location, url)  # Update the link in the json file by calling the add_link_to_json function
 
 
-def __add_url_to_json(location: str, url: str) -> None:
+def add_url_to_json(location: str, url: str) -> None:
     """
     This function adds the link for the location to the json file. Can also be used to update the link of the given
     location.
@@ -178,6 +201,12 @@ def __add_url_to_json(location: str, url: str) -> None:
         The url for the location.
     """
 
+    if not type(location) == str:  # If the location is not a string
+        raise Exception('The given location is not a string')  # Raise an exception
+    
+    if not type(url) == str:  # If the url is not a string
+        raise Exception('The given url is not a string')  # Raise an exception
+
     with open(get_path_to_csv("Urls.json"), 'r') as f:  # Open the json file with the information about the locations
         content = json.load(f)  # Load the content of the json file
 
@@ -187,9 +216,36 @@ def __add_url_to_json(location: str, url: str) -> None:
         json.dump(content, f, indent=4)  # Write the new content to the json file
 
 
+def get_url_from_json(location: str) -> str:
+    """
+    This function returns the url for the given location.
+
+    Parameters
+    ----------
+    location : str
+        The location for which the url should be returned.
+
+    Returns
+    -------
+    url : str
+        The url for the given location.
+    """
+
+    if not type(location) == str:  # If the location is not a string
+        raise Exception('The given location is not a string')  # Raise an exception
+
+    if not check_location_exists(location):  # If the location does not exist
+        raise Exception('The location {} does not exist'.format(location))  # Raise an exception
+
+    with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
+        content = json.load(f)  # Load the content of the json file
+
+    return content[location]  # Return the url for the given location
+
+
 # --- Functions for the Characteristics.csv file --- #
 
-def __remove_location_from_csv(location: str) -> None:
+def remove_location_from_csv(location: str) -> None:
     """
     This function removes the location from the csv file.
 
@@ -265,7 +321,7 @@ def update_location_occupancy(location: str) -> None:
 
     url = content[location]  # Get the url for the location
 
-    dic = __get_dict_from_url(url)  # Get the dictionary with the occupancy information from the url
+    dic = get_dict_from_url(url)  # Get the dictionary with the occupancy information from the url
 
     occupancy_tendency = dic['occupancy_tendency']  # Get the occupancy tendency from the dictionary
 
@@ -320,7 +376,7 @@ def add_location_to_occ_csv(location: str) -> None:
 
 # --- Functions for the API access --- #
 
-def __get_lat_lon_from_url(url: str) -> tuple[float, float]:
+def get_lat_lon_from_url(url: str) -> tuple[float, float]:
     """
     This function returns the latitude and longitude of the location given in the API.
 
@@ -337,7 +393,7 @@ def __get_lat_lon_from_url(url: str) -> tuple[float, float]:
         The longitude of the location.
     """
 
-    data = __get_dict_from_url(url)  # Access the API and get the dictionary with the information
+    data = get_dict_from_url(url)  # Access the API and get the dictionary with the information
 
     point = data['geometry']  # Get the coordinates of the location
 
@@ -349,7 +405,7 @@ def __get_lat_lon_from_url(url: str) -> tuple[float, float]:
     return lat, lon  # Return the latitude and longitude in the url
 
 
-def __get_dict_from_url(url: str) -> dict:
+def get_dict_from_url(url: str) -> dict:
     """
     This function extracts the information for the facility from the url.
 
@@ -364,14 +420,14 @@ def __get_dict_from_url(url: str) -> dict:
         Dictionary containing the information for the facility.
     """
 
-    request = __get_response_from_url(url)  # Send a request to the url and get the response
+    request = get_response_from_url(url)  # Send a request to the url and get the response
 
     data = request.json()  # Extract the json data from the response
 
     return data[0]  # Return the first element of the list (that is, the dictionary)
 
 
-def __get_response_from_url(url: str) -> Response:
+def get_response_from_url(url: str) -> Response:
     """
     This function sends a request to the url and returns the response.
 
@@ -398,6 +454,3 @@ def __get_response_from_url(url: str) -> Response:
 
     return r  # Return the response
 
-
-if __name__ == '__main__':
-    __remove_location_from_json("TestLocation")

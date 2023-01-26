@@ -38,5 +38,19 @@ def run_tests():
         f.write("Test suite: \n")  # Write the test suite to the log file
         f.write(str(suite) + "\n\n")  # Write the test suite to the log file
         f.write("Test results:\n")  # Write the test results to the log file
-
+        suite_printer(str(suite))  # Print the test suite to the console
         runner.run(suite)  # Run the tests
+
+
+def suite_printer(suite: str):
+    # Removing the leading and trailing `<`, `>` and `unittest.suite.TestSuite tests=`
+    suite = suite[39:-2]
+
+    # Splitting the string by `,` to get a list of test methods
+    test_methods = suite.split(',')
+
+    # Extracting the method name and class name from each element in the list
+    for test_method in test_methods:
+        method_name = test_method.split('testMethod=')[1].split('>')[0]
+        class_name = test_method.split('.')[-2]
+        print(f"Test method {method_name} from class {class_name}")
