@@ -12,6 +12,9 @@ import plotly.express as px
 import pages.global_vars as glob_vars
 from collections import defaultdict
 import fontstyle
+import base64
+import datetime
+import io
 
 FA_icon_trash= html.I(className="fa fa-trash fa-lg")
 FA_icon_pen= html.I(className="fa fa-pencil fa-lg")
@@ -194,7 +197,7 @@ def create_edit_window(index:int) -> dbc.Modal:
 #function to create the content of the tables(the content of the collapsibles)
 #will be switched out by table through vuetify library and is not documented further
 #DEPRECATED??!!
-def create_content(df: pd.DataFrame) -> tuple(list[str], list[str]):
+def create_content(df: pd.DataFrame) -> tuple[list[str], list[str]]:
     #print("create data: ", df)
     cols = df.columns
 
@@ -451,7 +454,7 @@ def edit_data(changed_data:list[str],index):
     update_characteristics_in_csv(dic)
 
 
-
+#-------------------callbacks------------------------
 #method to open the edit window and to close it after pressing the apply button
 @callback(
     Output({"type": "edit_window", "index": MATCH}, "is_open"),
@@ -528,7 +531,7 @@ def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, occupancy_vals, o
 
     - order of parameters(Input and Output) is important, especially in combination with filter dict handling
     """
-
+    #print(glob_vars.current_filter)
     #get origin of callback
     triggered_id = ctx.triggered_id
 
@@ -593,8 +596,216 @@ def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, occupancy_vals, o
         raise PreventUpdate
 
 #------
+#upload testing
+
+def parse_contents(contents, filename):
+    content_type, content_string = contents.split(',')
+
+    decoded = base64.b64decode(content_string)
+    try:
+        if '.csv' in filename:
+            # Assume that the user uploaded a CSV file
+            df = pd.read_csv(
+                io.StringIO(decoded.decode('utf-8')))
+        elif '.json' in filename:
+            # Assume that the user uploaded an excel file
+            df = json.loads(decoded)
+        else:
+            df = None
+
+        return df
+    
+    except Exception as e:
+        raise e
 
 
+@callback([Output("modal_import_file", "is_open"),
+           Output("modal_uploaded_csv", "value"),
+           Output("modal_uploaded_json", "value"),
+           Output("modal_import_warning", "children")],
+          [Input("upload_import_files", "contents"),
+           Input("modal_uploaded_csv", "value"),
+           Input("modal_uploaded_json", "value"),
+           Input("import_button", "n_clicks"),
+           Input("modal_import_file_upload_button", "n_clicks"),
+           Input("modal_import_file_cancel_button", "n_clicks"),],
+          [State('upload_import_files', 'filename'),
+           State("modal_import_file", "is_open")],
+          prevent_initial_call=True)
+def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, modal_state):
+    triggered_id = ctx.triggered_id
+    #print(triggered_id)
+    #print(contents, filenames)
+
+    if triggered_id == "import_button" or triggered_id == "modal_import_file_cancel_button":
+        glob_vars.temp_csv = None
+        glob_vars.temp_json = None
+        return not modal_state, None, None, ""
+    elif triggered_id == "upload_import_files":
+        #if too many files were passed, either simultaneously or both places for the files are already occupied
+        if len(contents) > 2:# or (glob_vars.temp_csv != None and glob_vars.temp_json != None):
+            glob_vars.temp_csv = None
+            glob_vars.temp_json = None
+            return modal_state, csv_val, json_val, "Too many files uploaded!"
+
+
+        #check if correct file types were uploaded
+        admissible_types = [".json", ".csv"]
+
+        for f in filenames:
+            valid = False
+            for a in admissible_types:
+                if a in f:
+                    valid = True
+            
+            if not valid:
+                return modal_state, csv_val, json_val, "Wrong file type uploaded!"
+
+        #iterate through uploaded files
+        for c, f in zip(contents, filenames):
+            try:
+                #read content from given file
+                df = parse_contents(c, f)
+            except: #exception at parse contents means wrong file type? maybe somewhere else?
+                raise PreventUpdate
+            #if json file then save json file and update check input
+            if ".json" in f:
+                glob_vars.temp_json = df
+                json_val = f
+            #other option is csv
+            elif ".csv" in f:
+                glob_vars.temp_csv = df
+                csv_val = f
+
+        return modal_state, csv_val, json_val, ""        
+
+    elif triggered_id == "modal_import_file_upload_button":
+        #if one of the necessary files hasnt beent uploaded dont upload
+        if glob_vars.temp_csv is None or glob_vars.temp_json is None:
+            return modal_state, csv_val, json_val, "Not all necessary files uploaded!"
+
+        #check validity of both files
+
+        if not check_csv_validity(glob_vars.temp_csv):
+            glob_vars.temp_csv = None
+            return modal_state, None, json_val, "CSV File does not meet conventions!"
+        
+        #csv data is okay now
+        location_names = list(glob_vars.temp_csv["location"])
+
+        if not check_json_validity(glob_vars.temp_json, location_names):
+            glob_vars.temp_json = None
+            return modal_state, csv_val, None, "JSON File does not meet conventions!"
+
+        #add both files to existing files
+
+        #obtain which locations are new
+        new_locations = []
+        old_locatiions = list(glob_vars.data["location"])
+
+        for l in location_names:
+            if l not in old_locatiions:
+                new_locations.append(l)
+
+        #add new locations to characteristics csv
+        #get all rows with location names of the new locations
+        df_to_append = glob_vars.temp_csv.loc[glob_vars.temp_csv['location'].isin(new_locations)]
+        #append new rows to old data
+        temp_data = pd.concat([glob_vars.data, df_to_append])
+        temp_data.reset_index(drop = True, inplace=True)
+
+        #save combined df to csv
+        path = get_path_to_csv(name_of_csv="Characteristics.csv")
+        temp_data.to_csv(path, index=False)
+        
+        #add new locations to json
+        #read current json file
+        path_to_urls = get_path_to_csv("Urls.json")
+        with open(path_to_urls) as json_file:
+            json_decoded = json.load(json_file)
+
+        #transfer links of new locations
+        for l in new_locations:
+            json_decoded[l] = glob_vars.temp_json[l]
+        #save json file
+        with open(path_to_urls, 'w') as json_file:
+            json.dump(json_decoded, json_file)
+
+        #add new locations to occupancy
+        occupancy_df = get_data(name_of_csv="Occupancy.csv")
+        
+        for l in new_locations:
+            occupancy_df[l] = None
+
+        #save Occupancy
+        o_path = get_path_to_csv(name_of_csv="Occupancy.csv")
+        occupancy_df.to_csv(o_path, index=False)
+
+        #renew global data
+        reset_data()
+        filter_data()
+
+        #TO-DO:
+        #update Occupancy for every location
+
+        return not modal_state, None, None, ""
+    else:
+        
+        raise PreventUpdate
+    
+
+def check_csv_validity(temp_df: pd.DataFrame) -> bool:
+    #things to check when given a dataframe:
+    #- check if columns align with our columns
+    #- check if data is rectangular - is dataframe always rectangular?
+    #- check if every row has a location name and no duplicate locations exist
+
+    #columns do not match
+    for tv, v in zip(list(temp_df.columns.values), list(glob_vars.data.columns.values)):
+        if tv != v:
+            return False
+    
+    #check that location name exists for every row
+    location_names = list(temp_df["location"])
+    #check for duplicates
+    temp_set = set(location_names)
+    if len(temp_set) != len(location_names):
+        return False
+
+    assert len(location_names) == len(temp_df)
+
+    #check for None values
+    for l in location_names:
+        if l == None:
+            return False
+
+
+    return True
+
+def check_json_validity(json_object:dict[str:str], csv_locations: list[str]) -> bool:
+    """
+    Checks if the given dictionary is according to the acceptance criteria
+
+    json_object: dictionary with key:value pairs as location:api-link
+    csv_locations: location names from the simultaniouisly uploaded csv file 
+    
+    returns: whether the dictionary is valid or not
+    """
+    
+    #validity of json file is guaranteed by:
+    #- every location from the csv file is represenmted in the json file -> meaning every location has a link
+    #- maybe also check that links are working? -> time expensive but okay when importing
+    print(json_object, csv_locations)
+
+    for l in csv_locations:
+        if l not in json_object:
+            return False
+
+    return True
+
+
+
+#----------
 #callback for adding new locations
 #receives button inputs and inputs from the modal input fields
 @callback(
@@ -757,6 +968,7 @@ def update_layout(*args):
             glob_vars.current_filter[s] = val
 
         #filter with new filter dictionary
+        print(glob_vars.current_filter)
         filter_data()
 
         return (refresh_layout(),) + tuple(sidebar_values)

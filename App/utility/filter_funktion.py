@@ -70,7 +70,7 @@ def filter_for_value(df:pd.DataFrame, category:str, set_value:str) -> pd.DataFra
     return df2
 
 
-def filter_for_list(df:pd.DataFrame, category:str, set_list:list) -> pd.DataFrame:
+def filter_for_list(df:pd.DataFrame, category:str, set_list:list,  filter_occupancy=False) -> pd.DataFrame:
     """
     given a dataframe, a category and a list of values, then filters the dataframe for all rows that have one of these values
 
@@ -80,6 +80,11 @@ def filter_for_list(df:pd.DataFrame, category:str, set_list:list) -> pd.DataFram
 
     returns: filtered dataframe
     """
+    print(df, set_list)
+
+    if filter_occupancy and len(set_list) == 0:
+        return df[0:0]
+
     #if no list given or if empty list, dont filter
     if set_list == None or len(set_list) == 0:
         return df
@@ -166,7 +171,7 @@ def get_occupancy_list_from_vals(occupancy_vals:list[str]) -> list[str]:
     """
     #if no list given
     if occupancy_vals == None:
-        return []
+        return None
 
     #read occupancy csv
     occupancy_csv = get_data("Occupancy.csv")
@@ -214,10 +219,10 @@ def filter_content(df: pd.DataFrame, filter_dict:defaultdict) -> pd.DataFrame:
 
     returns: filtered dataframe by standards of filter_dict
     """
-
+    #print("inside filter content")
    #iterate over all characteristics/keys of the data
     keys = df.columns.values
-    for key in keys:
+    for key in filter_dict:
          #if None then no value to filter for was given, so no filtering
         if filter_dict[key] == None:
             continue
@@ -226,7 +231,8 @@ def filter_content(df: pd.DataFrame, filter_dict:defaultdict) -> pd.DataFrame:
             df = filter_names(df, filter_dict[key], key)
         #occupancy values have to be preprocessed, and filtering happens on location names based on that, hence own if statement
         elif key == "occupancy":
-            df = df = filter_for_list(df, "location", get_occupancy_list_from_vals(filter_dict[key]))
+            #print("gotscha")
+            df = filter_for_list(df, "location", get_occupancy_list_from_vals(filter_dict[key]), filter_occupancy=True)
         #if single string is given, only filter for that value(this statement will probably not be called)
         elif type(filter_dict[key]) == str:
             df = filter_for_value(df, key, filter_dict[key])

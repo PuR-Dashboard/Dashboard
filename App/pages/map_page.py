@@ -82,7 +82,7 @@ def filter_content(df: pd.DataFrame, filter_dict:defaultdict):
     #if none then no location name was given the filter, so no filtering
     #print(df, filter_dict
     keys = df.columns.values
-    print("Keys are: ", keys)
+    #print("Keys are: ", keys)
     for key in keys:
         if filter_dict[key] == None:
             #print("Es wurde continued")
@@ -353,7 +353,7 @@ def update_layout(*args):
     #num is amount of sidebar elements that are quickfilter, i.e. the last num inputs of this callback
     num = 4
     sidebar_values = args[-num:]
-    print("VALS: ", sidebar_values)
+    #print("VALS: ", sidebar_values)
     # index of callback input for
     marks = args[-4]
 

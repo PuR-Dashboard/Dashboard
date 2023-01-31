@@ -15,6 +15,10 @@ data = None
 #will be used to filter data
 current_filter = None
 
+#these vars will be used to import files and tmporarily save the inputs
+temp_csv = None
+temp_json = None
+
 #initialize all global variables
 def init():
     #initialize data with all data in characteristics csv
