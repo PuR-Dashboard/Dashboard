@@ -285,7 +285,6 @@ def create_layout(names:list[str], content:list[str]) -> list:
     html_list = []
 
 
-
     #iterate through names(names and content must have the same length)
     for i in range(len(names)):
         #append header of location
@@ -339,6 +338,8 @@ html_list_for_layout = create_layout(names, content)
 layout = html.Div(children=html_list_for_layout, id="list_layout", style = CONTENT_STYLE)
 
 #Callbacks:-----------------------------------------------
+
+
 
 #callback to observe if the delete button has been pressed
 #open security question window as response

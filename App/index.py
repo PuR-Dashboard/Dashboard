@@ -1,11 +1,11 @@
 # Import necessary libraries
-from dash import html, dcc
+from dash import html, dcc, ctx
 from dash.dependencies import Input, Output
-
+import dash
 #from components import sidebar
 # Connect to main app.py file
 from app import app
-
+import dash_bootstrap_components as dbc
 # Connect to your app pages
 from pages import map_page, list_page
 
@@ -27,6 +27,12 @@ nav = navbar.get_navbar()  # Create the navbar
 app.layout = html.Div([  # Create a Div containing the navbar and the content
     dcc.Location(id='url', refresh=False),  # Track current URL of the page
     nav,  # Add the navbar
+    dcc.Interval(
+            id='auto_refresh_interval',
+            interval=60/60 * 60/20 * 1000, #factor meaning left to right: minutes, seconds, miliseconds, current refresh rate every 60 minutes
+            n_intervals=0
+    ),
+    html.Div(id="placeholder_interval_check", style={"display":"none"}),
     html.Div(id='page-content', children=[]),  # Add the page content
     #sid  # Add the sidebar
 ])
@@ -48,6 +54,40 @@ def display_page(pathname):
         return list_page.layout  # Return the layout of the list page
     else:  # If the URL is not map_page or list_page
         return map_page.layout  # Return the layout of the map page
+
+
+#callback to periodically refresh
+@app.callback(
+    Output("placeholder_interval_check", "n_clicks"),
+    [Input('url', 'pathname'),
+    Input("auto_refresh_interval", 'n_intervals')],
+    prevent_initial_call=True
+)
+def testing_pls(path, a):
+    ctxx = dash.callback_context
+    triggered_id = ctx.triggered_id
+
+    #parse/refresh urls/occupancy
+    if triggered_id == "url":
+        #dont update only because view is changed
+
+        return a
+    
+    if path == "/list_page":
+        #update list page layout
+
+        pass
+    elif path == "/map_page":
+        #update map page layout
+
+        pass
+
+    #update layout
+
+    #print(path, a)
+    
+    
+    return a
 
 
 # Run the app on localhost:8050

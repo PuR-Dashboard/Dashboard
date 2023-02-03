@@ -22,3 +22,6 @@ app = dash.Dash(  # Create instance of the Dash application
     ],
     suppress_callback_exceptions=True  # Suppress exceptions thrown in callbacks, so that the app can continue running
 )
+
+
+
