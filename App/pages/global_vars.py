@@ -1,5 +1,5 @@
 import pandas as pd
-from utility.util_functions import get_data
+from utility.data_functions import get_data
 from collections import defaultdict
 
 #IDEAS FOR THIS FILE:
@@ -30,3 +30,19 @@ def init():
     #initialise dictionary as default dictionary where not having a value returns None
     global current_filter
     current_filter = defaultdict(lambda: None)
+
+
+def reset_global_filter():
+    """
+    function that resets the dictionary that tracks the current filters
+    """
+    global current_filter
+    current_filter = defaultdict(lambda: None)
+
+
+def reset_data(name="Characteristics.csv"):
+    """
+    Resets the data with reading it new from a csv in the data folder with the given name
+    """
+    global data
+    data = get_data(name)

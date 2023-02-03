@@ -33,14 +33,16 @@ sid = sidebar.get_sidebar()
 # sid = sidebar.get_sidebar()  # Create the sidebar
 
 app.layout = html.Div([  # Create a Div containing the navbar and the content
-    dcc.Location(id='url', refresh=False),  # Track current URL of the page
+    dcc.Location(id='url', refresh=True),  # Track current URL of the page
     nav,  # Add the navbar
     dcc.Interval(
             id='auto_refresh_interval',
-            interval=60/60 * 60/20 * 1000, #factor meaning left to right: minutes, seconds, miliseconds, current refresh rate every 60 minutes
+            interval=60 * 60 * 1000, #factor meaning left to right: minutes, seconds, miliseconds, current refresh rate every 60 minutes
             n_intervals=0
     ),
     html.Div(id="placeholder_interval_check", style={"display":"none"}),
+    html.Div(id="update_list_div", style={"display":"none"}),
+    html.Div(id="update_map_div", style={"display":"none"}),
     html.Div(id='page-content', children=[]),  # Add the page content
     sid,  # Add the sidebar
 ])
@@ -63,40 +65,38 @@ def display_page(pathname):
     else:  # If the URL is not map_page or list_page
         return map_page.layout  # Return the layout of the map page
 
-
+"""
 #callback to periodically refresh
 @app.callback(
-    Output("placeholder_interval_check", "n_clicks"),
+    [Output("update_list_div", "n_clicks"),
+     Output("update_map_div", "n_clicks"),],
     [Input('url', 'pathname'),
-    Input("auto_refresh_interval", 'n_intervals')],
+     Input("auto_refresh_interval", 'n_intervals')],
     prevent_initial_call=True
 )
 def testing_pls(path, a):
     ctxx = dash.callback_context
     triggered_id = ctx.triggered_id
 
+
     #parse/refresh urls/occupancy
     if triggered_id == "url":
         #dont update only because view is changed
 
-        return a
+        return dash.no_update, dash.no_update
     
+    #still add url refreshing!!!!!!-----------------------
     if path == "/list_page":
         #update list page layout
-
-        pass
+        return 1, dash.no_update
     elif path == "/map_page":
         #update map page layout
+        return dash.no_update, 1
 
-        pass
-
-    #update layout
-
-    #print(path, a)
     
-    
-    return a
-
+    #no update else
+    raise PreventUpdate
+"""
 
 
 #callback for adding new locations
@@ -194,6 +194,86 @@ def add_new_location(_1, _2, _3, URL_value, *params):
     else:
         raise PreventUpdate
 
+@app.callback(
+        [Output("update_list_div", "n_clicks"),
+        Output("update_map_div", "n_clicks"),
+        Output("sideboard_name_filter", "value"),
+        Output("sideboard_address_filter", "value"),
+        Output("sideboard_occupancy_filter", "value"),
+        Output("sideboard_price_filter", "value"),],
+        [Input('url', 'pathname'),
+        Input("auto_refresh_interval", 'n_intervals'),
+        Input("placeholder_div_filter", "n_clicks"),
+        Input("placeholder_div_adding", "n_clicks"),
+        Input("clear_filter_button", "n_clicks"),
+        Input("refresh_page", "n_clicks"),
+        Input("sideboard_name_filter", "value"),
+        Input("sideboard_address_filter", "value"),
+        Input("sideboard_occupancy_filter", "value"),
+        Input("sideboard_price_filter", "value"),],
+        prevent_initial_call=True
+)
+def choose_correct_update(*args):
+    """
+    last x args are input values from sidebar
+    first args element is name of page
+    order important according to sidebar_characs list
+
+    first output updates list, second one the map
+    """
+    #print(args)
+    triggered_id = ctx.triggered_id
+    
+    #name of current page, important to decide which page to update
+    page_name = args[0]
+
+    #manually write characteristics of quick filters
+    sidebar_characs = ["location", "address", "occupancy", "price"]
+
+    #num is amount of sidebar elements that are quickfilter, i.e. the last num inputs of this callback
+    num = 4
+    sidebar_values = args[-num:]
+    # index of callback input for
+
+
+    if triggered_id == "clear_filter_button":
+        #reset data and filter dictionary
+        glob_vars.reset_data()
+        glob_vars.reset_global_filter()
+        #return refreshed layout with new data and empty value list for inputs
+        sidebar_values = [None for x in sidebar_values]
+
+    elif triggered_id == "sideboard_price_filter" or triggered_id == "sideboard_occupancy_filter" or triggered_id == "sideboard_address_filter" or triggered_id == "sideboard_name_filter":
+        #sidebar filter triggered
+        print("sidebar triggered")
+        #first reset data
+        glob_vars.reset_data()
+        #check for error
+        assert len(sidebar_characs) == len(sidebar_values), "Number of filter inputs in sidebar and hardcoded characteristics must be equal"
+
+        #add filter values to dictionary
+        for s, val in zip(sidebar_characs, sidebar_values):
+
+            if val == "":
+                val = None
+
+            glob_vars.current_filter[s] = val
+
+        #filter with new filter dictionary
+        
+        filter_data()
+
+
+    #if triggered_id == "placeholder_div_filter" or triggered_id == "placeholder_div_adding" or triggered_id == "url" or triggered_id == "refresh_page":
+    if page_name == "/list_page":
+        return (1, dash.no_update) + tuple(sidebar_values)
+    elif page_name == "/map_page":
+        return (dash.no_update, 1) + tuple(sidebar_values)
+    else: #error or page not accounted for
+        print("Hoffentlich Startcallback")
+        raise PreventUpdate
+
+        #raise ValueError("A Page is not accounted for in the update method")
 
 
 #callback to handle everything about the advanced filter
@@ -214,9 +294,9 @@ def add_new_location(_1, _2, _3, URL_value, *params):
     [Input("advanced_filter_button" , "n_clicks"),
     Input("modal_filter_submit_button" , "n_clicks"),
     Input("modal_filter_cancel_button" , "n_clicks"),
-    Input("modal_advanced_filter_parking_lots" , "marks"),
+    #Input("modal_advanced_filter_parking_lots" , "marks"),
     Input("modal_advanced_filter_occupancy" , "value"),
-    Input("modal_advanced_filter_occupancy" , "marks"),
+    #Input("modal_advanced_filter_occupancy" , "marks"),
     Input("modal_advanced_filter_name" , "value"),
     Input("modal_advanced_filter_address" , "value"),
     Input("modal_advanced_filter_administration" , "value"),
@@ -229,14 +309,14 @@ def add_new_location(_1, _2, _3, URL_value, *params):
     [State("modal_filter_window" , "is_open")],
     prevent_initial_call=True
 )
-def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, occupancy_vals, occupancy_marks, *params):
+def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
     """
     - variables with _ are n_clicks and not important
     - params is list with characteristics and modal state at the end
 
     - order of parameters(Input and Output) is important, especially in combination with filter dict handling
     """
-    
+    print(params, glob_vars.current_filter)
     #get origin of callback
     triggered_id = ctx.triggered_id
 
@@ -268,7 +348,7 @@ def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, occupancy_vals, o
     #if apply button of modal, apply filters and keep values in input fields
     elif triggered_id == "modal_filter_submit_button" :
         #rest data to filter on all data available
-        reset_data()
+        glob_vars.reset_data()
         #insert occupancy values to filter dict
         #occupancy not in characteristics csv therefore seperate assignment
         glob_vars.current_filter["occupancy"] = occupancy_vals
@@ -281,6 +361,7 @@ def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, occupancy_vals, o
             #assign values to filter dictionary
             glob_vars.current_filter[chara] = c
 
+        #print(glob_vars.current_filter)
         #filter data with filter dictionary
         filter_data()
         #return confirmation to filter placeholder, modal state and input values
@@ -424,7 +505,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
         occupancy_df.to_csv(o_path, index=False)
 
         #renew global data
-        reset_data()
+        glob_vars.reset_data()
         filter_data()
 
         #TO-DO:

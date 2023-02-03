@@ -1,6 +1,6 @@
 import sklearn, numpy
 import pandas as pd
-from utility.util_functions import *
+from utility.data_functions import *
 from collections import defaultdict
 import pages.global_vars as glob_vars
 
@@ -192,24 +192,14 @@ def get_occupancy_list_from_vals(occupancy_vals:list[str]) -> list[str]:
     
 
 
-def reset_global_filter():
-    """
-    function that resets the dictionary that tracks the current filters
-    """
-    glob_vars.current_filter = defaultdict(lambda: None)
-
 
 def filter_data():
     """
     filters the current data with the currently applied filters
     """
+    #print("Entering Filter Content")
     glob_vars.data = filter_content(glob_vars.data, glob_vars.current_filter)
 
-def reset_data(name="Characteristics.csv"):
-    """
-    Resets the data with reading it new from a csv in the data folder with the given name
-    """
-    glob_vars.data = get_data(name)
 
 
 def filter_content(df: pd.DataFrame, filter_dict:defaultdict) -> pd.DataFrame:
@@ -229,6 +219,7 @@ def filter_content(df: pd.DataFrame, filter_dict:defaultdict) -> pd.DataFrame:
         #location and address are filtered by the autocomplete method filter names
         elif key == "location" or key == "address":
             df = filter_names(df, filter_dict[key], key)
+            #print("New Location filtered DF is: ", df)
         #occupancy values have to be preprocessed, and filtering happens on location names based on that, hence own if statement
         elif key == "occupancy":
             #print("gotscha")
@@ -243,4 +234,5 @@ def filter_content(df: pd.DataFrame, filter_dict:defaultdict) -> pd.DataFrame:
         elif type(filter_dict[key]) == int or type(filter_dict[key]) == float:
             df = filter_max_value(df, key, filter_dict[key])
 
+    #print("New DF is: ", df)
     return df

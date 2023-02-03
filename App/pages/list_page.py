@@ -4,7 +4,7 @@ from dash import html, dcc, callback, ctx
 from dash.dependencies import Input, Output, State, MATCH, ALL
 import numpy as np
 from dash.exceptions import PreventUpdate
-from utility.util_functions import *
+#from utility.util_functions import *
 from utility.filter_funktion import *
 from utility.data_functions import *
 from components.sidebar import get_sidebar
@@ -33,11 +33,11 @@ CONTENT_STYLE = { #style the content of list_page so that it aligns with the sid
     "flex-grow": "1",
     "seamless":"True"
 }
-global sid
-seitentag = "_list"
+#global sid
+#seitentag = "_list"
 
 #generate sidebar for this page
-sid = get_sidebar(seitentag)
+#sid = get_sidebar(seitentag)
 
 #function to generate the modal for the delete security question("do you really want do delete xy...?")
 def create_security_window(location:str, index:int) -> dbc.Modal:
@@ -183,7 +183,7 @@ def create_edit_window(index:int) -> dbc.Modal:
                         id={"type":"edit_submit_button", "index":index}  # Set the id of the button to modal_submit_button
                     ),
                     #placeholder div for output of location edit
-                    html.Div(id="placeholder_div_edit" + seitentag, style={"display":"none"}),
+                    html.Div(id="placeholder_div_edit", style={"display":"none"}),
 
                 ]
             ),
@@ -278,7 +278,7 @@ def create_layout(names:list[str], content:list[str]) -> list:
     returns: list of python dash and dash.html elements, will be the new layout
     """
     #currently content is list of strings, datatype will vary in the future
-    global sid
+    #global sid
 
 
     #init list of components
@@ -323,7 +323,7 @@ def create_layout(names:list[str], content:list[str]) -> list:
         html_list.append(html.H3("No results found!"))
         html_list.append(html.Hr())
 
-    html_list.append(sid)
+    #html_list.append(sid)
     html_list.append(
                 #placeholder div for output of location delete
                 html.Div(id="placeholder_div_delete_list", style={"display":"none"}))
@@ -399,7 +399,7 @@ def delete_location(yes, no):
     #remove_location_from_json(location=location_to_delete)
 
     #renew global data
-    reset_data()
+    glob_vars.reset_data()
     filter_data()
 
     #return confirmation of deletion and second return 0 to close security window
@@ -498,77 +498,24 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,adress, parking_lots, accessi
 #layout refresh callback and sidebar handling
 #gets confirmation of deletion, update filter etc through placeholder, also inputs from sidebar
 @callback(
-    [Output("list_layout", "children"),
-    Output("sideboard_name_filter" + seitentag, "value"),
-    Output("sideboard_address_filter" + seitentag, "value"),
-    Output("sideboard_occupancy_filter" + seitentag, "value"),
-    Output("sideboard_price_filter" + seitentag, "value"),],
+    Output("list_layout", "children"),
     [Input("placeholder_div_delete_list", "n_clicks"),
-    Input("placeholder_div_filter" + seitentag, "n_clicks"),
-    Input("placeholder_div_adding" + seitentag, "n_clicks"),
-    Input("clear_filter_button" + seitentag, "n_clicks"),
-    Input("refresh_page", "n_clicks"),
-    Input("sideboard_name_filter" + seitentag, "value"),
-    Input("sideboard_address_filter" + seitentag, "value"),
-    Input("sideboard_occupancy_filter" + seitentag, "value"),
-    Input("sideboard_price_filter" + seitentag, "value"),],
+     Input("update_list_div", "n_clicks")],
     prevent_initial_call=True
 )
 def update_layout(*args):
-    """
-    last x args are input values from sidebar
-    order important according to sidebar_characs list
-    """
     triggered_id = ctx.triggered_id
 
-    #manually write characteristics of quick filters
-    sidebar_characs = ["location", "address", "occupancy", "price"]
+    #if triggered_id == "update_div_delete_list":
+    return refresh_layout()
 
-    #num is amount of sidebar elements that are quickfilter, i.e. the last num inputs of this callback
-    num = 4
-    sidebar_values = args[-num:]
-    # index of callback input for
-
-    #if clear filter was pressed reset all filters
-    if triggered_id == "clear_filter_button" + seitentag:
-        #reet data and filter dictionary
-        reset_data()
-        reset_global_filter()
-        #return refreshed layout with new data and empty value list for inputs
-        sidebar_values = [None for x in sidebar_values]
-        return (refresh_layout(),) + tuple(sidebar_values)
-    #if refresh button pressed
-    elif triggered_id == "refresh_page":
-        return (refresh_layout(),) + tuple(sidebar_values)
-    #if confirmation of successful filtering, deleting, etc is given refresh the page
-    elif triggered_id == "placeholder_div_filter" + seitentag or triggered_id == "placeholder_div_adding" + seitentag or triggered_id == "placeholder_div_delete_list":
-        return (refresh_layout(),) + tuple(sidebar_values)
-    else:
-        #sidebar filter triggered
-        #first reset data
-        reset_data()
-        #check for error
-        assert len(sidebar_characs) == len(sidebar_values), "Number of filter inputs in sidebar and hardcoded characteristics must be equal"
-
-        #add filter values to dictionary
-        for s, val in zip(sidebar_characs, sidebar_values):
-
-            if val == "":
-                val = None
-
-            glob_vars.current_filter[s] = val
-
-        #filter with new filter dictionary
-        print(glob_vars.current_filter)
-        filter_data()
-
-        return (refresh_layout(),) + tuple(sidebar_values)
+    
 
 
 #function to reapply the filters to the data and create new layout to display
 def refresh_layout() -> list:
     #filter on renewed data
-    reset_data()
+    glob_vars.reset_data()
     filter_data()
     #create names and content of collapsibles
     names, content = create_content(glob_vars.data)
