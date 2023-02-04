@@ -33,9 +33,8 @@ FA_icon_Plus = html.I(className="fa fa-plus fa-lg")
 
 def get_sidebar() -> html.Div:
     """
-    This function defines and returns a Dash layout for the sidebar of the page given by the distinction.
+    This function defines and returns a Dash layout for the sidebar.
 
-    distinction: string name of the page the sidebar is for. string will be appended to all IDs
     return: The layout of the sidebar of the page.
     """
 
@@ -65,6 +64,16 @@ def get_sidebar() -> html.Div:
                         autofocus=False #no autofocus to not clash with name filter
                     ),
                     html.Hr(),
+                       html.H5("Address",style={'color': 'white'}),  # Label of the name search bar
+                    dbc.Input(  # Input field
+                        id="sideboard_address_filter" ,
+                        type="text",  # Set the type of the input field to text
+                        debounce=False,  # Set the debounce-attribute of the input field to False
+                        value=None,  # Set the value of the input field
+                        placeholder="Address",  # Set the placeholder of the input field to Location Name
+                        autofocus=False
+                    ),
+ html.Hr(),
                     html.H5("Occupancy:",style={'color': 'white'}),  # Label for the occupancy input field
                     dbc.RadioItems(  # Radio buttons to select the occupancy
                         options=[  # Define the options of the radio buttons
@@ -85,7 +94,7 @@ def get_sidebar() -> html.Div:
                         type="number",  # Set the type of the input field to number
                         debounce=False,  # Set the debounce-attribute of the input field
                         value=None,  # Set the value of the input field
-                        placeholder="Price",  # Set the placeholder of the input field 
+                        placeholder="Price",  # Set the placeholder of the input field
 
                     ),
                     html.Hr(),
@@ -171,7 +180,7 @@ def get_sidebar() -> html.Div:
                                 multi=True,
                             ),
 
-                            dbc.Label("Number of Parking Lots:",style = {"margin-top":"2%"}), # parking lot filter
+                            dbc.Label("Number of Parking Lots:",style = {"margin-top":"2%"}), # parking lot filter(no slider like in sidebar above, this time dropdown)
                              dcc.Dropdown(
                                  options=[
                                      {'label': '1-25', 'value': '1-25'},
@@ -181,27 +190,27 @@ def get_sidebar() -> html.Div:
                                      {'label': '200-1200', 'value': '200-1200'},
                                  ],
                                  placeholder="Specify number of parking slots",
-                                 id='modal_advanced_filter_parking_lots' ,
+                                 id='modal_advanced_filter_number_parking_lots' ,
                                  multi=True,
                              ),
-                             dbc.Label("Max. price(\u20ac):",style = {"margin-top":"2%"}),#price filter, unicode symbol for euro sign
+                             dbc.Label("Max. price(\u20ac):",style = {"margin-top":"2%"}),
                              dbc.Input(
                                  id="modal_advanced_filter_price" ,
-                                 type="number",  # Set the type of the input field
-                                 debounce=False,  # Set the debounce-attribute of the input field
-                                 placeholder="Price in \u20ac", #unicode symbol for euro sign
-                                 value=None  # Set the value of the input field
+                                 type="number",  # Set the type of the input field to text
+                                 debounce=False,  # Set the debounce-attribute of the input field to True
+                                 placeholder="Price in \u20ac",
+                                 value=None  # Set the value of the input field to an empty string
                              ),
-                             dbc.Label("Public Transport Accessibility",style = {"margin-top":"2%"}), #number of tram connections filter
+                             dbc.Label("Public Transport Accessibility",style = {"margin-top":"2%"}),
                              dbc.Input(
-                                 id="modal_advanced_filter_num_connections" ,
-                                 type="number",  # Set the type of the input field
-                                 debounce=False,  # Set the debounce-attribute of the input field
+                                 id="modal_advanced_filter_public_transport" ,
+                                 type="number",  # Set the type of the input field to text
+                                 debounce=False,  # Set the debounce-attribute of the input field to True
                                  placeholder="Specify the public transport accessibility",
-                                 value=None  # Set the value of the input field
+                                 value=None  # Set the value of the input field to an empty string
                              ),
 
-                            dbc.Label("Transport Connection:",style = {"margin-top":"2%"}),#tram connection filter
+                            dbc.Label("Transport Connection:",style = {"margin-top":"2%"}),
                             dcc.Dropdown(
                                 options=[
                                     {'label': 'Superordinate network within the city (interstate)', 'value': 'Superordinate network within the city (interstate)'},
@@ -210,12 +219,12 @@ def get_sidebar() -> html.Div:
                                     {'label': 'Subordinate network out of town', 'value': 'Subordinate network out of town'},
                                 ],
                                 placeholder="Specify connection",
-                                id="modal_advanced_filter_connection" ,
+                                id="modal_advanced_filter_road_network_connection" ,
                                 multi=True,
                             ),
 
 
-                            dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"2%"}), #infrastructure filter
+                            dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"2%"}),
                             dcc.Dropdown(
                                 options=[
                                     {'label': 'Green Spaces', 'value': 'Green Spaces'},
@@ -225,9 +234,13 @@ def get_sidebar() -> html.Div:
                                     {'label': 'Mixed Areas', 'value': 'Mixed Areas'},
                                 ],
                                 placeholder="Specify surrounding infrastructure",
-                                id="modal_advanced_filter_infrastructure" ,
+                                id="modal_advanced_filter_surrounding_infrastructure" ,
                                 multi=True,
                             ),
+
+
+
+
                         ]
                     ),
                     dbc.ModalFooter(  # Footer of the modal
@@ -287,7 +300,7 @@ def get_sidebar() -> html.Div:
                                     {'label': 'No', 'value': 'No'},
                                 ],
                                 placeholder="Specify administration",
-                                id="modal_add_location_administration" 
+                                id="modal_add_location_administration"
                             ),
                             dbc.Label("Type of Facility:",style = {"margin-top":"2%"}), #kind
                             dcc.Dropdown(
@@ -297,7 +310,7 @@ def get_sidebar() -> html.Div:
                                     {'label': 'At the edge of the road / on the road', 'value': 'At the edge of the road / on the road'},
                                 ],
                                 placeholder="Specify the type of the facility",
-                                id="modal_add_location_kind" 
+                                id="modal_add_location_kind"
                             ),
 
                             dbc.Label("Number of Parking Spots:",style = {"margin-top":"2%"}), #number of parking lots
@@ -310,9 +323,9 @@ def get_sidebar() -> html.Div:
                                     {'label': '200-1200', 'value': '200-1200'},
                                 ],
                                 placeholder="Specify Number of parking spots",
-                                id="modal_add_location_parking_lots" 
+                                id="modal_add_location_number_parking_lots"
                             ),
-                            dbc.Label("Price:(\u20ac)",style = {"margin-top":"2%"}), #price
+                            dbc.Label("Max Price:(\u20ac)",style = {"margin-top":"2%"}),
                             dbc.Input(
                                 placeholder="Specify the max price in \u20ac",
                                 id="modal_add_location_price" ,
@@ -321,10 +334,10 @@ def get_sidebar() -> html.Div:
                                 value=None  # Set the value of the input field
                             ),
 
-                            dbc.Label("Public Transport Accessibility:",style = {"margin-top":"2%"}), #number of tram connections
+                            dbc.Label("Public Transport Accessibility:",style = {"margin-top":"2%"}),
                             dbc.Input(
                                 placeholder="Specify the public transport accessibility",
-                                id="modal_add_location_num_connections" ,
+                                id="modal_add_location_public_transport" ,
                                 type="number",  # Set the type
                                 debounce=True,  # Set the debounce-attribute
                                 value=None  # Set the default value
@@ -339,11 +352,11 @@ def get_sidebar() -> html.Div:
                                     {'label': 'Subordinate network out of town', 'value': 'Subordinate network out of town'},
                                 ],
                                 placeholder="Specify the transport connection",
-                                id="modal_add_location_connection" 
+                                id="modal_add_location_road_network_connection"
                             ),
 
 
-                            dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"2%"}), #infrastruture
+                            dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"2%"}),
                             dcc.Dropdown(
                                 options=[
                                     {'label': 'Green Spaces', 'value': 'Green Spaces'},
@@ -353,7 +366,7 @@ def get_sidebar() -> html.Div:
                                     {'label': 'Mixed Areas', 'value': 'Mixed Areas'},
                                 ],
                                 placeholder="Specify the surrounding infrastructure",
-                                id="modal_add_location_infrastructure" 
+                                id="modal_add_location_surrounding_infrastructure"
                             ),
 
 

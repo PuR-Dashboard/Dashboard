@@ -12,9 +12,7 @@ import plotly.express as px
 import pages.global_vars as glob_vars
 from collections import defaultdict
 import fontstyle
-import base64
-import datetime
-import io
+from csv import reader
 
 FA_icon_trash= html.I(className="fa fa-trash fa-lg")
 FA_icon_pen= html.I(className="fa fa-pencil fa-lg")
@@ -39,15 +37,49 @@ CONTENT_STYLE = { #style the content of list_page so that it aligns with the sid
 #generate sidebar for this page
 #sid = get_sidebar(seitentag)
 
-#function to generate the modal for the delete security question("do you really want do delete xy...?")
-def create_security_window(location:str, index:int) -> dbc.Modal:
-    """
-    location: name of location to be deleted
-    index: index of row in the currently displayed data that shall be deleted
 
-    returns: Modal with security question
+# TODO: Move to other file
+def define_chracteristics()->list:
+    """
+    This functions creates a list with all current characteristics.
+
+    Returns
+    -------
+    characteristics2:list
+        A list of all chracters in the data.
     """
 
+    temp_data = get_data("Characteristics.csv")
+    csv_reader = reader(temp_data)
+    characteristics2 = []
+
+    counter = 0
+
+    for row in csv_reader:
+        if counter < 3:
+            counter +=1
+            continue
+        characteristics2.append(row[0])
+
+    return characteristics2
+
+def create_security_window(location:str, index:int)-> dbc.Modal:
+    """
+    This function creates a pop up for the deleting function.
+
+    Parameters
+    ----------
+    location:
+        The name of the location which should be deleted.
+
+    index:
+        The index of the deleted location.
+
+    Returns
+    -------
+    popup:
+        A layout for the popup to ensure the action of deleting.
+    """
     return dbc.Modal([dbc.ModalHeader("Deleting Location {}. Are you sure?".format(location)),
                       dbc.ModalBody(
                         [dbc.Button(  # Button to close the modal
@@ -72,14 +104,21 @@ def create_security_window(location:str, index:int) -> dbc.Modal:
                         centered=True,  # Set the centered-attribute of the modal to True
                         )
 
-#function to create modal for editing data
-def create_edit_window(index:int) -> dbc.Modal:
+def create_edit_window(index:int)-> dbc.Modal:
     """
-    index: index of row that should be edited if the window is called
+    This function creates a pop up to add the data for a certain location.
 
-    returns: modal to edit data
+    Parameters
+    ----------
+    index:
+        The index of the edited location.
+
+    Returns
+    -------
+    edit_popUp:
+        A layout for the popup to edit the data of the location.
     """
-    
+
     edit_popUp = dbc.Modal(  # Modal to display the advanced filter
         [
             dbc.ModalHeader("Edit"),# Header of the modal
@@ -113,7 +152,7 @@ def create_edit_window(index:int) -> dbc.Modal:
                                         {'label': 'At the edge of the road / on the road', 'value': 'At the edge of the road / on the road'},
                                     ],
                                     placeholder="edit type of facility",
-                                    id={"type":"edit_parking_type", "index":index},
+                                    id={"type":"edit_kind", "index":index},
                                 ),
 
                     dbc.Label("Number of Parking spots",style = {"margin-top":"5%", "weight":"bold"}),
@@ -126,7 +165,7 @@ def create_edit_window(index:int) -> dbc.Modal:
                             {'label': '200-1200', 'value': '200-1200'},
                         ],
                         placeholder="edit number of parking spots",
-                        id={"type":"edit_parking_lots", "index":index}
+                        id={"type":"edit_number_parking_lots", "index":index}
                     ),
 
                     dbc.Label("Max Price(\u20ac):",style = {"margin-top":"5%"}),
@@ -140,7 +179,7 @@ def create_edit_window(index:int) -> dbc.Modal:
 
                     dbc.Label("Public Transport Accessibility",style = {"margin-top":"5%"}),
                     dbc.Input(
-                                    id={"type":"edit_accessibility", "index":index},
+                                    id={"type":"edit_public_transport", "index":index},
                                     type="number",  # Set the type of the input field to text
                                     debounce=False,  # Set the debounce-attribute of the input field to True
                                     placeholder="edit public transport accessibility",
@@ -156,7 +195,7 @@ def create_edit_window(index:int) -> dbc.Modal:
                             {'label': 'Subordinate network out of town', 'value': 'Subordinate network out of town'},
                         ],
                         placeholder="edit connection",
-                        id={"type":"edit_connection", "index":index},
+                        id={"type":"edit_road_network_connection", "index":index},
                     ),
 
                     dbc.Label("Surrounding Infrastructure",style = {"margin-top":"5%"}),
@@ -169,7 +208,7 @@ def create_edit_window(index:int) -> dbc.Modal:
                             {'label': 'Mixed Areas', 'value': 'Mixed Areas'},
                         ],
                         placeholder="edit surrounding infrastructure",
-                        id={"type":"edit_infrastructure", "index":index},
+                        id={"type":"edit_surrounding_infrastructure", "index":index},
                     ),
 
 
@@ -183,7 +222,7 @@ def create_edit_window(index:int) -> dbc.Modal:
                         id={"type":"edit_submit_button", "index":index}  # Set the id of the button to modal_submit_button
                     ),
                     #placeholder div for output of location edit
-                    html.Div(id="placeholder_div_edit", style={"display":"none"}),
+                    #html.Div(id="placeholder_div_edit", style={"display":"none"}),
 
                 ]
             ),
@@ -194,11 +233,26 @@ def create_edit_window(index:int) -> dbc.Modal:
     return edit_popUp
 
 
-#function to create the content of the tables(the content of the collapsibles)
-#will be switched out by table through vuetify library and is not documented further
-#DEPRECATED??!!
-def create_content(df: pd.DataFrame) -> tuple[list[str], list[str]]:
-    #print("create data: ", df)
+#will be switched out by table through vuetify library and is not documented further -> soon to be DEPRECATED
+def create_content(df: pd.DataFrame)-> tuple[list[str], list[str]]:
+    """
+    This function creates the names and information of the location.
+    --> content of the tables
+
+    Parameters
+    ----------
+    df:
+        The Dataframe storring the data of the location.
+
+    Returns
+    -------
+    names:
+        Names of the location.
+
+    content:
+        Given Information of the location.
+    """
+
     cols = df.columns
 
     content = []
@@ -221,16 +275,25 @@ def create_content(df: pd.DataFrame) -> tuple[list[str], list[str]]:
     return names, content
 
 
-#table for characteristics
-def create_table(content:list[str]) -> dbc.Table:
+def create_table(content:list)->dbc.Table :
     """
-    content: list of strings to be written into the table
+    This function creates the tables for the given data.
+
+    Parameters
+    ----------
+    content:
+        A list of the information which should be storred in the table.
+
+    Returns
+    -------
+    table_1:
+        A tables which represents all the given data.
     """
 
     table_header = [
         html.Thead(html.Tr([html.Th("Charakeristiken"), html.Th("")]), style = {"marginTop":"5%"})
     ]
-    charakter = ["address:","administration:" ,"Kind:","number of parking lots:","price:","public transport:","Road network connection:", "surrounding infrastructure" ]
+    charakter = define_chracteristics()
     rows = [html.Tr([html.Td(charakter[i]), html.Td(content[(i+3)*2])]) for i in range (len(charakter))]
 
     table_body = [html.Tbody(rows)]
@@ -301,7 +364,7 @@ def create_layout(names:list[str], content:list[str]) -> list:
 
                 #append collapsible content
         html_list.append(dbc.Collapse(
-            [dbc.CardBody(create_table(content[i]), style ={"width": "60%", "marginLeft": "3%"}), dbc.CardBody(create_plot(),style ={"width": "50%", "color": "#F0F8FF"}) , create_edit_window(i), create_security_window(names[i], i), html.Div(id={"type":"security_id_transmitter", "index":i}, style={"display":"none"})],
+            [dbc.CardBody(create_table(content[i]), style ={"width": "60%", "marginLeft": "3%"}), dbc.CardBody(create_plot(),style ={"width": "50%", "color": "#F0F8FF"}) , create_edit_window(i), create_security_window(names[i], i), html.Div(id={"type":"edit_controller", "index":i}, style={"display":"none"}),html.Div(id={"type":"security_id_transmitter", "index":i}, style={"display":"none"})],
 
             id={"type":"content", "index":i},
             style = {"width":"87%"},
@@ -327,15 +390,18 @@ def create_layout(names:list[str], content:list[str]) -> list:
     html_list.append(
                 #placeholder div for output of location delete
                 html.Div(id="placeholder_div_delete_list", style={"display":"none"}))
-
+    html_list.append(#placeholder div for output of location edit
+                    html.Div(id="placeholder_div_edit", style={"display":"none"}))
     return html_list
 
 #create headers and content
 names, content = create_content(glob_vars.data)
 #create new layout
 html_list_for_layout = create_layout(names, content)
-#assign layout of this page to the one above
+
 layout = html.Div(children=html_list_for_layout, id="list_layout", style = CONTENT_STYLE)
+
+#print(type(glob_vars.data["number_parking_lots"][0]))
 
 #Callbacks:-----------------------------------------------
 
@@ -414,7 +480,7 @@ def delete_location(yes, no):
     [State({"type": "content", "index": MATCH}, "is_open")],
 )
 def toggle_collapses(_butts, stats):
-    
+
     ctxx = dash.callback_context
 
     #if callback is not triggered by inputs dont expand
@@ -425,15 +491,26 @@ def toggle_collapses(_butts, stats):
         return not stats
 
 
+
+
+
+
 #method which edits the data according to the changes in the edit_window
 def edit_data(changed_data:list[str],index):
     #global data, temp_data
 
-    characteristics = ["address","administration","kind","number_parking_lots","price","public_transport","road_network_connection","surrounding_infrastructure"]
+    temp_data = get_data("Characteristics.csv")
+
+
+    characteristics = define_chracteristics()
+
+
+
 
     location = glob_vars.data.iloc[index]["location"]
 
-    temp_data = get_data("Characteristics.csv")
+
+
 
     for i in range (len(temp_data)):
         if temp_data.iloc[i]["location"] == location:
@@ -441,34 +518,57 @@ def edit_data(changed_data:list[str],index):
             break
 
     dic = {}
+    array = []
+    array.append(temp_data.iloc[position]["location"])
     dic["location"] =  temp_data.iloc[position]["location"]
 
     for i  in range(len(characteristics)):
 
         if changed_data[i] == None:
+            array.append(np.squeeze(temp_data.iloc[position][characteristics[i]]))
             dic[characteristics[i]] = np.squeeze(temp_data.iloc[position][characteristics[i]])
 
         else:
             dic[characteristics[i]] = changed_data[i]
+            array.append(changed_data[i])
 
 
-    update_characteristics_in_csv(dic)
+    update_characteristics_in_csv(array)
 
 
-#-------------------callbacks------------------------
+
+@callback(
+    Output("placeholder_div_edit" , "n_clicks"),
+    [Input({"type": "edit_controller", "index": ALL}, "is_open")]
+)
+
+def edit_window_observer(_n):
+
+    return 1
+
+
+
+def define_inputs_edit(special_ones):
+
+
+    inputs = []
+
+    for one in special_ones:
+        inputs.append(one)
+
+    characteristics= define_chracteristics()
+
+    for characs in characteristics:
+        inputs.append(Input({"type": "edit_"+characs, "index": MATCH}, 'value'))
+
+    return inputs
+
+
 #method to open the edit window and to close it after pressing the apply button
 @callback(
-    Output({"type": "edit_window", "index": MATCH}, "is_open"),
-    [Input({"type": "pen_button", "index": MATCH}, 'n_clicks'),
-     Input({"type": "edit_submit_button", "index": MATCH}, 'n_clicks'),
-     Input({"type": "edit_address", "index": MATCH}, 'value'),
-     Input({"type": "edit_parking_lots", "index": MATCH}, 'value'),
-     Input({"type": "edit_accessibility", "index": MATCH}, 'value'),
-     Input({"type": "edit_price", "index": MATCH}, 'value'),
-     Input({"type": "edit_infrastructure", "index": MATCH}, 'value'),
-     Input({"type": "edit_administration", "index": MATCH}, 'value'),
-     Input({"type": "edit_parking_type", "index": MATCH}, 'value'),
-     Input({"type": "edit_connection", "index": MATCH}, 'value'), ],
+    [Output({"type": "edit_window", "index": MATCH}, "is_open"),
+     Output({"type": "edit_controller", "index": MATCH}, "is_open")],
+     define_inputs_edit([Input({"type": "pen_button", "index": MATCH}, 'n_clicks'),Input({"type": "edit_submit_button", "index": MATCH}, 'n_clicks')]),
     [State({"type": "edit_window", "index": MATCH}, "is_open")],
     prevent_initial_call=True,
 )
@@ -480,13 +580,13 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,adress, parking_lots, accessi
 
     # if the edit button was pressed the edit window opens
     if triggered_id["type"] == "pen_button":
-        return (not edit_state)
+        return (not edit_state), dash.no_update
 
     # if the apply button was pressed the edit window closes and the data updates
     elif triggered_id["type"] == "edit_submit_button" :
 
         edit_data([adress, administration,kind, parking_lots,price,accessibility, connection,infrastructure],triggered_id.index)
-        return(not edit_state)
+        return(not edit_state),1
     else:
         raise PreventUpdate
 
@@ -509,7 +609,7 @@ def update_layout(*args):
     #if triggered_id == "update_div_delete_list":
     return refresh_layout()
 
-    
+
 
 
 #function to reapply the filters to the data and create new layout to display

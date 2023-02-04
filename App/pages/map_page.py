@@ -16,6 +16,7 @@ from utility.data_functions import *
 from utility.filter_funktion import *
 import pages.global_vars as glob_vars
 from collections import defaultdict
+from csv import reader
 
 
 
@@ -32,22 +33,56 @@ CONTENT_STYLE = { #style the content of map_page so that it aligns with the side
 
 #seitentag = "_map"
 
-#html_list = []
-
-#global data, temp_data
 
 #global sid
 #sid = get_sidebar(seitentag)
 
-#data = get_data(name_of_csv="Characteristics.csv")
-#temp_data = data.copy(deep=True)
 
-#method to create the html which represents the map_page
-#returns the layout of the map_page as a HTML List
-def create_html_map(data):
+
+def define_chracteristics()-> list:
+    """
+    This functions creates a list with all current characteristics.
+
+    Returns
+    -------
+    characteristics2:list
+        A list of all chracters in the data.
+    """
+
+    temp_data = get_data("Characteristics.csv")
+    csv_reader = reader(temp_data)
+    characteristics2 = []
+
+    counter = 0
+
+    for row in csv_reader:
+        if counter < 3:
+            counter +=1
+            continue
+        characteristics2.append(row[0])
+
+    return characteristics2
+
+
+
+def create_html_map(data:pd.DataFrame)-> list:
+    """
+    This function creates a map and adds it to the map_page.
+
+    Parameters
+    ----------
+    data: Panda DataFrame
+        The data which should be visualized.
+
+    Returns
+    -------
+    html_list:
+        Represents the componentents which should be visualized in the map_page.
+    """
     global sid
 
     html_list = []
+
 
     map_functions.create_map(data) # create the map
     html_list.append(  # Append the map tp the map_page
@@ -61,6 +96,7 @@ def create_html_map(data):
 
     #html_list.append(sid)
 
+
     return html_list
 
 layout = html.Div( #creating the layout
@@ -68,42 +104,6 @@ layout = html.Div( #creating the layout
                     id = "layout_map", # the ID of the layout
                     style = CONTENT_STYLE #style the content of the page
                  )
-
-#filtering the given df for the characteristics in the filter_dict
-def filter_content(df: pd.DataFrame, filter_dict:defaultdict):
-    """
-    df: Dataframe with user content to be filtered
-    filter_dict: default dictionary with all characteristics to be filtered for as keys, value to be filtered for as value and default value as none
-
-    returns: filtered dataframe by standards of filter_dict
-    """
-    #currently only filters for location and occupancy
-
-    #if none then no location name was given the filter, so no filtering
-    #print(df, filter_dict
-    keys = df.columns.values
-    #print("Keys are: ", keys)
-    for key in keys:
-        if filter_dict[key] == None:
-            #print("Es wurde continued")
-            continue
-        elif key == "location":
-            #print("loc is: ", filter_dict[key])
-            df = filter_names(df, filter_dict[key])
-            #print(df)
-        elif type(filter_dict[key]) == str:
-            df = filter_for_value(df, key, filter_dict[key])
-        elif type(filter_dict[key]) == list:
-            #print(filter_dict[key])
-            df = filter_for_list(df, key, filter_dict[key])
-            #print(df)
-        elif type(filter_dict[key]) == int or type(filter_dict[key]) == float:
-            df = filter_max_value(df, key, filter_dict[key])
-
-    #print("Am Ende: ", df)
-    #filtered dataframe
-    return df
-
 
 #---------------------------------------------------------------------
 #Callbacks:
@@ -126,7 +126,16 @@ def update_layout(*args):
 
 #function to replace the filtered dataframe with the original
 #returns layout of page
-def reverse_Map():
+def reverse_Map()->list:
+    """
+    This function reverses the map (all filters are removed).
+
+    Returns
+    -------
+    html_map :
+        A list of all components of the map page with the reversed data.
+    """
+
     #lobal data
 
     glob_vars.data = get_data(name_of_csv="Characteristics.csv")
@@ -134,45 +143,59 @@ def reverse_Map():
     return create_html_map(glob_vars.data)
 
 
-def reset_global_filter():
-    glob_vars.current_filter = defaultdict(lambda: None)
+def keep_layout_Map()-> list:
+    """
+    This function replaces the current dataframe with itself.
+    Nothing should change.
 
-
-
-def filter_data():#filter_dict: dict[str:str]):
-    #global data
-
-    glob_vars.data = filter_content(glob_vars.data, glob_vars.current_filter)
-
-
-#function to replace the filtered dataframe with itself, not changing anything
-#returns layout of page
-def keep_layout_Map():
+    Returns
+    -------
+    html_map :
+        A list of all components/layout of the map page.
+    """
     reset_data()
     filter_data()
-    #global data, temp_data
 
     return create_html_map(glob_vars.data)
 
 
-def reset_data(name="Characteristics.csv"):
-    glob_vars.data = get_data(name)
+def filter_buttons_Map(filter_dict:pd.DataFrame)-> list:
+    """
+    This function replaces the current dataframe with the filtered version of the original.
 
-#function to replace the current dataframe with the filtered version of the original
-#returns layout of page
-def filter_buttons_Map(filter_dict):
+    Parameters
+    -------
+    filter_dict :
+        The filtered version of the dictionary.
+
+    Returns
+    -------
+    layout:
+        The layout with the filtered data.
+    """
 
     global data, temp_data
     temp_data = data.copy(deep=True)
 
-    temp_data = list_page.filter_content(temp_data, filter_dict)
+    temp_data = filter_content(temp_data, filter_dict)
 
     return create_html_map(temp_data)
 
 
-#function to update the dataframe according to the data (checking for potentiell changes in the data)
-# returns the updated layou of the page
-def update(nr_clicks):
+def update(nr_clicks:int)-> list:
+    """
+    This function updates the dataframe according to the data (checking for potentiell changes in the data)
+
+    Parameters
+    -------
+    nr_clicks:
+        Number of clicks.
+
+    Returns
+    -------
+    layout:
+        The updated layout of the page.
+    """
     global data, temp_data
 
     if nr_clicks == None:

@@ -17,7 +17,7 @@ class Data_Functions_Tester(unittest.TestCase):
     def test_add_location(self):
 
         # Test whether the function raises an exception when the url is not valid
-        self.assertRaises(Exception, add_location, self.example_dict, "test") 
+        self.assertRaises(Exception, add_location, self.example_dict, "test")
 
         # Test whether the function raises an exception when no dictionary is passed
         self.assertRaises(Exception, add_location, None, "https://www.google.com")
@@ -28,7 +28,7 @@ class Data_Functions_Tester(unittest.TestCase):
         add_location(self.example_dict, "https://www.google.com")
         self.assertTrue(check_location_exists(self.example_dict["location"]))
 
-        # Test whether the function raises an exception when the location is already existing 
+        # Test whether the function raises an exception when the location is already existing
         self.assertRaises(Exception, add_location, self.example_dict, "https://www.google.com")
 
         remove_location(self.example_dict["location"])
@@ -44,7 +44,7 @@ class Data_Functions_Tester(unittest.TestCase):
         self.assertRaises(Exception, check_url, 5)
 
         check_url("https://www.google.com")
-        
+
     def test_check_location_exists(self):
         self.assertFalse(check_location_exists("fjkdlöafnioawe"))
         self.assertRaises(Exception, check_location_exists, None)
@@ -159,4 +159,3 @@ class Data_Functions_Tester(unittest.TestCase):
         self.assertRaises(Exception, get_response_from_url, "test")
 
         self.assertRaises(Exception, get_response_from_url, "https://www.google.com")
-
