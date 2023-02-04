@@ -3,8 +3,52 @@ import requests
 import json
 import validators
 from datetime import datetime
-from utility.util_functions import *
+#from utility.util_functions import *
 from requests import Response
+
+#marcs imports aus util_functions
+import pandas as pd
+import os
+import pathlib
+from collections import defaultdict
+#import pages.global_vars as glob_vars
+
+
+
+#-------------------
+#marcs fucntions from util functions
+
+#get the top directory of our app, regardless of depth
+#TO-DO: Error if while loop breaks and nothing matching was found
+def get_root_dir(name_of_top_folder="App"):
+    current_path = pathlib.Path(__file__).parent.resolve()
+    parent_path = current_path
+    while os.path.basename(parent_path) != name_of_top_folder:
+        parent_path = parent_path.parent.absolute()
+
+        if parent_path.parent.absolute() == parent_path:
+            break
+
+
+    parent_path = parent_path.parent.absolute()
+
+    return parent_path
+
+
+def get_path_to_csv(name_of_csv="Characteristics.csv", app_name="App"):
+    data_path = get_root_dir(app_name)
+
+    return os.path.join(data_path, os.path.join("Data", name_of_csv))
+
+
+#get data stored in our Location Data and return DataFrame
+def get_data(name_of_csv="Location_Data.csv", app_name="App"):
+    #data_path = get_root_dir(app_name)
+    #print(os.path.join(data_path, os.path.join("Data", name_of_csv)))
+    df = pd.read_csv(get_path_to_csv(name_of_csv, app_name))
+    return df
+
+#----------------------------
 
 
 username = 'optipark'  # Username for the API
@@ -14,6 +58,7 @@ path_to_urls = get_path_to_csv("Urls.json")  # Path to the json file with the AP
 path_to_csv = get_path_to_csv("Location_Data.csv")  # Path to the csv file containing the location data
 path_to_characteristics = get_path_to_csv("Characteristics.csv")  # Path to the csv file containing the characteristics of the locations
 path_to_occupancy = get_path_to_csv("Occupancy.csv") # Path to the csv file containing the occupancies of the locations
+
 
 
 # --- General functions --- #
@@ -205,7 +250,7 @@ def add_url_to_json(location: str, url: str) -> None:
 
     if not type(location) == str:  # If the location is not a string
         raise Exception('The given location is not a string')  # Raise an exception
-    
+
     if not type(url) == str:  # If the url is not a string
         raise Exception('The given url is not a string')  # Raise an exception
 
@@ -305,7 +350,7 @@ def update_characteristics_in_csv(dic: dict) -> None:
 # TODO: Add a function that updates the occupancies of all locations
 def update_occupancies():
     ...
-    
+
 
 def update_location_occupancy(location: str) -> None:
     """
