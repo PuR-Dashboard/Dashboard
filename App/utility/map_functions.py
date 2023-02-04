@@ -14,6 +14,7 @@ import ctypes
 import dash_bootstrap_components as dbc
 from dash import Input, Output, State, html
 import branca
+from utility.data_functions import *
 
 
 
@@ -292,6 +293,6 @@ def create_map(data:pd.DataFrame)->folium.Map :
     update(data,m)
     add_legend(m)
 
-    m.save(os.path.join("App", "P&R_Karte.html"))
+    m.save(os.path.join(get_root_dir(), os.path.join("App", "P&R_Karte.html")))
 
     return m
