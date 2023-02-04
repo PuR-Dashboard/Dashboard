@@ -3,7 +3,7 @@ import requests
 import json
 import validators
 from datetime import datetime
-from App.utility.util_functions import *
+from utility.util_functions import *
 from requests import Response
 
 
@@ -52,17 +52,19 @@ def add_location(dic, url) -> None:
 
             writer = csv.writer(characteristics_file, delimiter=',')  # Create a csv writer
 
-            writer.writerow([location, 8, 8
-            #, __get_lat_lon_from_url(url)
-            ]
-            
+            try:
+                lat, lon = get_lat_lon_from_url(url)  # Get the latitude and longitude from the url
+            except Exception as e:
+                lat, lon = 0, 0  # Set the latitude and longitude to None
+
+            writer.writerow([location, lat, lon]
             + list(dic.values())[1:])  # Write the location
             # and its characteristics
 
             characteristics_file.close()  # Close the file
 
         # --- Append the location to the csv file containing the occupancies --- #
-        #add_location_to_occ_csv(location)  # Add the location to the csv file containing the occupancies
+        add_location_to_occ_csv(location)  # Add the location to the csv file containing the occupancies
 
     else:  # If the location already exists
         raise Exception('The location {} already exists'.format(location))  # Raise an exception
@@ -300,6 +302,11 @@ def update_characteristics_in_csv(dic: dict) -> None:
 
 # --- Functions for the Occupancy.csv file --- #
 
+# TODO: Add a function that updates the occupancies of all locations
+def update_occupancies():
+    ...
+    
+
 def update_location_occupancy(location: str) -> None:
     """
     This function updates the occupancy of the location. First, the function tries to read the occupancy of the given
@@ -447,10 +454,4 @@ def get_response_from_url(url: str) -> Response:
         If the request is not successful.
     """
 
-    r = requests.get(url, auth=(username, password))  # Send a request to the url using the username and password
-
-    if r.status_code != 200:  # If the request was not successful
-        raise Exception('Could not access the url {}'.format(url))  # Raise an exception and print the url
-
-    return r  # Return the response
-
+    return requests.get(url, auth=(username, password))  # Return the response

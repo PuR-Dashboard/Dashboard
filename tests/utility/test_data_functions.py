@@ -123,7 +123,18 @@ class Data_Functions_Tester(unittest.TestCase):
         remove_location_from_json("test")
 
     def test_remove_location_from_csv(self):
-        assert 1 == 1
+        self.assertRaises(Exception, remove_location_from_csv, None)
+        self.assertRaises(Exception, remove_location_from_csv, 5)
+        self.assertRaises(Exception, remove_location_from_csv, "test")
+
+    def test_get_url_from_json(self):
+        self.assertRaises(Exception, get_url_from_json, None)
+        self.assertRaises(Exception, get_url_from_json, 5)
+        self.assertRaises(Exception, get_url_from_json, "test")
+
+        add_url_to_json("test", "test")
+        self.assertEqual(get_url_from_json("test"), "test")
+        remove_location_from_json("test")
 
     def test_update_characteristics_in_csv(self):
         assert 1 == 1
@@ -141,4 +152,11 @@ class Data_Functions_Tester(unittest.TestCase):
         assert 1 == 1
 
     def test_get_response_from_url(self):
-        assert 1 == 1
+        self.assertRaises(Exception, get_response_from_url, None)
+
+        self.assertRaises(Exception, get_response_from_url, 5)
+
+        self.assertRaises(Exception, get_response_from_url, "test")
+
+        self.assertRaises(Exception, get_response_from_url, "https://www.google.com")
+
