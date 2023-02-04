@@ -11,13 +11,27 @@ import pandas as pd
 from pandas import read_csv
 import csv
 import ctypes
-
-
+import dash_bootstrap_components as dbc
+from dash import Input, Output, State, html
 import branca
 
-#Markerfunktion
-#input: liste an Positionen für Marker, folium_map
-def Marker(markers, folium_map, tooltips):
+
+
+def Marker(markers:list, folium_map:folium.Map, tooltips)-> None:
+    """
+    This function visualises the given markers on the given map.
+
+    Parameters
+    ----------
+    markers : list of markers
+        The list of markers which should be visualized.
+
+    folium_map:
+        The map on which the marrkers should be presented.
+
+    tooltips: list of tooltips:
+        Contains a tooltip for each marker.
+    """
 
     for i in range (len(markers)):
         marker = markers[i]
@@ -30,88 +44,151 @@ def Marker(markers, folium_map, tooltips):
 
 
 
-# Bestimmung der Bildschirmgröße
-def Bildschirmgroesse():
 
-    #user32 = ctypes.windll.user32
-    ##screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
-    #return screensize
+def Bildschirmgroesse()-> list:
     """
     Get the size of the primary monitor
-    :return: width, height
+    Returns
+    -------
+    width and height of the screen
     """
     return pyautogui.size()  # Returns a tuple of (width, height)
 
 
-# Popup kreiiren
-# input: Name des Popup
-# output: popup
-# <img src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1" width="200" height="200" align = "right">
-def create_html(data,screensize,colors):
-     result = []
+def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
+    """
+    This function creates the pop-up for all markers/locations.
 
-     for i in range (len(data)):
+    Parameters
+    ----------
+    data : csv
+        The data which should be visualized
 
-         one_location_previous = data.iloc[i]
-         one_location = ["not specified" if (one_location_previous[i] == None) else one_location_previous[i] for i in range (len(one_location_previous)) ]
-         arrow = "&#x2B06;" if (one_location[3] == "increasing") else ("&#x2B07;" if (one_location[3] == "decreasing")else "&#x2B05;")
-         html=f"""
-             <h1> {one_location[0]}</h1>
-             <hr width="100%" size = "0.1">
-              &thinsp;
+    screensize: list of Integer
+        The size to which the pop up window should be adjusted.
+
+    colors: list of strings
+        Contains the occupancy as a color representation.
+
+    Returns
+    -------
+    result: list of folium.Popup
+        Contains all Pop ups for all markers.
+    """
+    result = []
 
 
-             <h2>
-             Charkteristika:
-             </h2>
-             <ul style="margin:0px;list-style:none ;">
-                 <li><B>Adress:     </B>&emsp;{one_location[3]}</li>
-                 &thinsp;
-                 <li><B>kind: </B>&emsp;{one_location[5]}</li>
-                 &thinsp;
-                 <li><B>Number of parking lots: </B>&emsp;{one_location[6]}</li>
-                 &thinsp;
-                 <li><B>price: </B>&emsp;{one_location[7]}</li>
-                 &thinsp;
-                 <li><B>Public transport: </B>&emsp;{one_location[8]}</li>
-             </ul>
-            &thinsp;
-             <hr width="100%" size = "0.1">
-             &thinsp;
-             <h2>Prognose:</h2>
-             <ul style="margin:0px;padding:30px;list-style:none ;">
-                 <li> <B>aktuelle Auslastung:</B> <font color = {colors[i]}>&emsp; high  </font>&emsp;{arrow}</li>&thinsp;
+    for i in range (len(data)):
+        one_location_previous = data.iloc[i]
+        one_location = ["not specified" if (one_location_previous[i] == None) else one_location_previous[i] for i in range (len(one_location_previous)) ]
+        arrow = "&#x2B06;" if (one_location[3] == "increasing") else ("&#x2B07;" if (one_location[3] == "decreasing")else "&#x2B05;")
+        html=f"""
+            <!DOCTYPE html>
+            <html>
+                   <head>
+                   <h1 style = "text-align: center"><font face="Arial"> {data.iloc[i]["location"]}</font></h1>
+                   </head>
+                   <body>
+                    <p style = "font-size: 18px"><B><u><font face="Arial">Characteristics:</font></u></B></p>
+                   <ul>
+                       <li style= "font-size: 15px"><B><font face="Arial">Address:</B></font></B></font><font face="Arial">&emsp; {data.iloc[i]["address"]}</font></li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">Number of Parking Lots: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["number_parking_lots"]}</font></li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">Type of Facility:</font></B></font><font face="Arial">&emsp;{data.iloc[i]["kind"]}</font></li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">Public Transport Connections: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["public_transport"]}</font></li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">Current Occupancy:</font></B> <font color = {colors[i]}>&emsp; {"None"}  </font>&emsp;{arrow}</li>&thinsp;
+                   </ul>
 
-             </ul>
-             </p>
-             <body><py-script output="plot">
-         </py-script></body>
+                       <table style= "border:1px solid black; background-color:#E3EFFA; text-align:center; font-size: 14px; width:100%; height:100%">
+                       <caption style= "text-align:center"> <B style= "font-size: 18px"><font face="Arial">Occupancy History Of The Week</font></B> </caption>
+                        &thinsp;
+                       <tr>
+                           <th height=30 style=" border-bottom: 1px solid black; border-right: 1px solid black;"><font face="Arial">Monday</font></th>
+                           <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Tuesday</font></th>
+                           <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Wednesday</font></th>
+                           <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Thursday</font></th>
+                           <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Friday</font></th>
+                           <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Saturday</font></th>
+                           <th  style=" border-bottom: 1px solid black;"><font face="Arial">Sunday</font></th>
+                       </tr>
+                       &thinsp;
+                       <tr>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       </tr>
+                       </table>
 
+
+                   </p>
+                   </body>
+           </html>
              """
-         iframe = folium.IFrame(html=html, width=screensize[0]/3, height=screensize[1]/2)
-         popup = folium.Popup(iframe, max_width=7000)
-         result.append(popup)
-     return result
+        iframe = folium.IFrame(html=html, width=screensize[0]/3, height=screensize[1]/2)
+        popup = folium.Popup(iframe, max_width=7000)
+        result.append(popup)
 
-#Einzugsgebiete kreiiern und zum Cluster hinzufügen
-# Input: liste an Positionen der Gebiete, Cluster
-def create_Einzugsgebiete(gebiete,cluster):
+    return result
 
-    for gebiet in gebiete:
-        circle = folium.vector_layers.Circle(location=[gebiet[0], gebiet[1]], radius=gebiet[2],color="#3186cc",
+
+
+def define_radius(radius= 0)-> int:
+    """
+    This function returns the radius of the draw area.
+
+    Parameters
+    ----------
+    radius : int
+        The size of the radius.
+        (If none is given, the radius is zero)
+
+    Returns
+    -------
+    radius: int
+    """
+
+    return radius
+
+
+
+def create_Einzugsgebiete(regions: list,cluster: MarkerCluster)-> None:
+    """
+    This function creates the draw areas for all markers.
+
+    Parameters
+    ----------
+    regions : list of locations
+
+    cluster:
+        Component to cluster the draw areas in the visualization.
+    """
+
+    for r in regions:
+        circle = folium.vector_layers.Circle(location=[r[0], r[1]], radius=r[2],color="#3186cc",
                                         fill=True,
                                         fill_color="#3186cc")
         circle.add_to(cluster)
 
-#Knopf erstellen mit bestimmter Funktion
-#Input: Funktion hinter Button
-def create_Button( function):
-    return JsButton(title='<i class="fas fa-crosshairs"></i>',function= function)
+
+def add_legend(folium_map:folium.Map)-> folium.Map:
+    """
+    This function adds a legend to the given map.
+
+    Parameters
+    ----------
+    folium_map :
+        The map which will be visualized.
+
+    Returns
+    -------
+    folium_map:
+        The map with the added legend.
+    """
 
 
-#Legender der Map hinzufügen
-#Input: Map
-def add_legend(folium_map):
     legend_html = '''
     {% macro html(this, kwargs) %}
     <div style="
@@ -151,9 +228,24 @@ def add_legend(folium_map):
 
 
     #updaten der Map
-def update(data,m):
+def update(data:pd.DataFrame,m:folium.Map)-> folium.Map:
+    """
+    This function updates the given map according to potential changes in the data.
+    Creates all the components of the map.
 
-    #data = read_csv("C:\\Users\\Marc\\Downloads\\Dashboard\\Dashboard\\Location_Data (1).csv",delimiter=',')
+    Parameters
+    ----------
+    data: Panda DataFrame
+        The data which should be visualized.
+
+    m: Folium.map
+        The map which should be updated.
+
+    Returns
+    -------
+    folium_map:
+        The updated map.
+    """
 
     screensize = Bildschirmgroesse()
 
@@ -170,7 +262,7 @@ def update(data,m):
     einzugsgebiete = MarkerCluster(name ='Einzugsgebiete', show = False).add_to(m)
     gebiete = []
     for i in range (len(data)):
-        gebiete.append([data.iloc[i][2], data.iloc[i][1],10000])
+        gebiete.append([data.iloc[i][2], data.iloc[i][1],define_radius()])
     create_Einzugsgebiete(gebiete,einzugsgebiete)
     # Butto für die Angabe des Standortes
     folium.plugins.LocateControl().add_to(m)
@@ -181,14 +273,24 @@ def update(data,m):
     m
     return m
 
-def create_map(data):
+
+def create_map(data:pd.DataFrame)->folium.Map :
+    """
+    This function creates a folium map based on the given data
+
+    Parameters
+    ----------
+    data: Panda DataFrame
+        The data which should be visualized.
+
+    Returns
+    -------
+    folium_map:
+        The created folium map.
+    """
     m = folium.Map(location=[51.5, 10.0], zoom_start=6.47)
     update(data,m)
     add_legend(m)
     m.save("P&R_Karte.html")
 
     return m
-
-
-
-#es fehlt nur das letztendliche erstellen der Karte (s. Notebook)

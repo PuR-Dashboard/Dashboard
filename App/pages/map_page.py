@@ -16,154 +16,212 @@ from utility.data_functions import add_location
 from utility.filter_funktion import *
 import pages.global_vars as glob_vars
 from collections import defaultdict
+from csv import reader
 
 
-SIDEBAR_STYLE = {
+
+CONTENT_STYLE = { #style the content of map_page so that it aligns with the sidebar
     "position": "fixed",
-    "top": "4rem",
-    "right": 0,
-    "bottom": 0,
-    "width": "16rem",
-    "padding": "2rem 1rem",
-    "background-color": "#f8f9fa",
-    "overflow": "scroll"
-}
+    "width": "calc(100vw - 250px)",
+    "height": "calc(100vh - 50px)",
+   # "resize":"both",
+    "flex-grow": "1",
+    #"border":"none",
+    "seamless":"True"
 
-BUTTON_STYLE = {
-    "width": "8rem",
-    "height": "2rem",
-    "padding": "2rem 1rem",
-    "text-align":"center",
-}
-
-CONTENT_STYLE = {
-    "margin-right": "0rem",
-    "padding": "2rem 1rem",
 }
 
 seitentag = "_map"
 
-#html_list = []
-
-#global data, temp_data
 
 global sid
 sid = get_sidebar(seitentag)
 
-#data = get_data(name_of_csv="Characteristics.csv")
-#temp_data = data.copy(deep=True)
 
 
-#button for refreshing the map
-FA_icon = html.I(className="fa fa-refresh")
-button = (html.Div(dbc.Button([FA_icon, " Refresh"], color="light", className="me-1",id = "test_refresh", value = 0,
-style={
-                        "marginLeft": "6%",
-                        "width": "7%",
-                        "height": "60%",
-                        "fontSize": "1em",
-                       # "background-color": "grey",
-                        "color": "black",
-                       # "border-radius": "4px",
-                       # "border": "2px solid black",
-                    },
-                    )))
+def define_chracteristics()-> list:
+    """
+    This functions creates a list with all current characteristics.
+
+    Returns
+    -------
+    characteristics2:list
+        A list of all chracters in the data.
+    """
+
+    temp_data = get_data("Characteristics.csv")
+    csv_reader = reader(temp_data)
+    characteristics2 = []
+
+    counter = 0
+
+
+    for row in csv_reader:
+        if counter < 3:
+            counter +=1
+            continue
+        characteristics2.append(row[0])
+
+    return characteristics2
 
 
 
-#method to create the html which represents the map_page
-#returns the layout of the map_page as a HTML List
-def create_html_map(data):
+def create_html_map(data:pd.DataFrame)-> list:
+    """
+    This function creates a map and adds it to the map_page.
+
+    Parameters
+    ----------
+    data: Panda DataFrame
+        The data which should be visualized.
+
+    Returns
+    -------
+    html_list:
+        Represents the componentents which should be visualized in the map_page.
+    """
     global sid
 
     html_list = []
 
+
     map_functions.create_map(data) # create the map
-    html_list.append(button) # adding the Refresh_Button to the map_page
     html_list.append(  # Append the map tp the map_page
                     html.Iframe( #Create an Iframe element to get an interactive map
                     id="page-layout", # Set the id of the Iframe element
                     srcDoc=open(os.path.join(os.path.dirname(__file__), '../P&R_Karte.html'), "r").read(),# Set the source of the Iframe element to be the previously created map
-                     width="84%", height="800" # set the width and the height of the IFrame Element
+                     #width="87%", height="800", # set the width and the height of the IFrame Element
+                     style = CONTENT_STYLE
+
                      ))
 
     html_list.append(sid)
 
+
     return html_list
 
 layout = html.Div( #creating the layout
-                children = create_html_map(glob_vars.data), # the elements of the layout
-                 id = "layout_map", # the ID of the layout
-                 style = CONTENT_STYLE  #style the content of the page
+                    children = create_html_map(glob_vars.data), # the elements of the layout
+                    id = "layout_map", # the ID of the layout
+                    style = CONTENT_STYLE #style the content of the page
                  )
 
-#filtering the given df for the characteristics in the filter_dict
-def filter_content(df: pd.DataFrame, filter_dict:defaultdict):
-    """
-    df: Dataframe with user content to be filtered
-    filter_dict: default dictionary with all characteristics to be filtered for as keys, value to be filtered for as value and default value as none
 
-    returns: filtered dataframe by standards of filter_dict
+
+def filter_content(df: pd.DataFrame, filter_dict: defaultdict)-> pd.DataFrame:
+    """
+    This functions filters the given DataFeame by the given dictionary.
+    Parameters
+    ----------
+    df:
+        Dataframe with user content to be filtered
+
+    filter_dict:
+        default dictionary with all characteristics to be filtered for as keys, value to be filtered for as value and default value as none
+
+    Returns
+    -------
+    df:
+        filtered dataframe by standards of filter_dict
     """
     #currently only filters for location and occupancy
 
     #if none then no location name was given the filter, so no filtering
     #print(df, filter_dict
     keys = df.columns.values
-    print("Keys are: ", keys)
     for key in keys:
         if filter_dict[key] == None:
             #print("Es wurde continued")
             continue
         elif key == "location":
-            #print("loc is: ", filter_dict[key])
             df = filter_names(df, filter_dict[key])
-            #print(df)
+
         elif type(filter_dict[key]) == str:
             df = filter_for_value(df, key, filter_dict[key])
+
         elif type(filter_dict[key]) == list:
-            #print(filter_dict[key])
             df = filter_for_list(df, key, filter_dict[key])
-            #print(df)
+
         elif type(filter_dict[key]) == int or type(filter_dict[key]) == float:
             df = filter_max_value(df, key, filter_dict[key])
 
-    #print("Am Ende: ", df)
     #filtered dataframe
     return df
 
+
+
+def define_inputs_add_location(special_ones:list)-> list:
+    """
+    This function creates a list of all inpus for the callback to add a new location.
+
+    Parameters
+    ----------
+    special_ones:
+        A list of inputs which are final.
+
+    Returns
+    -------
+    inputs :
+        A list of all inputs to add a new location.
+    """
+
+    inputs = []
+
+    for one in special_ones:
+        inputs.append(one)
+
+
+    characteristics= define_chracteristics()
+
+
+    for characs in characteristics:
+        inputs.append(Input("modal_add_location_"+ characs + seitentag, "value"))
+
+    return inputs
+
+
+
+def define_outputs_add_loction(special_ones:list)-> list:
+    """
+    This function creates a list of all outputs for the callback to add a new location.
+
+    Parameters
+    ----------
+    special_ones:
+        A list of outputs which are final.
+
+    Returns
+    -------
+    outputs :
+        A list of all outputs to add a new location.
+    """
+
+
+    outputs = []
+
+    for one in special_ones:
+        outputs.append(one)
+
+
+    characteristics= define_chracteristics()
+
+
+    for characs in characteristics:
+        outputs.append(Output("modal_add_location_"+ characs + seitentag, "value"))
+
+    return outputs
 
 #---------------------------------------------------------------------
 #Callbacks:
 
 #open adding module, add location etc
 @callback(
-    [Output("placeholder_div_adding" + seitentag, "n_clicks"),
+    define_outputs_add_loction([Output("placeholder_div_adding" + seitentag, "n_clicks"),
     Output("modal_add_location" + seitentag, "is_open"),
     Output("modal_field_warning" + seitentag, "style"),
     Output("modal_add_location_url" + seitentag, "value"),
-    Output("modal_add_location_name" + seitentag, "value"),
-    Output("modal_add_location_address" + seitentag, "value"),
-    Output("modal_add_location_administration" + seitentag, "value"),
-    Output("modal_add_location_kind" + seitentag, "value"),
-    Output("modal_add_location_parking_lots" + seitentag, "value"),
-    Output("modal_add_location_price" + seitentag, "value"),
-    Output("modal_add_location_connection" + seitentag, "value"),
-    Output("modal_add_location_num_connections" + seitentag, "value"),
-    Output("modal_add_location_infrastructure" + seitentag, "value"),],
-    [Input("modal_add_location_submit_button" + seitentag, "n_clicks"),
-    Input("open_modal_add_location_button" + seitentag, "n_clicks"),
-    Input("modal_add_location_cancel_button" + seitentag, "n_clicks"),
-    Input("modal_add_location_url" + seitentag, "value"),
-    Input("modal_add_location_name" + seitentag, "value"),
-    Input("modal_add_location_address" + seitentag, "value"),
-    Input("modal_add_location_administration" + seitentag, "value"),
-    Input("modal_add_location_kind" + seitentag, "value"),
-    Input("modal_add_location_parking_lots" + seitentag, "value"),
-    Input("modal_add_location_price" + seitentag, "value"),
-    Input("modal_add_location_connection" + seitentag, "value"),
-    Input("modal_add_location_num_connections" + seitentag, "value"),
-    Input("modal_add_location_infrastructure" + seitentag, "value"),],
+    Output("modal_add_location_name" + seitentag, "value")]),
+    define_inputs_add_location([Input("modal_add_location_submit_button" + seitentag, "n_clicks"),Input("open_modal_add_location_button" + seitentag, "n_clicks"), Input("modal_add_location_cancel_button" + seitentag, "n_clicks"),Input("modal_add_location_url" + seitentag, "value"),Input("modal_add_location_name" + seitentag, "value")]),
     [State("modal_add_location" + seitentag, "is_open")],
     prevent_initial_call=True,
     suppress_callback_exceptions=True
@@ -234,37 +292,80 @@ def add_new_location(_1, _2, _3, URL_value, *params):
 
 
 
+def define_inputs_advanced_filter(special_ones:list)-> list:
+    """
+    This function creates a list of all inpus for the callback to conduct the advanced filter.
+
+    Parameters
+    ----------
+    special_ones:
+        A list of inputs which are final.
+
+    Returns
+    -------
+    inputs :
+        A list of all inputs to conduct the advanced filter.
+    """
+
+
+    inputs = []
+
+    for one in special_ones:
+        inputs.append(one)
+
+    characteristics= define_chracteristics()
+
+    for characs in characteristics:
+        inputs.append(Input("modal_advanced_filter_"+ characs + seitentag, "marks"))
+
+    return inputs
+
+
+def define_outputs_advanced_filter(special_ones:list)->list:
+    """
+    This function creates a list of all outputs for the callback to to conduct the advanced filter.
+
+    Parameters
+    ----------
+    special_ones:
+        A list of outputs which are final.
+
+    Returns
+    -------
+    outputs :
+        A list of all outputs to to conduct the advanced filter.
+    """
+
+
+    outputs = []
+
+    for one in special_ones:
+        outputs.append(one)
+
+
+    characteristics= define_chracteristics()
+
+
+    for characs in characteristics:
+        outputs.append(Output("modal_advanced_filter_"+ characs + seitentag, "value"))
+
+    return outputs
+
 
 #modal filter handling
 @callback(
-    [Output("placeholder_div_filter" + seitentag, "n_clicks"),
-    Output("modal_filter_window" + seitentag, "is_open"),
-    Output("modal_advanced_filter_occupancy" + seitentag, "value"),
-    Output("modal_advanced_filter_name" + seitentag, "value"),
-    Output("modal_advanced_filter_address" + seitentag, "value"),
-    Output("modal_advanced_filter_administration" + seitentag, "value"),
-    Output("modal_advanced_filter_kind" + seitentag, "value"),
-    Output("modal_advanced_filter_parking_lots" + seitentag, "value"),
-    Output("modal_advanced_filter_price" + seitentag, "value"),
-    Output("modal_advanced_filter_connection" + seitentag, "value"),
-    Output("modal_advanced_filter_num_connections" + seitentag, "value"),
-    Output("modal_advanced_filter_infrastructure" + seitentag, "value"),],
-    [Input("advanced_filter_button" + seitentag, "n_clicks"),
-    Input("modal_filter_submit_button" + seitentag, "n_clicks"),
-    Input("modal_filter_cancel_button" + seitentag, "n_clicks"),
-    Input("modal_advanced_filter_parking_lots" + seitentag, "marks"),
-    Input("modal_advanced_filter_occupancy" + seitentag, "value"),
-    Input("modal_advanced_filter_occupancy" + seitentag, "marks"),
-    Input("modal_advanced_filter_name" + seitentag, "value"),
-    Input("modal_advanced_filter_address" + seitentag, "value"),
-    Input("modal_advanced_filter_administration" + seitentag, "value"),
-    Input("modal_advanced_filter_kind" + seitentag, "value"),
-    Input("modal_advanced_filter_parking_lots" + seitentag, "value"),
-    Input("modal_advanced_filter_price" + seitentag, "value"),
-    Input("modal_advanced_filter_connection" + seitentag, "value"),
-    Input("modal_advanced_filter_num_connections" + seitentag, "value"),
-    Input("modal_advanced_filter_infrastructure" + seitentag, "value"),],
-    [State("modal_filter_window" + seitentag, "is_open")],
+    define_outputs_advanced_filter([Output("placeholder_div_filter" + seitentag, "n_clicks"),
+                                    Output("modal_filter_window" + seitentag, "is_open"),
+                                    Output("modal_advanced_filter_occupancy" + seitentag, "value"),
+                                    Output("modal_advanced_filter_name" + seitentag, "value"),]),
+    define_inputs_advanced_filter([Input("advanced_filter_button" + seitentag, "n_clicks"),
+                                   Input("modal_filter_submit_button" + seitentag, "n_clicks"),
+                                   Input("modal_filter_cancel_button" + seitentag, "n_clicks"),
+                                   Input("modal_advanced_filter_number_parking_lots" + seitentag, "marks"),
+                                   Input("modal_advanced_filter_occupancy" + seitentag, "value"),
+                                   Input("modal_advanced_filter_occupancy" + seitentag, "marks"),
+                                   Input("modal_advanced_filter_name" + seitentag, "value")]),
+   [State("modal_filter_window" + seitentag, "is_open")],
     prevent_initial_call=True
 )
 def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, occupancy_vals, occupancy_marks, *params):
@@ -357,16 +458,17 @@ def advanced_filter_handling(_n1, _n2, _n3, parking_lot_marks, occupancy_vals, o
 @callback(
     [Output("layout_map", "children"),
     Output("sideboard_name_filter" + seitentag, "value"),
+    Output("sideboard_address_filter" + seitentag, "value"),
     Output("sideboard_occupancy_filter" + seitentag, "value"),
-    Output("sideboard_parking_lots_slider" + seitentag, "value"),],
+    Output("sideboard_price_filter" + seitentag, "value"),],
     [Input("placeholder_div_filter" + seitentag, "n_clicks"),
     Input("placeholder_div_adding" + seitentag, "n_clicks"),
     Input("clear_filter_button" + seitentag, "n_clicks"),
-    Input("test_refresh", "n_clicks"),
-    Input("sideboard_parking_lots_slider" + seitentag, "marks"),
+    Input("refresh_page", "n_clicks"),
     Input("sideboard_name_filter" + seitentag, "value"),
+    Input("sideboard_address_filter" + seitentag, "value"),
     Input("sideboard_occupancy_filter" + seitentag, "value"),
-    Input("sideboard_parking_lots_slider" + seitentag, "value"),],
+    Input("sideboard_price_filter" + seitentag, "value"),],
     prevent_initial_call=True
 )
 def update_layout(*args):
@@ -375,10 +477,10 @@ def update_layout(*args):
     #print(triggered_id)
 
     #manually write characteristics of quick filters
-    sidebar_characs = ["location", "administration", "number_parking_lots"]
+    sidebar_characs = ["location", "address", "occupancy", "price"]
 
     #num is amount of sidebar elements that are quickfilter, i.e. the last num inputs of this callback
-    num = 3
+    num = 4
     sidebar_values = args[-num:]
     print("VALS: ", sidebar_values)
     # index of callback input for
@@ -389,28 +491,31 @@ def update_layout(*args):
         reset_global_filter()
         new_lay = reverse_Map()
 
-        return new_lay, "", "", [1,6]
+        return (new_lay,) + tuple(sidebar_values)
     #elif triggered_id == "sideboard_name_filter" + seitentag or triggered_id == "sideboard_occupancy_filter" + seitentag:
-    elif triggered_id == "test_refresh" or triggered_id == "placeholder_div_filter" + seitentag: #or triggered_id == "placeholder_div_adding" + seitentag:
+    elif  triggered_id == "placeholder_div_filter" + seitentag: #or triggered_id == "placeholder_div_adding" + seitentag:
         reset_data()
         filter_data()
-        return create_html_map(glob_vars.data), args[-3], args[-2], args[-1]
-    else:
-        #print(triggered_id, glob_vars.current_filter, marks, args[-1])
-        reset_data()
+        return (create_html_map(glob_vars.data),) + tuple(sidebar_values)
 
+    elif triggered_id == "refresh_page":
+
+        reset_data()
+        reset_global_filter()
+        new_lay= update(1)
+
+        return (new_lay,)   + tuple(sidebar_values)
+
+    else:
+        print()
+        reset_data()
+        #sidebar_characs = ["location", "address", "occupancy", "price"]
         assert len(sidebar_characs) == len(sidebar_values)
 
         for s, val in zip(sidebar_characs, sidebar_values):
-            if s == "number_parking_lots":
-                if val[0] == 1 and val[1] == 6:
-                    glob_vars.current_filter.pop(s, None)
-                    continue
-                else:
-                    #print("conversion: ", make_parking_lot_list(val[0], val[1], marks))
-                    glob_vars.current_filter[s] = list_page.make_parking_lot_list(val[0], val[1], marks)
-            elif val == None or val == "":
-                glob_vars.current_filter.pop(s, None)
+
+            if val == None or val == "":
+                glob_vars.current_filter[s] = None
                 continue
             else:
                 glob_vars.current_filter[s] = val
@@ -420,12 +525,22 @@ def update_layout(*args):
 
         #print(glob_vars.data)
 
-        return keep_layout_Map(), args[-3], args[-2], args[-1]
+        return (keep_layout_Map(),) + tuple(sidebar_values)
+
 
 
 #function to replace the filtered dataframe with the original
 #returns layout of page
-def reverse_Map():
+def reverse_Map()->list:
+    """
+    This function reverses the map (all filters are removed).
+
+    Returns
+    -------
+    html_map :
+        A list of all components of the map page with the reversed data.
+    """
+
     #lobal data
 
     glob_vars.data = get_data(name_of_csv="Characteristics.csv")
@@ -433,33 +548,68 @@ def reverse_Map():
     return create_html_map(glob_vars.data)
 
 
-def reset_global_filter():
+def reset_global_filter()-> None:
+    """
+    This function reundo all the filters.
+
+    """
     glob_vars.current_filter = defaultdict(lambda: None)
 
 
 
-def filter_data():#filter_dict: dict[str:str]):
-    #global data
+def filter_data()-> None:
+    """
+    This function filters the data according the global filter dataframe.
+
+    """
 
     glob_vars.data = filter_content(glob_vars.data, glob_vars.current_filter)
 
 
-#function to replace the filtered dataframe with itself, not changing anything
-#returns layout of page
-def keep_layout_Map():
+
+def keep_layout_Map()-> list:
+    """
+    This function replaces the current dataframe with itself.
+    Nothing should change.
+
+    Returns
+    -------
+    html_map :
+        A list of all components/layout of the map page.
+    """
     reset_data()
     filter_data()
-    #global data, temp_data
 
     return create_html_map(glob_vars.data)
 
 
-def reset_data(name="Characteristics.csv"):
+def reset_data(name="Characteristics.csv")-> None:
+    """
+    This function resets the data.
+    Re-reading the csv file.
+
+    Parameters
+    ----------
+    name: string
+        Name of the csv file storring the data
+    """
     glob_vars.data = get_data(name)
 
-#function to replace the current dataframe with the filtered version of the original
-#returns layout of page
-def filter_buttons_Map(filter_dict):
+
+def filter_buttons_Map(filter_dict:pd.DataFrame)-> list:
+    """
+    This function replaces the current dataframe with the filtered version of the original.
+
+    Parameters
+    -------
+    filter_dict :
+        The filtered version of the dictionary.
+
+    Returns
+    -------
+    layout:
+        The layout with the filtered data.
+    """
 
     global data, temp_data
     temp_data = data.copy(deep=True)
@@ -469,14 +619,25 @@ def filter_buttons_Map(filter_dict):
     return create_html_map(temp_data)
 
 
-#function to update the dataframe according to the data (checking for potentiell changes in the data)
-# returns the updated layou of the page
-def update(nr_clicks):
+def update(nr_clicks:int)-> list:
+    """
+    This function updates the dataframe according to the data (checking for potentiell changes in the data)
+
+    Parameters
+    -------
+    nr_clicks:
+        Number of clicks.
+
+    Returns
+    -------
+    layout:
+        The updated layout of the page.
+    """
     global data, temp_data
 
     if nr_clicks == None:
         raise PreventUpdate
-    data = get_data("Characteristics.csv")
+    data = get_data()
     temp_data = data.copy(deep=True)
     #only for testing
     #temp_data.drop(temp_data.loc[temp_data['location'] == "Heidelberg"].index, inplace = True )
