@@ -304,9 +304,21 @@ def create_table(content:list)->dbc.Table :
 
 
 
-#create plot for the distribution over the week
 #!!!!Fehlen die Daten, um die Verteilung für die Orte individuell zu gestalten
-def create_plot(content:list[str] = [1,2,3,4,5,6]):
+def create_plot(content:list[str] = [1,2,3,4,5,6])--> dcc.Graph:
+    """
+    This function creates a plot to visualize the prediction over the week.
+
+    Parameters
+    ----------
+    content:
+        A list of the average occupancy for a certain day in the week.
+
+    Returns
+    -------
+    graph:
+        A graph which visualize the occupancy prediction for the whole week.
+    """
 
     df = pd.DataFrame({
     "": ["Monday","Tuesday", "Wednesday", "Thursday","Friday", "WE"],
@@ -331,14 +343,24 @@ def create_plot(content:list[str] = [1,2,3,4,5,6]):
     return graph
 
 
-#function to dynamically create the dash components of the new layout, will always be used after filtering or refreshing
+
 #----!!! Names and content is at the moment created through the create_content() def, will need new creation function after create_content() is DEPRECATED
 def create_layout(names:list[str], content:list[str]) -> list:
     """
-    names: list of headlines for the list of locations. typically the name of the location
-    content: list of content to be given to the collapsibles
+    This function dynamically creates the layout for the list_page.
 
-    returns: list of python dash and dash.html elements, will be the new layout
+    Parameters
+    ----------
+    names:
+        A list of all names of the locations for the headlines.
+
+    content:
+        A list of the content to be represented in the collapsibles.
+
+    Returns
+    -------
+    html_list:
+        A list of python dash and dash.html elements representing the layout of the list_page.
     """
     #currently content is list of strings, datatype will vary in the future
     #global sid
@@ -401,7 +423,7 @@ html_list_for_layout = create_layout(names, content)
 
 layout = html.Div(children=html_list_for_layout, id="list_layout", style = CONTENT_STYLE)
 
-#print(type(glob_vars.data["number_parking_lots"][0]))
+
 
 #Callbacks:-----------------------------------------------
 
@@ -415,12 +437,25 @@ layout = html.Div(children=html_list_for_layout, id="list_layout", style = CONTE
     prevent_initial_call=True
 )
 def security_observer(_n):
+    """
+    This helper function opens the secruity window if the yes button for the Deleting was pressed.
+
+    Parameters
+    ----------
+    _n:
+        The number of clicks on the button controller.
+
+    Returns
+    -------
+    security_window:
+        A boolean whether the security should be opended.
+    """
     #if n_clicks is set to 0 close window
     if _n == 0:
         return False
     return True
 
-#callback to trigger the placeholder for deleting the row
+
 #is necessary because in the delete_location() callback placeholder_div_delete_list cant be called due to no wildcard id(no MATCH index)
 @callback(
     Output("placeholder_div_delete_list", "n_clicks"),
@@ -428,6 +463,21 @@ def security_observer(_n):
     prevent_initial_call=True
 )
 def delete_observer(_n):
+    """
+    This helper function for the delete location function.
+    It should trigger the placeholder for deleting a row.
+
+    Parameters
+    ----------
+    _n:
+        The number of clicks on the security id transmitter.
+
+    Returns
+    -------
+    n_clicks:
+        returns 1 (to trigger all function which input is placeholder_div_delete_list)
+
+    """
     return 1
 
 
@@ -441,6 +491,27 @@ def delete_observer(_n):
     prevent_initial_call=True,
 )
 def delete_location(yes, no):
+    """
+    This function deletes a row from csv and give deletion confirmation to placeholder div.
+    Furthermore it checks if yes or no was pressed on security question and acts according to this.
+
+    Parameters
+    ----------
+    yes:
+        Number of clicks on the yes Button(if it was pressed)
+
+    no:
+        Number of clicks on the no Button(if it was pressed)
+
+    Returns
+    -------
+    n_clicks on the security_id_transmitter:
+        Returns a number if yes was pressed and the security window should be opended
+
+    n_clicks on the button_control:
+        always 0
+
+    """
     #id of row to be deleted => only in currently displayed data, not necessarily global row id!!!
     triggered_id = ctx.triggered_id["index"]
 

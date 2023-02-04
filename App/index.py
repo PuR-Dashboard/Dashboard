@@ -84,7 +84,7 @@ def testing_pls(path, a):
         #dont update only because view is changed
 
         return dash.no_update, dash.no_update
-    
+
     #still add url refreshing!!!!!!-----------------------
     if path == "/list_page":
         #update list page layout
@@ -93,7 +93,7 @@ def testing_pls(path, a):
         #update map page layout
         return dash.no_update, 1
 
-    
+
     #no update else
     raise PreventUpdate
 """
@@ -288,7 +288,7 @@ def choose_correct_update(*args):
     """
     #print(args)
     triggered_id = ctx.triggered_id
-    
+
     #name of current page, important to decide which page to update
     page_name = args[0]
 
@@ -325,7 +325,7 @@ def choose_correct_update(*args):
             glob_vars.current_filter[s] = val
 
         #filter with new filter dictionary
-        
+
         filter_data()
 
 
@@ -528,7 +528,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
             for a in admissible_types:
                 if a in f:
                     valid = True
-            
+
             if not valid:
                 return modal_state, csv_val, json_val, "Wrong file type uploaded!"
 
@@ -548,7 +548,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
                 glob_vars.temp_csv = df
                 csv_val = f
 
-        return modal_state, csv_val, json_val, ""        
+        return modal_state, csv_val, json_val, ""
 
     elif triggered_id == "modal_import_file_upload_button":
         #if one of the necessary files hasnt beent uploaded dont upload
@@ -560,7 +560,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
         if not check_csv_validity(glob_vars.temp_csv):
             glob_vars.temp_csv = None
             return modal_state, None, json_val, "CSV File does not meet conventions!"
-        
+
         #csv data is okay now
         location_names = list(glob_vars.temp_csv["location"])
 
@@ -588,7 +588,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
         #save combined df to csv
         path = get_path_to_csv(name_of_csv="Characteristics.csv")
         temp_data.to_csv(path, index=False)
-        
+
         #add new locations to json
         #read current json file
         path_to_urls = get_path_to_csv("Urls.json")
@@ -604,7 +604,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
 
         #add new locations to occupancy
         occupancy_df = get_data(name_of_csv="Occupancy.csv")
-        
+
         for l in new_locations:
             occupancy_df[l] = None
 
@@ -621,9 +621,9 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
 
         return not modal_state, None, None, ""
     else:
-        
+
         raise PreventUpdate
-    
+
 
 def check_csv_validity(temp_df: pd.DataFrame) -> bool:
     #things to check when given a dataframe:
@@ -635,7 +635,7 @@ def check_csv_validity(temp_df: pd.DataFrame) -> bool:
     for tv, v in zip(list(temp_df.columns.values), list(glob_vars.data.columns.values)):
         if tv != v:
             return False
-    
+
     #check that location name exists for every row
     location_names = list(temp_df["location"])
     #check for duplicates
@@ -658,11 +658,11 @@ def check_json_validity(json_object:dict[str:str], csv_locations: list[str]) -> 
     Checks if the given dictionary is according to the acceptance criteria
 
     json_object: dictionary with key:value pairs as location:api-link
-    csv_locations: location names from the simultaniouisly uploaded csv file 
-    
+    csv_locations: location names from the simultaniouisly uploaded csv file
+
     returns: whether the dictionary is valid or not
     """
-    
+
     #validity of json file is guaranteed by:
     #- every location from the csv file is represenmted in the json file -> meaning every location has a link
     #- maybe also check that links are working? -> time expensive but okay when importing
@@ -690,7 +690,7 @@ def parse_contents(contents, filename):
             df = None
 
         return df
-    
+
     except Exception as e:
         raise e
 
