@@ -291,6 +291,7 @@ def create_map(data:pd.DataFrame)->folium.Map :
     m = folium.Map(location=[51.5, 10.0], zoom_start=6.47)
     update(data,m)
     add_legend(m)
-    m.save("P&R_Karte.html")
+
+    m.save(os.path.join("App", "P&R_Karte.html"))
 
     return m
