@@ -20,8 +20,8 @@ import fontstyle
 import base64
 import datetime
 import io
+from csv import reader
 
-seitentag = "_list"
 """
 This is the main index file to control the app layout.
 Further, it includes callback functions for the different pages of the application.
@@ -98,37 +98,102 @@ def testing_pls(path, a):
     raise PreventUpdate
 """
 
+def define_chracteristics()->list:
+    """
+    This functions creates a list with all current characteristics.
+
+    Returns
+    -------
+    characteristics2:list
+        A list of all chracters in the data.
+    """
+
+    temp_data = get_data("Characteristics.csv")
+    csv_reader = reader(temp_data)
+    characteristics2 = []
+
+    counter = 0
+
+
+    for row in csv_reader:
+        if counter < 3:
+            counter +=1
+            continue
+        characteristics2.append(row[0])
+
+    return characteristics2
+
+def define_inputs_add_location(special_ones:list)-> list:
+    """
+    This function creates a list of all inpus for the callback to add a new location.
+
+    Parameters
+    ----------
+    special_ones:
+        A list of inputs which are final.
+
+    Returns
+    -------
+    inputs :
+        A list of all inputs to add a new location.
+    """
+
+    inputs = []
+
+    for one in special_ones:
+        inputs.append(one)
+
+
+    characteristics= define_chracteristics()
+
+
+    for characs in characteristics:
+        inputs.append(Input("modal_add_location_"+ characs, "value"))
+
+    return inputs
+
+
+
+def define_outputs_add_loction(special_ones:list)-> list:
+    """
+    This function creates a list of all outputs for the callback to add a new location.
+
+    Parameters
+    ----------
+    special_ones:
+        A list of outputs which are final.
+
+    Returns
+    -------
+    outputs :
+        A list of all outputs to add a new location.
+    """
+
+
+    outputs = []
+
+    for one in special_ones:
+        outputs.append(one)
+
+
+    characteristics= define_chracteristics()
+
+
+    for characs in characteristics:
+        outputs.append(Output("modal_add_location_"+ characs, "value"))
+
+    return outputs
+
 
 #callback for adding new locations
 #receives button inputs and inputs from the modal input fields
-@app.callback(
-    [Output("placeholder_div_adding" , "n_clicks"),
-    Output("modal_add_location" , "is_open"),
+@app.callback(define_outputs_add_loction([Output("placeholder_div_adding", "n_clicks"),
+    Output("modal_add_location", "is_open"),
     Output("modal_field_warning" , "style"),
     Output("modal_add_location_url" , "value"),
-    Output("modal_add_location_name" , "value"),
-    Output("modal_add_location_address" , "value"),
-    Output("modal_add_location_administration" , "value"),
-    Output("modal_add_location_kind" , "value"),
-    Output("modal_add_location_parking_lots" , "value"),
-    Output("modal_add_location_price" , "value"),
-    Output("modal_add_location_connection" , "value"),
-    Output("modal_add_location_num_connections" , "value"),
-    Output("modal_add_location_infrastructure" , "value"),],
-    [Input("modal_add_location_submit_button" , "n_clicks"),
-    Input("open_modal_add_location_button" , "n_clicks"),
-    Input("modal_add_location_cancel_button" , "n_clicks"),
-    Input("modal_add_location_url" , "value"),
-    Input("modal_add_location_name" , "value"),
-    Input("modal_add_location_address" , "value"),
-    Input("modal_add_location_administration" , "value"),
-    Input("modal_add_location_kind" , "value"),
-    Input("modal_add_location_parking_lots" , "value"),
-    Input("modal_add_location_price" , "value"),
-    Input("modal_add_location_connection" , "value"),
-    Input("modal_add_location_num_connections" , "value"),
-    Input("modal_add_location_infrastructure" , "value"),],
-    [State("modal_add_location" , "is_open")],
+    Output("modal_add_location_name" , "value")]),
+    define_inputs_add_location([Input("modal_add_location_submit_button" , "n_clicks"),Input("open_modal_add_location_button" , "n_clicks"), Input("modal_add_location_cancel_button", "n_clicks"),Input("modal_add_location_url" , "value"),Input("modal_add_location_name", "value")]),
+    [State("modal_add_location", "is_open")],
     prevent_initial_call=True,
     suppress_callback_exceptions=True
 )
@@ -270,42 +335,85 @@ def choose_correct_update(*args):
     elif page_name == "/map_page":
         return (dash.no_update, 1) + tuple(sidebar_values)
     else: #error or page not accounted for
-        print("Hoffentlich Startcallback")
+        #print("Hoffentlich Startcallback")
         raise PreventUpdate
 
         #raise ValueError("A Page is not accounted for in the update method")
+
+def define_inputs_advanced_filter(special_ones:list)-> list:
+    """
+    This function creates a list of all inpus for the callback to conduct the advanced filter.
+
+    Parameters
+    ----------
+    special_ones:
+        A list of inputs which are final.
+
+    Returns
+    -------
+    inputs :
+        A list of all inputs to conduct the advanced filter.
+    """
+
+
+    inputs = []
+
+    for one in special_ones:
+        inputs.append(one)
+
+    characteristics= define_chracteristics()
+
+    for characs in characteristics:
+        inputs.append(Input("modal_advanced_filter_"+ characs, "value"))
+
+    return inputs
+
+
+def define_outputs_advanced_filter(special_ones:list)->list:
+    """
+    This function creates a list of all outputs for the callback to to conduct the advanced filter.
+
+    Parameters
+    ----------
+    special_ones:
+        A list of outputs which are final.
+
+    Returns
+    -------
+    outputs :
+        A list of all outputs to to conduct the advanced filter.
+    """
+
+
+    outputs = []
+
+    for one in special_ones:
+        outputs.append(one)
+
+
+    characteristics= define_chracteristics()
+
+
+    for characs in characteristics:
+        outputs.append(Output("modal_advanced_filter_"+ characs, "value"))
+
+    return outputs
 
 
 #callback to handle everything about the advanced filter
 #gets input from the button on the sidebar, the buttons in the modal footer and the input elements in the modal
 @app.callback(
-    [Output("placeholder_div_filter" , "n_clicks"),
-    Output("modal_filter_window" , "is_open"),
-    Output("modal_advanced_filter_occupancy" , "value"),
-    Output("modal_advanced_filter_name" , "value"),
-    Output("modal_advanced_filter_address" , "value"),
-    Output("modal_advanced_filter_administration" , "value"),
-    Output("modal_advanced_filter_kind" , "value"),
-    Output("modal_advanced_filter_parking_lots" , "value"),
-    Output("modal_advanced_filter_price" , "value"),
-    Output("modal_advanced_filter_connection" , "value"),
-    Output("modal_advanced_filter_num_connections" , "value"),
-    Output("modal_advanced_filter_infrastructure" , "value"),],
-    [Input("advanced_filter_button" , "n_clicks"),
-    Input("modal_filter_submit_button" , "n_clicks"),
-    Input("modal_filter_cancel_button" , "n_clicks"),
-    #Input("modal_advanced_filter_parking_lots" , "marks"),
-    Input("modal_advanced_filter_occupancy" , "value"),
-    #Input("modal_advanced_filter_occupancy" , "marks"),
-    Input("modal_advanced_filter_name" , "value"),
-    Input("modal_advanced_filter_address" , "value"),
-    Input("modal_advanced_filter_administration" , "value"),
-    Input("modal_advanced_filter_kind" , "value"),
-    Input("modal_advanced_filter_parking_lots" , "value"),
-    Input("modal_advanced_filter_price" , "value"),
-    Input("modal_advanced_filter_connection" , "value"),
-    Input("modal_advanced_filter_num_connections" , "value"),
-    Input("modal_advanced_filter_infrastructure" , "value"),],
+    define_outputs_advanced_filter([Output("placeholder_div_filter" , "n_clicks"),
+                                    Output("modal_filter_window" , "is_open"),
+                                    Output("modal_advanced_filter_occupancy" , "value"),
+                                    Output("modal_advanced_filter_name" , "value"),]),
+    define_inputs_advanced_filter([Input("advanced_filter_button" , "n_clicks"),
+                                   Input("modal_filter_submit_button" , "n_clicks"),
+                                   Input("modal_filter_cancel_button" , "n_clicks"),
+                                   #Input("modal_advanced_filter_number_parking_lots" , "marks"),
+                                   Input("modal_advanced_filter_occupancy" , "value"),
+                                   #Input("modal_advanced_filter_occupancy" , "marks"),
+                                   Input("modal_advanced_filter_name", "value")]),
     [State("modal_filter_window" , "is_open")],
     prevent_initial_call=True
 )
