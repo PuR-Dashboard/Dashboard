@@ -475,7 +475,7 @@ def delete_observer(_n):
     Returns
     -------
     n_clicks:
-        returns 1 (to trigger all function which input is placeholder_div_delete_list)
+        returns 1 to trigger the trigger the update function and update the layout of the list page.
 
     """
     return 1
@@ -506,10 +506,10 @@ def delete_location(yes, no):
     Returns
     -------
     n_clicks on the security_id_transmitter:
-        Returns a number if yes was pressed and the security window should be opended
+        Returns a number instead of dash.no_update if yes was pressed to trigger  delete obsver to update the layout.
 
     n_clicks on the button_control:
-        always 0
+        always 0 to trigger the function security_observer.
 
     """
     #id of row to be deleted => only in currently displayed data, not necessarily global row id!!!
