@@ -88,9 +88,9 @@ def add_location(dic, url) -> None:
 
     location = dic['location']  # Get the location from the dictionary
 
-    if not __check_location_exists(location):  # If the location does not exist yet
+    if not check_location_exists(location):  # If the location does not exist yet
         # --- Add the location and its api-access to the Urls.json file --- #
-        __add_url_to_json(location, url)  # Add the link to the json file
+        add_url_to_json(location, url)  # Add the link to the json file
 
         # --- Append the location with its characteristics to the csv file --- #
         with open(path_to_characteristics, 'a', newline='', encoding='utf-8-sig') as characteristics_file:  # Open the csv file
@@ -98,7 +98,7 @@ def add_location(dic, url) -> None:
             writer = csv.writer(characteristics_file, delimiter=',')  # Create a csv writer
 
             try:
-                lat, lon = __get_lat_lon_from_url(url)  # Get the latitude and longitude from the url
+                lat, lon = get_lat_lon_from_url(url)  # Get the latitude and longitude from the url
             except Exception as e:
                 lat, lon = 0, 0  # Set the latitude and longitude to None
 
@@ -150,8 +150,8 @@ def remove_location(location: str) -> None:
     if not type(location) == str:  # If the location is not a string
         raise Exception('The given location is not a string')  # Raise an exception
 
-    if __check_location_exists(location):  # If the location exists
-        __remove_location_from_json(location)  # Remove the location from the json file
+    if check_location_exists(location):  # If the location exists
+        remove_location_from_json(location)  # Remove the location from the json file
 
         remove_location_from_csv(location)  # Remove the location from the csv file
 
@@ -199,7 +199,7 @@ def remove_location_from_json(location: str) -> None:
     if not type(location) == str:  # If the location is not a string
         raise Exception('The given location is not a string')  # Raise an exception
 
-    if not __check_location_exists(location):  # If the location does not exist
+    if not check_location_exists(location):  # If the location does not exist
         raise Exception('The location {} does not exist'.format(location))  # Raise an exception
 
     with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
@@ -230,10 +230,10 @@ def update_url_in_json(location: str, url: str) -> None:
     if not type(url) == str:
         raise Exception('The given url is not a string')
 
-    if not __check_location_exists(location):
+    if not check_location_exists(location):
         raise Exception('The location {} does not exist'.format(location))
 
-    __add_url_to_json(location, url)  # Update the link in the json file by calling the add_link_to_json function
+    add_url_to_json(location, url)  # Update the link in the json file by calling the add_link_to_json function
 
 
 def add_url_to_json(location: str, url: str) -> None:
@@ -282,7 +282,7 @@ def get_url_from_json(location: str) -> str:
     if not type(location) == str:  # If the location is not a string
         raise Exception('The given location is not a string')  # Raise an exception
 
-    if not __check_location_exists(location):  # If the location does not exist
+    if not check_location_exists(location):  # If the location does not exist
         raise Exception('The location {} does not exist'.format(location))  # Raise an exception
 
     with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
