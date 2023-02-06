@@ -1,2 +1,4 @@
 ﻿location,lat,lon,address,administration,kind,number_parking_lots,price,public_transport,road_network_connection,surrounding_infrastructure
-Schmeidelberg,8.675259999999998,49.40572,An der tauben Wiese 23,yes,Separate Fläche,1.0,2000000.0,70.0,Übergeordnetes Netz innerorts (Bundesstraßen),Nicht eindeutig zuzuordnen
+Heidelberg,8.675259999999998,49.40572,An der Wiese 32,yes,separate space,100.0,1.5,70.0,Übergeordnetes Netz innerorts (Bundesstraßen),Nicht eindeutig zuzuordnen
+Zwingenberg,8.98316,49.46584,Zwingenbergstr. 23,yes,car park,50.0,1.0,70.0,Übergeordnetes Netz innerorts (Bundesstraßen),Nicht eindeutig zuzuordnen
+Bamberg,10.8998399999999993,49.9017499999999998,Bambergstr. 23,yes,car park,50.0,1-25,70.0,Übergeordnetes Netz innerorts (Bundesstraßen),Nicht eindeutig zuzuordnen
