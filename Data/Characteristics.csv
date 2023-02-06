@@ -1,2 +1,2 @@
 ﻿location,lat,lon,address,administration,kind,number_parking_lots,price,public_transport,road_network_connection,surrounding_infrastructure
-Schmeidelberg,8.675259999999998,49.40572,An der tauben Wiese 23,yes,Separate Fläche,1.0,2000000.0,70.0,Übergeordnetes Netz innerorts (Bundesstraßen),Nicht eindeutig zuzuordnen
+Schmeidelberg,8.675259999999998,49.40572,stz,yes,Separate Fläche,1.0,2000000.0,70.0,Übergeordnetes Netz innerorts (Bundesstraßen),Nicht eindeutig zuzuordnen

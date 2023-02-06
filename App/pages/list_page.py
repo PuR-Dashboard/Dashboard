@@ -305,7 +305,7 @@ def create_table(content:list)->dbc.Table :
 
 
 #!!!!Fehlen die Daten, um die Verteilung für die Orte individuell zu gestalten
-def create_plot(content:list[str] = [1,2,3,4,5,6])--> dcc.Graph:
+def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
     """
     This function creates a plot to visualize the prediction over the week.
 
@@ -570,6 +570,8 @@ def toggle_collapses(_butts, stats):
 def edit_data(changed_data:list[str],index):
     #global data, temp_data
 
+
+
     temp_data = get_data("Characteristics.csv")
 
 
@@ -602,7 +604,6 @@ def edit_data(changed_data:list[str],index):
         else:
             dic[characteristics[i]] = changed_data[i]
             array.append(changed_data[i])
-
 
     update_characteristics_in_csv(array)
 
@@ -671,6 +672,7 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,adress, parking_lots, accessi
 @callback(
     Output("list_layout", "children"),
     [Input("placeholder_div_delete_list", "n_clicks"),
+    Input("placeholder_div_edit", "n_clicks"),
      Input("update_list_div", "n_clicks")],
     prevent_initial_call=True
 )

@@ -430,7 +430,7 @@ def add_location_to_occ_csv(location: str) -> None:
 
 # --- Functions for the API access --- #
 
-def __get_lat_lon_from_url(url: str) -> tuple[float, float]:
+def __get_lat_lon_from_url(url: str):
     """
     This function returns the latitude and longitude of the location given in the API.
 
