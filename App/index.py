@@ -125,7 +125,7 @@ def define_chracteristics()->list:
 
 def define_inputs_add_location(special_ones:list)-> list:
     """
-    This function creates a list of all inpus for the callback to add a new location.
+    This function creates a list of all inputs for the callback to add a new location.
 
     Parameters
     ----------

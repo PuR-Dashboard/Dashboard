@@ -31,11 +31,7 @@ CONTENT_STYLE = { #style the content of map_page so that it aligns with the side
 
 }
 
-#seitentag = "_map"
 
-
-#global sid
-#sid = get_sidebar(seitentag)
 
 
 
@@ -105,35 +101,8 @@ layout = html.Div( #creating the layout
                     style = CONTENT_STYLE #style the content of the page
                  )
 
-#---------------------------------------------------------------------
-#Callbacks:
 
 
-#------
-
-
-
-
-#layout refresh callback and sidebar handling
-@callback(
-    Output("layout_map", "children"),
-    [Input("update_map_div", "n_clicks"),
-    Input("refresh_page","n_clicks")],
-    prevent_initial_call=True
-)
-def update_layout(*args):
-    triggered_id = ctx.triggered_id
-
-    if triggered_id == "refresh_page":
-        glob_vars.reset_data()
-        create_html_map(glob_vars.data)
-
-    return create_html_map(glob_vars.data)
-
-
-
-#function to replace the filtered dataframe with the original
-#returns layout of page
 def reverse_Map()->list:
     """
     This function reverses the map (all filters are removed).
@@ -210,7 +179,46 @@ def update(nr_clicks:int)-> list:
         raise PreventUpdate
     data = get_data()
     temp_data = data.copy(deep=True)
-    #only for testing
-    #temp_data.drop(temp_data.loc[temp_data['location'] == "Heidelberg"].index, inplace = True )
 
     return create_html_map(temp_data)
+
+#---------------------------------------------------------------------
+#Callbacks:
+
+
+#------
+
+
+
+
+#layout refresh callback and sidebar handling
+@callback(
+    Output("layout_map", "children"),
+    [Input("update_map_div", "n_clicks"),
+    Input("refresh_page","n_clicks")],
+    prevent_initial_call=True
+)
+def update_layout(*args):
+    """
+    This function updates the layout of the map page by confirmation of other components like the refresh button.
+
+    Inputs
+    ----------
+    update_map_div:
+        A placeholder as an integer value to indicate that the map_page should be refreshed(can be from different sources)
+
+    refresh_page:
+        Number of clicks on the refresh button to refresh/update the page.
+
+    Outputs
+    -------
+    layout_map:
+        A list of all components which will represent the new layout of page.
+    """
+    triggered_id = ctx.triggered_id
+
+    if triggered_id == "refresh_page":
+        glob_vars.reset_data()
+        create_html_map(glob_vars.data)
+
+    return create_html_map(glob_vars.data)

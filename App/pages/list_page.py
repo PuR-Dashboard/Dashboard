@@ -425,6 +425,112 @@ layout = html.Div(children=html_list_for_layout, id="list_layout", style = CONTE
 
 
 
+def edit_data(changed_data:list[str],index:int)-> None:
+    """
+    This function edits the data according to the changes in the edit_window and displays the changes.
+
+    Parameters
+    ----------
+    changed_data:
+        A list of the values for the different chracteristics(if nothing was changed to one charachteritsics is is the old value).
+
+    index:
+        The index of the location.
+
+    """
+
+
+    temp_data = get_data("Characteristics.csv")
+
+
+    characteristics = define_chracteristics()
+
+
+
+
+    location = glob_vars.data.iloc[index]["location"]
+
+
+
+
+    for i in range (len(temp_data)):
+        if temp_data.iloc[i]["location"] == location:
+            position = i
+            break
+
+    dic = {}
+    array = []
+    array.append(temp_data.iloc[position]["location"])
+    dic["location"] =  temp_data.iloc[position]["location"]
+
+    for i  in range(len(characteristics)):
+
+        if changed_data[i] == None:
+            array.append(np.squeeze(temp_data.iloc[position][characteristics[i]]))
+            dic[characteristics[i]] = np.squeeze(temp_data.iloc[position][characteristics[i]])
+
+        else:
+            dic[characteristics[i]] = changed_data[i]
+            array.append(changed_data[i])
+
+    update_characteristics_in_csv(array)
+
+
+
+def define_inputs_edit(special_ones:list)->list:
+    """
+    This function creates a list of all inputs for the callback to edit the data for a location.
+
+    Parameters
+    ----------
+    special_ones:
+        A list of inputs which are final.
+
+    Returns
+    -------
+    inputs :
+        A list of all inputs to edit the data of a location.
+
+    """
+
+
+    inputs = []
+
+    for one in special_ones:
+        inputs.append(one)
+
+    characteristics= define_chracteristics()
+
+    for characs in characteristics:
+        inputs.append(Input({"type": "edit_"+characs, "index": MATCH}, 'value'))
+
+    return inputs
+
+
+def refresh_layout() -> list:
+    """
+    This function refreshed the layout by reseting the data and reapply the filters.
+
+    Returns
+    -------
+    layout :
+        A list with all components for the new reseted layout to display.
+
+    """
+
+    #filter on renewed data
+    glob_vars.reset_data()
+    filter_data()
+    #create names and content of collapsibles
+    names, content = create_content(glob_vars.data)
+    #make new layout
+    layout = create_layout(names, content)
+
+    return layout
+
+
+
+
 #Callbacks:-----------------------------------------------
 
 
@@ -440,12 +546,12 @@ def security_observer(_n):
     """
     This helper function opens the secruity window if the yes button for the Deleting was pressed.
 
-    Parameters
+    Inputs
     ----------
     _n:
         The number of clicks on the button controller.
 
-    Returns
+    Outputs
     -------
     security_window:
         A boolean whether the security should be opended.
@@ -467,12 +573,12 @@ def delete_observer(_n):
     This helper function for the delete location function.
     It should trigger the placeholder for deleting a row.
 
-    Parameters
+    Inputs
     ----------
     _n:
         The number of clicks on the security id transmitter.
 
-    Returns
+    Outputs
     -------
     n_clicks:
         returns 1 to trigger the trigger the update function and update the layout of the list page.
@@ -495,7 +601,7 @@ def delete_location(yes, no):
     This function deletes a row from csv and give deletion confirmation to placeholder div.
     Furthermore it checks if yes or no was pressed on security question and acts according to this.
 
-    Parameters
+    Inputs
     ----------
     yes:
         Number of clicks on the yes Button(if it was pressed)
@@ -503,7 +609,7 @@ def delete_location(yes, no):
     no:
         Number of clicks on the no Button(if it was pressed)
 
-    Returns
+    Outputs
     -------
     n_clicks on the security_id_transmitter:
         Returns a number instead of dash.no_update if yes was pressed to trigger  delete obsver to update the layout.
@@ -551,6 +657,24 @@ def delete_location(yes, no):
     [State({"type": "content", "index": MATCH}, "is_open")],
 )
 def toggle_collapses(_butts, stats):
+    """
+    This function collapses and expands the list items/collapsibles.
+
+    Inputs
+    ----------
+    _butts:
+        The number of clicks on the arrow button.
+
+    State
+    ----------
+     content:
+        The current state of the collapsibles(visble or invisible).
+
+    Outputs
+    -------
+    content:
+        The changed state of the collapsibles(visble or invisible).
+    """
 
     ctxx = dash.callback_context
 
@@ -567,45 +691,6 @@ def toggle_collapses(_butts, stats):
 
 
 #method which edits the data according to the changes in the edit_window
-def edit_data(changed_data:list[str],index):
-    #global data, temp_data
-
-
-
-    temp_data = get_data("Characteristics.csv")
-
-
-    characteristics = define_chracteristics()
-
-
-
-
-    location = glob_vars.data.iloc[index]["location"]
-
-
-
-
-    for i in range (len(temp_data)):
-        if temp_data.iloc[i]["location"] == location:
-            position = i
-            break
-
-    dic = {}
-    array = []
-    array.append(temp_data.iloc[position]["location"])
-    dic["location"] =  temp_data.iloc[position]["location"]
-
-    for i  in range(len(characteristics)):
-
-        if changed_data[i] == None:
-            array.append(np.squeeze(temp_data.iloc[position][characteristics[i]]))
-            dic[characteristics[i]] = np.squeeze(temp_data.iloc[position][characteristics[i]])
-
-        else:
-            dic[characteristics[i]] = changed_data[i]
-            array.append(changed_data[i])
-
-    update_characteristics_in_csv(array)
 
 
 
@@ -614,26 +699,28 @@ def edit_data(changed_data:list[str],index):
     [Input({"type": "edit_controller", "index": ALL}, "is_open")]
 )
 
-def edit_window_observer(_n):
+def edit_window_observer(_n)-> int:
+    """
+    This helper function for the edit function.
+    It should trigger the placeholder for refreshingthe page after editing the data.
+
+    Inputs
+    ----------
+    _n:
+        Whether the state of zhe edit controller changed.
+
+    Outputs
+    -------
+    n_clicks:
+        returns 1 to trigger the trigger the update function and update the layout of the list page.
+
+    """
 
     return 1
 
 
 
-def define_inputs_edit(special_ones):
 
-
-    inputs = []
-
-    for one in special_ones:
-        inputs.append(one)
-
-    characteristics= define_chracteristics()
-
-    for characs in characteristics:
-        inputs.append(Input({"type": "edit_"+characs, "index": MATCH}, 'value'))
-
-    return inputs
 
 
 #method to open the edit window and to close it after pressing the apply button
@@ -644,7 +731,37 @@ def define_inputs_edit(special_ones):
     [State({"type": "edit_window", "index": MATCH}, "is_open")],
     prevent_initial_call=True,
 )
-def open_edit_window(n_clicks_edit,n_clicks_submit,adress, parking_lots, accessibility,price, infrastructure, administration,kind, connection, edit_state):
+def open_edit_window(n_clicks_edit,n_clicks_submit,*params):
+#adress, parking_lots, accessibility,price, infrastructure, administration,kind, connection, edit_state):
+
+    """
+    This function handels editing the data and open/close the edit window.
+
+    Inputs
+    ----------
+    n_clicks_edit:
+        The number of clicks on the pen-button(to open the eddit window).
+
+    n_clicks_submit:
+        The number of clicks on the submit button to change the data according to the inputs.
+
+    adress, parking_lots, accessibility,price, infrastructure, administration,kind, connection, edit_state:
+        The values of the charachteritsics which should be added.
+
+    State
+    ----------
+     stateedit_window:
+        The current state of the edit window(visble or invisible).
+
+    Outputs
+    -------
+    edit_window_is_open:
+        Whether the edit window should be open/visibe.
+
+    edit_controller_is_open:
+        Whether the edit window should be open/visibe.
+
+    """
 
     triggered_id = ctx.triggered_id
 
@@ -657,7 +774,7 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,adress, parking_lots, accessi
     # if the apply button was pressed the edit window closes and the data updates
     elif triggered_id["type"] == "edit_submit_button" :
 
-        edit_data([adress, administration,kind, parking_lots,price,accessibility, connection,infrastructure],triggered_id.index)
+        edit_data(params[:-1],triggered_id.index)
         return(not edit_state),1
     else:
         raise PreventUpdate
@@ -667,32 +784,34 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,adress, parking_lots, accessi
 
 
 #--------
-#layout refresh callback and sidebar handling
 #gets confirmation of deletion, update filter etc through placeholder, also inputs from sidebar
 @callback(
     Output("list_layout", "children"),
     [Input("placeholder_div_delete_list", "n_clicks"),
     Input("placeholder_div_edit", "n_clicks"),
-     Input("update_list_div", "n_clicks")],
+    Input("update_list_div", "n_clicks")],
     prevent_initial_call=True
 )
 def update_layout(*args):
+    """
+    This function updates the layout of the list page by confirmation of deletion, update filter, update edit and other placeholders.
+
+    Inputs
+    ----------
+    placeholder_div_delete_list:
+        A placeholder as an integer value to indicate that a location was deleted from the list and the layout should be refreshed.
+
+    placeholder_div_edit:
+        A placeholder as an integer value to indicate that a location was edit and the layout should be refreshed.
+
+    update_list_div:
+        A placeholder as an integer value to indicate that the layout should be refreshed.
+
+    Outputs
+    -------
+    list_layout:
+        A list of all components which will represent the new layout of page.
+    """
     triggered_id = ctx.triggered_id
 
-    #if triggered_id == "update_div_delete_list":
     return refresh_layout()
-
-
-
-
-#function to reapply the filters to the data and create new layout to display
-def refresh_layout() -> list:
-    #filter on renewed data
-    glob_vars.reset_data()
-    filter_data()
-    #create names and content of collapsibles
-    names, content = create_content(glob_vars.data)
-    #make new layout
-    layout = create_layout(names, content)
-
-    return layout
