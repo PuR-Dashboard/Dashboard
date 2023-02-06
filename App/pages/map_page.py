@@ -112,13 +112,21 @@ layout = html.Div( #creating the layout
 #------
 
 
+
+
 #layout refresh callback and sidebar handling
 @callback(
     Output("layout_map", "children"),
-    [Input("update_map_div", "n_clicks")],
+    [Input("update_map_div", "n_clicks"),
+    Input("refresh_page","n_clicks")],
     prevent_initial_call=True
 )
 def update_layout(*args):
+    triggered_id = ctx.triggered_id
+
+    if triggered_id == "refresh_page":
+        glob_vars.reset_data()
+        create_html_map(glob_vars.data)
 
     return create_html_map(glob_vars.data)
 
