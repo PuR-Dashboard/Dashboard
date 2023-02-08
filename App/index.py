@@ -697,4 +697,5 @@ def parse_contents(contents, filename):
 
 # Run the app on localhost:8050
 if __name__ == '__main__':
+    update_occupancies()
     app.run_server(debug=True)
