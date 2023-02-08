@@ -19,8 +19,11 @@ current_filter = None
 temp_csv = None
 temp_json = None
 
-#initialize all global variables
-def init():
+
+def init()-> None:
+    """
+    This function initializes all global variables accirding to the data(chracteristics.csv).
+    """
     #initialize data with all data in characteristics csv
     global data
     try:
@@ -32,17 +35,22 @@ def init():
     current_filter = defaultdict(lambda: None)
 
 
-def reset_global_filter():
+def reset_global_filter()-> None:
     """
-    function that resets the dictionary that tracks the current filters
+    This function resets the dictionary that tracks the current filters.
     """
     global current_filter
     current_filter = defaultdict(lambda: None)
 
 
-def reset_data(name="Characteristics.csv"):
+def reset_data(name="Characteristics.csv")->None:
     """
-    Resets the data with reading it new from a csv in the data folder with the given name
+    Thid function resets the data(global variable) by the given file name.
+
+    Parameters
+    ----------
+    name:
+        The name of the csv file which data should be saved in the global data variable.
     """
     global data
     data = get_data(name)

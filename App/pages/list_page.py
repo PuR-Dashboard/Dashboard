@@ -769,13 +769,13 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,*params):
 
     # if the edit button was pressed the edit window opens
     if triggered_id["type"] == "pen_button":
-        return (not edit_state), dash.no_update
+        return (not params[-1]), dash.no_update
 
     # if the apply button was pressed the edit window closes and the data updates
     elif triggered_id["type"] == "edit_submit_button" :
 
         edit_data(params[:-1],triggered_id.index)
-        return(not edit_state),1
+        return(not params[-1]),1
     else:
         raise PreventUpdate
 

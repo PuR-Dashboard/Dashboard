@@ -48,56 +48,6 @@ app.layout = html.Div([  # Create a Div containing the navbar and the content
 ])
 
 
-@app.callback(  # Create a callback for the index page
-    Output('page-content', 'children'),  # Output for the page content
-    [Input('url', 'pathname')]  # Input for the current URL of the page
-)
-def display_page(pathname):
-    """
-    This function updates the content of the page based on the URL
-    :param pathname:    The URL of the new page
-    :return:    The new page content
-    """
-    if pathname == '/map_page':  # If the URL is map_page
-        return map_page.layout  # Return the layout of the map page
-    if pathname == '/list_page':  # If the URL is list_page
-        return list_page.layout  # Return the layout of the list page
-    else:  # If the URL is not map_page or list_page
-        return map_page.layout  # Return the layout of the map page
-
-"""
-#callback to periodically refresh
-@app.callback(
-    [Output("update_list_div", "n_clicks"),
-     Output("update_map_div", "n_clicks"),],
-    [Input('url', 'pathname'),
-     Input("auto_refresh_interval", 'n_intervals')],
-    prevent_initial_call=True
-)
-def testing_pls(path, a):
-    ctxx = dash.callback_context
-    triggered_id = ctx.triggered_id
-
-
-    #parse/refresh urls/occupancy
-    if triggered_id == "url":
-        #dont update only because view is changed
-
-        return dash.no_update, dash.no_update
-
-    #still add url refreshing!!!!!!-----------------------
-    if path == "/list_page":
-        #update list page layout
-        return 1, dash.no_update
-    elif path == "/map_page":
-        #update map page layout
-        return dash.no_update, 1
-
-
-    #no update else
-    raise PreventUpdate
-"""
-
 def define_chracteristics()->list:
     """
     This functions creates a list with all current characteristics.
@@ -122,6 +72,7 @@ def define_chracteristics()->list:
         characteristics2.append(row[0])
 
     return characteristics2
+
 
 def define_inputs_add_location(special_ones:list)-> list:
     """
@@ -185,6 +136,73 @@ def define_outputs_add_loction(special_ones:list)-> list:
     return outputs
 
 
+@app.callback(  # Create a callback for the index page
+    Output('page-content', 'children'),  # Output for the page content
+    [Input('url', 'pathname')]  # Input for the current URL of the page
+)
+def display_page(pathname):
+    """
+    This function updates the content of the page based on the URL.
+
+    Parameters
+    ----------
+    pathname:
+        The URL of the new page.
+
+    index:
+        The index of the deleted location.
+
+    Returns
+    -------
+    page-content:
+        The new page content in a layout format.
+    """
+
+    if pathname == '/map_page':  # If the URL is map_page
+        return map_page.layout  # Return the layout of the map page
+    if pathname == '/list_page':  # If the URL is list_page
+        return list_page.layout  # Return the layout of the list page
+    else:  # If the URL is not map_page or list_page
+        return map_page.layout  # Return the layout of the map page
+
+"""
+#callback to periodically refresh
+@app.callback(
+    [Output("update_list_div", "n_clicks"),
+     Output("update_map_div", "n_clicks"),],
+    [Input('url', 'pathname'),
+     Input("auto_refresh_interval", 'n_intervals')],
+    prevent_initial_call=True
+)
+def testing_pls(path, a):
+    ctxx = dash.callback_context
+    triggered_id = ctx.triggered_id
+
+
+    #parse/refresh urls/occupancy
+    if triggered_id == "url":
+        #dont update only because view is changed
+
+        return dash.no_update, dash.no_update
+
+    #still add url refreshing!!!!!!-----------------------
+    if path == "/list_page":
+        #update list page layout
+        return 1, dash.no_update
+    elif path == "/map_page":
+        #update map page layout
+        return dash.no_update, 1
+
+
+    #no update else
+    raise PreventUpdate
+"""
+
+
+
+
+
+
 #callback for adding new locations
 #receives button inputs and inputs from the modal input fields
 @app.callback(define_outputs_add_loction([Output("placeholder_div_adding", "n_clicks"),
@@ -198,6 +216,51 @@ def define_outputs_add_loction(special_ones:list)-> list:
     suppress_callback_exceptions=True
 )
 def add_new_location(_1, _2, _3, URL_value, *params):
+    """
+    This function deletes a row from csv and give deletion confirmation to placeholder div.
+    Furthermore it checks if yes or no was pressed on security question and acts according to this.
+
+    Inputs
+    ----------
+    modal_add_location_submit_button:
+        Number of clicks on the submit button for adding a location(if it was pressed).
+
+    open_modal_add_location_button:
+        Number of clicks on the adding a new location button(if it was pressed).
+
+    modal_add_location_cancel_button
+        Number of clicks on the cancel button for adding a location(if it was pressed).
+
+    modal_add_location_url
+        The input for the URL for the occupancy of the new location.
+
+    modal_add_location_name
+        The input for the name of the new location.
+
+    rest of the params:
+        The value which was typed in the dash components to the corresponding characteristics.
+
+    State
+    ----------
+     modal_add_location:
+        The current state of the add_location_popup(visble or invisible).
+
+    Outputs
+    -------
+    placeholder_div_adding:
+        returns 1 to trigger the update function and update the layout of the list page.
+
+    modal_add_location:
+        The state of the add_location_popup(visble or invisible).
+
+    modal_field_warning:
+
+
+    modal_add_location_url
+
+    modal_add_location_name
+
+    """
     """
     structure of parameters:
     - variables with underscore(_1,...) are n_clicks of buttons and not relevant
