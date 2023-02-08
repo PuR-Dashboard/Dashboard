@@ -135,6 +135,173 @@ def define_outputs_add_loction(special_ones:list)-> list:
 
     return outputs
 
+def define_inputs_advanced_filter(special_ones:list)-> list:
+    """
+    This function creates a list of all inpus for the callback to conduct the advanced filter.
+
+    Parameters
+    ----------
+    special_ones:
+        A list of inputs which are final.
+
+    Returns
+    -------
+    inputs :
+        A list of all inputs to conduct the advanced filter.
+    """
+
+
+    inputs = []
+
+    for one in special_ones:
+        inputs.append(one)
+
+    characteristics= define_chracteristics()
+
+    for characs in characteristics:
+        inputs.append(Input("modal_advanced_filter_"+ characs, "value"))
+
+    return inputs
+
+
+def define_outputs_advanced_filter(special_ones:list)->list:
+    """
+    This function creates a list of all outputs for the callback to to conduct the advanced filter.
+
+    Parameters
+    ----------
+    special_ones:
+        A list of outputs which are final.
+
+    Returns
+    -------
+    outputs :
+        A list of all outputs to to conduct the advanced filter.
+    """
+
+
+    outputs = []
+
+    for one in special_ones:
+        outputs.append(one)
+
+
+    characteristics= define_chracteristics()
+
+
+    for characs in characteristics:
+        outputs.append(Output("modal_advanced_filter_"+ characs, "value"))
+
+    return outputs
+
+
+def check_csv_validity(temp_df: pd.DataFrame) -> bool:
+    """
+    This function cecks the given DataFrame according to conditions:
+    - check if columns align with our columns
+    - check if data is rectangular - is dataframe always rectangular?
+    - check if every row has a location name and no duplicate locations exist
+
+    Parameters
+    ----------
+    temp_df:
+        The dataframe which should be checked.
+
+    Returns
+    -------
+    valid:
+        Whether the DataFrame based all the conditions.
+    """
+
+    #columns do not match
+    for tv, v in zip(list(temp_df.columns.values), list(glob_vars.data.columns.values)):
+        if tv != v:
+            return False
+
+    #check that location name exists for every row
+    location_names = list(temp_df["location"])
+    #check for duplicates
+    temp_set = set(location_names)
+    if len(temp_set) != len(location_names):
+        return False
+
+    assert len(location_names) == len(temp_df)
+
+    #check for None values
+    for l in location_names:
+        if l == None:
+            return False
+
+
+    return True
+
+
+def check_json_validity(json_object:dict[str:str], csv_locations: list[str]) -> bool:
+    """
+    This function checks the given DataFrame according to the acceptance criteria:
+    - every location from the csv file is represenmted in the json file -> meaning every location has a link
+
+    Parameters
+    ----------
+    json_object:
+        A dictionary with key:value pairs as location:api-link.
+
+    csv_locations:
+        The location names from the simultaniouisly uploaded csv file.
+
+    Returns
+    -------
+    valid:
+        Whether the DataFrame based all acceptance criteria.
+    """
+
+    #validity of json file is guaranteed by:
+    #- every location from the csv file is represenmted in the json file -> meaning every location has a link
+    #- maybe also check that links are working? -> time expensive but okay when importing
+
+    for l in csv_locations:
+        if l not in json_object:
+            return False
+
+    return True
+
+
+def parse_contents(contents, filename:str)-> pd.DataFrame:
+    """
+    This function pareses the information which are in file with the filename into a dictionary if the user uploads a csv or json file to add a new location.
+
+    Parameters
+    ----------
+    contents:
+        Including all the content for a certain location.
+
+    filename:
+        The name of the file saving the information to add a new location.
+
+    Returns
+    -------
+    df:
+        A dirctionary based on the information of the file with the given filename.
+    """
+    content_type, content_string = contents.split(',')
+
+    decoded = base64.b64decode(content_string)
+    try:
+        if '.csv' in filename:
+            # Assume that the user uploaded a CSV file
+            df = pd.read_csv(
+                io.StringIO(decoded.decode('utf-8')))
+        elif '.json' in filename:
+            # Assume that the user uploaded an excel file
+            df = json.loads(decoded)
+        else:
+            df = None
+
+        return df
+
+    except Exception as e:
+        raise e
+
 
 @app.callback(  # Create a callback for the index page
     Output('page-content', 'children'),  # Output for the page content
@@ -217,8 +384,7 @@ def testing_pls(path, a):
 )
 def add_new_location(_1, _2, _3, URL_value, *params):
     """
-    This function deletes a row from csv and give deletion confirmation to placeholder div.
-    Furthermore it checks if yes or no was pressed on security question and acts according to this.
+    This function adds a new locatin to the list of locations and updates the pages if the conditions are given. Otherwise a warning will be displayed.
 
     Inputs
     ----------
@@ -254,21 +420,11 @@ def add_new_location(_1, _2, _3, URL_value, *params):
         The state of the add_location_popup(visble or invisible).
 
     modal_field_warning:
+        The style of the warning outputs(if some conditions are not verified)
 
 
-    modal_add_location_url
-
-    modal_add_location_name
-
-    """
-    """
-    structure of parameters:
-    - variables with underscore(_1,...) are n_clicks of buttons and not relevant
-    - URL_value is the given url
-    - params is every dash component that is also a characteristic and the pop up open state at the end
-    -> !!! order or parameters is important. Order is matched 1 to 1 to list of characteristics for adding new locations.
-            if new characteristics are added, then the order of the parameters must be changed accordingly!!!
-    Also order of putputs is depending on order of input
+    rest:
+        All the values of the charachteritsics to use them for further functions.
     """
 
     #get characteristics from data
@@ -321,6 +477,9 @@ def add_new_location(_1, _2, _3, URL_value, *params):
         return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
     else:
         raise PreventUpdate
+
+
+
 
 @app.callback(
         [Output("update_list_div", "n_clicks"),
@@ -403,64 +562,10 @@ def choose_correct_update(*args):
 
         #raise ValueError("A Page is not accounted for in the update method")
 
-def define_inputs_advanced_filter(special_ones:list)-> list:
-    """
-    This function creates a list of all inpus for the callback to conduct the advanced filter.
-
-    Parameters
-    ----------
-    special_ones:
-        A list of inputs which are final.
-
-    Returns
-    -------
-    inputs :
-        A list of all inputs to conduct the advanced filter.
-    """
 
 
-    inputs = []
-
-    for one in special_ones:
-        inputs.append(one)
-
-    characteristics= define_chracteristics()
-
-    for characs in characteristics:
-        inputs.append(Input("modal_advanced_filter_"+ characs, "value"))
-
-    return inputs
 
 
-def define_outputs_advanced_filter(special_ones:list)->list:
-    """
-    This function creates a list of all outputs for the callback to to conduct the advanced filter.
-
-    Parameters
-    ----------
-    special_ones:
-        A list of outputs which are final.
-
-    Returns
-    -------
-    outputs :
-        A list of all outputs to to conduct the advanced filter.
-    """
-
-
-    outputs = []
-
-    for one in special_ones:
-        outputs.append(one)
-
-
-    characteristics= define_chracteristics()
-
-
-    for characs in characteristics:
-        outputs.append(Output("modal_advanced_filter_"+ characs, "value"))
-
-    return outputs
 
 
 #callback to handle everything about the advanced filter
@@ -688,74 +793,9 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
         raise PreventUpdate
 
 
-def check_csv_validity(temp_df: pd.DataFrame) -> bool:
-    #things to check when given a dataframe:
-    #- check if columns align with our columns
-    #- check if data is rectangular - is dataframe always rectangular?
-    #- check if every row has a location name and no duplicate locations exist
-
-    #columns do not match
-    for tv, v in zip(list(temp_df.columns.values), list(glob_vars.data.columns.values)):
-        if tv != v:
-            return False
-
-    #check that location name exists for every row
-    location_names = list(temp_df["location"])
-    #check for duplicates
-    temp_set = set(location_names)
-    if len(temp_set) != len(location_names):
-        return False
-
-    assert len(location_names) == len(temp_df)
-
-    #check for None values
-    for l in location_names:
-        if l == None:
-            return False
 
 
-    return True
 
-def check_json_validity(json_object:dict[str:str], csv_locations: list[str]) -> bool:
-    """
-    Checks if the given dictionary is according to the acceptance criteria
-
-    json_object: dictionary with key:value pairs as location:api-link
-    csv_locations: location names from the simultaniouisly uploaded csv file
-
-    returns: whether the dictionary is valid or not
-    """
-
-    #validity of json file is guaranteed by:
-    #- every location from the csv file is represenmted in the json file -> meaning every location has a link
-    #- maybe also check that links are working? -> time expensive but okay when importing
-    print(json_object, csv_locations)
-
-    for l in csv_locations:
-        if l not in json_object:
-            return False
-
-    return True
-
-def parse_contents(contents, filename):
-    content_type, content_string = contents.split(',')
-
-    decoded = base64.b64decode(content_string)
-    try:
-        if '.csv' in filename:
-            # Assume that the user uploaded a CSV file
-            df = pd.read_csv(
-                io.StringIO(decoded.decode('utf-8')))
-        elif '.json' in filename:
-            # Assume that the user uploaded an excel file
-            df = json.loads(decoded)
-        else:
-            df = None
-
-        return df
-
-    except Exception as e:
-        raise e
 
 
 # Run the app on localhost:8050
