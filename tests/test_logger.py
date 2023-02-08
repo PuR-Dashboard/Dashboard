@@ -1,7 +1,7 @@
 import unittest
 import os
 from datetime import datetime
-from App.utility.util_functions import get_root_dir
+from App.utility.data_functions import get_root_dir
 from tests.utility.test_data_functions import Data_Functions_Tester
 from tests.utility.test_map_functions import Map_Functions_Tester
 

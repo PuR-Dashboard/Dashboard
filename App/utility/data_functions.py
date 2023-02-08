@@ -155,6 +155,7 @@ def remove_location(location: str) -> None:
 
         remove_location_from_csv(location)  # Remove the location from the csv file
 
+        remove_location_from_occ_csv(location)  # Remove the location from the csv file containing the occupancies
     else:  # If the location does not exist
         raise Exception('The location {} does not exist'.format(location))  # Raise an exception
 
@@ -325,9 +326,6 @@ def update_characteristics_in_csv(dic) -> None:
         Dictionary containing the new characteristics of the location.
     """
 
-
-
-
     location = dic[0]#identify which location should be modifed
 
     dic.pop(0)# Deleting the location to avoid the problem of duplication of the location in the CSV
@@ -351,7 +349,26 @@ def update_characteristics_in_csv(dic) -> None:
 
 # TODO: Add a function that updates the occupancies of all locations
 def update_occupancies():
-    ...
+    """
+    This function updates the occupancies of all locations given in the Urls.json file.
+    """
+    urls = []
+    occupancies = []
+    with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
+        content = json.load(f)  # Load the content of the json file
+        for location in content:
+            urls.append(content[location])
+        f.close()
+    import time 
+    for url in urls:
+        start_time = time.time()
+        occupancies.append(get_occupancy_from_url(url))
+        print("--- %s seconds ---" % (time.time() - start_time))
+
+    with open(path_to_occupancy, 'a', newline='\n') as f:  # Open the csv file
+        writer = csv.writer(f)  # Create a csv writer
+        writer.writerow([datetime.now()] + occupancies)  # Write the new row to the csv file
+        f.close()
 
 
 def update_location_occupancy(location: str) -> None:
@@ -370,35 +387,33 @@ def update_location_occupancy(location: str) -> None:
     if not check_location_exists(location):  # If the location does not exist
         raise Exception('The location {} does not exist'.format(location))  # Raise an exception
 
+    all_locations = []
     with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
         content = json.load(f)  # Load the content of the json file
+        for loc in content:
+            all_locations.append(loc)
+        url = content[location]  # Get the url for the location
 
-    url = content[location]  # Get the url for the location
+    occupancy = get_occupancy_from_url(url)  # Get the occupancy from the url
 
-    dic = get_dict_from_url(url)  # Get the dictionary with the occupancy information from the url
+    with open(path_to_occupancy, 'r') as f:  # Open the csv file
+        reader = csv.reader(f)  # Create a csv reader
+        lines = list(reader)  # Read the csv file
+    
+    last_row = lines[-1][1:]  # Get the last row of the csv file (without the time stamp)
 
-    occupancy_tendency = dic['occupancy_tendency']  # Get the occupancy tendency from the dictionary
+    new_row = [datetime.now()]  # Create a new row with the current time stamp
 
-    # Open the input file in read mode and the output file in write mode
-    with open('input.csv', 'r') as input_file, open('output.csv', 'w') as output_file:
-        reader = csv.reader(input_file)  # Create a csv reader
-        writer = csv.writer(output_file)  # Create a csv writer
+    for i in range(len(all_locations)):
+        if all_locations[i] == location:
+            new_row.append(occupancy)
+        else:
+            new_row.append(last_row[i])
 
-        first_row = next(reader)  # Read the first row of the csv file
-        last_row = None  # Initialize the last row
-
-        for row in reader:  # Iterate over the rows
-            last_row = row  # Set the last row to the current row
-            writer.writerow(row)  # Write the row to the output file
-
-        new_row = [datetime.now()]  # Initialize the new row with the current time stamp
-        for i in range(1, len(first_row)):  # Iterate over the columns
-            new_row.append(
-                occupancy_tendency if first_row[i] == location else last_row[i]
-            )  # Add the occupancy tendency to the new row if the column is the column for the location, otherwise add
-            # the occupancy of the last row
-
-        writer.writerow(new_row)  # Write the new row to the output file
+    with open(path_to_occupancy, 'a', newline='\n') as f:  # Open the csv file
+        writer = csv.writer(f)  # Create a csv writer
+        writer.writerow(new_row)  # Write the new row to the csv file
+        f.close()
 
 
 def add_location_to_occ_csv(location: str) -> None:
@@ -412,20 +427,46 @@ def add_location_to_occ_csv(location: str) -> None:
         The location that should be added.
     """
 
-    with open(get_path_to_csv("Occupancy.csv"), 'r') as f, open(get_path_to_csv("Occupancy.csv"), 'w') as w:  # Open the csv file in read and write
+    with open(path_to_occupancy, 'r') as f:  # Open the csv file
         reader = csv.reader(f)  # Create a csv reader
-        writer = csv.writer(w)  # Create a csv writer
+        lines = list(reader)  # Read the csv file
 
-        all_rows = []  # Create a list to store the lines of the csv file
-        row = next(reader)  # Get the first row of the csv file
-        row.append(location)  # Add the location to the row
-        all_rows.append(row)  # Add the first row to the list
+    lines[0].append(location)  # Add the location to the first row
+    for i in range(1, len(lines)):  # Iterate over the rows
+        lines[i].append('None')  # Add an empty value to the row
+    
+    with open(path_to_occupancy, 'w', newline='\n') as f:  # Open the csv file
+        writer = csv.writer(f)  # Create a csv writer
+        writer.writerows(lines)  # Write the new rows to the csv file
+        f.close()
 
-        for row in reader:  # Iterate over the rows of the csv file
-            row.append('')  # Add an empty cell to the row
-            all_rows.append(row)  # Add the row to the list
 
-        writer.writerows(all_rows)  # Write the list to the csv file
+def remove_location_from_occ_csv(location: str) -> None:
+    """
+    This function removes the location from the occupancy csv file.
+
+    Parameters
+    ----------
+    location : str
+        The location that should be removed.
+    """
+
+    with open(path_to_occupancy, 'r') as f:
+        reader = csv.reader(f)
+        lines = list(reader)
+
+    for i in range(len(lines[0])):
+        if lines[0][i] == location:
+            index = i
+            break
+    
+    for line in lines:
+        del line[index]
+        
+    with open(path_to_occupancy, 'w', newline='\n') as f:
+        writer = csv.writer(f)
+        writer.writerows(lines)
+        f.close()
 
 
 # --- Functions for the API access --- #
@@ -457,6 +498,28 @@ def get_lat_lon_from_url(url: str) -> tuple[float, float]:
     lon = float(split[2][:-1])  # Remove the ')' from the longitude and convert to float
 
     return lat, lon  # Return the latitude and longitude in the url
+
+
+def get_occupancy_from_url(url: str) -> str:
+    """
+    This function returns the occupancy of the location given in the API.
+
+    Parameters
+    ----------
+    url : str
+        The url for the API access.
+
+    Returns
+    -------
+    occupancy : str
+        The occupancy of the location.
+    """
+
+    data = get_dict_from_url(url)  # Access the API and get the dictionary with the information
+
+    occupancy = data['occupancy_tendency:de']  # Get the occupancy of the location
+
+    return occupancy  # Return the occupancy of the location
 
 
 def get_dict_from_url(url: str) -> dict:
