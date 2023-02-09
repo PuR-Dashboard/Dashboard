@@ -394,7 +394,7 @@ def update_location_occupancy(location: str) -> None:
             all_locations.append(loc)
         url = content[location]  # Get the url for the location
 
-    occupancy = get_occupancy_from_url(url)  # Get the occupancy from the url
+    tendency, occupancy = get_occupancy_from_url(url)  # Get the occupancy from the url
 
     with open(path_to_occupancy, 'r') as f:  # Open the csv file
         reader = csv.reader(f)  # Create a csv reader
@@ -406,7 +406,7 @@ def update_location_occupancy(location: str) -> None:
 
     for i in range(len(all_locations)):
         if all_locations[i] == location:
-            new_row.append(occupancy)
+            new_row.append((tendency, occupancy))
         else:
             new_row.append(last_row[i])
 
@@ -517,9 +517,9 @@ def get_occupancy_from_url(url: str) -> str:
 
     data = get_dict_from_url(url)  # Access the API and get the dictionary with the information
 
-    occupancy = data['occupancy_tendency:de']  # Get the occupancy of the location
+    tendency, occupancy = data['occupancy_tendency:de'], data['occupancy_label:de']  # Get the occupancy of the location
 
-    return occupancy  # Return the occupancy of the location
+    return tendency, occupancy  # Return the occupancy of the location
 
 
 def get_dict_from_url(url: str) -> dict:
