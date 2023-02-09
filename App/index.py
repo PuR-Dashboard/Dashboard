@@ -266,17 +266,16 @@ def check_json_validity(json_object:dict[str:str], csv_locations: list[str]) -> 
     return True
 
 
-def parse_contents(contents, filename:str)-> pd.DataFrame:
+def parse_contents(contents, filename:str):
     """
-    This function pareses the information which are in file with the filename into a dictionary if the user uploads a csv or json file to add a new location.
+    This function pareses the information which are in file with the filename into a dictionary/DataFrame if the user uploads a csv or json file.
 
     Parameters
     ----------
     contents:
-        Including all the content for a certain location.
-
+        String that holds information on the content of the file to be read.
     filename:
-        The name of the file saving the information to add a new location.
+        The name of the file which will be parsed.
 
     Returns
     -------
@@ -368,7 +367,7 @@ def testing_pls(path, a):
 
 
 
-
+#--------------------callback-functions---------------------------------------------------------
 
 #callback for adding new locations
 #receives button inputs and inputs from the modal input fields
@@ -502,12 +501,34 @@ def add_new_location(_1, _2, _3, URL_value, *params):
 )
 def choose_correct_update(*args):
     """
-    last x args are input values from sidebar
-    first args element is name of page
-    order important according to sidebar_characs list
+    This function chooses correctly which page should be updated based on the inputs and instruct further steps for the updating.
 
-    first output updates list, second one the map
+    Inputs
+    ----------
+    url:
+        The name of the page(listpage or mappage).
+
+    auto_refresh_interval:
+        The number of intervals to update the page automatically.
+
+    placeholder_div_filter, placeholder_div_adding, clear_filter_button, refresh_page
+        Number of clicks on placeholders or buttons indicating that the page should be refreshed.
+
+    sideboard_name_filter, sideboard_address_filter, sideboard_occupancy_filter, sideboard_price_filter
+        The input filter values from the sidebar.
+
+    Outputs
+    -------
+    update_list_div:
+        returns 1 to trigger the update function in list_page to update the listpage.
+
+    update_map_div:
+        returns 1 to trigger the update function in map_page to update the mappage.
+
+    sideboard_name_filter, sideboard_address_filter, sideboard_occupancy_filter, sideboard_price_filter :
+        The value which was typed in the dash components to the corresponding filters for further functions.
     """
+
     #print(args)
     triggered_id = ctx.triggered_id
 
@@ -578,21 +599,49 @@ def choose_correct_update(*args):
     define_inputs_advanced_filter([Input("advanced_filter_button" , "n_clicks"),
                                    Input("modal_filter_submit_button" , "n_clicks"),
                                    Input("modal_filter_cancel_button" , "n_clicks"),
-                                   #Input("modal_advanced_filter_number_parking_lots" , "marks"),
                                    Input("modal_advanced_filter_occupancy" , "value"),
-                                   #Input("modal_advanced_filter_occupancy" , "marks"),
                                    Input("modal_advanced_filter_name", "value")]),
     [State("modal_filter_window" , "is_open")],
     prevent_initial_call=True
 )
 def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
     """
-    - variables with _ are n_clicks and not important
-    - params is list with characteristics and modal state at the end
+    This function handles the advanced filtering. It filters the data according the given filter inputs and displays it on the pages.
+    Further it handles the displaying of the filter window.
 
-    - order of parameters(Input and Output) is important, especially in combination with filter dict handling
+    Inputs
+    ----------
+    advanced_filter_button:
+        Number of clicks on the advanced filter button to open the filter window(if it was pressed).
+
+    modal_filter_submit_button:
+        Number of clicks on the submit button for filtering a location(if it was pressed).
+        The filter should be applied on the location.
+
+    modal_filter_cancel_button:
+        Number of clicks on the cancel button for filtering the location(if it was pressed).
+        The filter should not be applied on the data and the window should be closed.
+
+    rest of the params:
+        The value which was typed in the dash components to the corresponding characteristics.
+
+    State
+    ----------
+     modal_filter_window:
+        The current state of the filter_window(visble or invisible).
+
+    Outputs
+    -------
+    placeholder_div_filter:
+        returns 1 to trigger the update function and update the layout of the list page/map page according to the filter.
+
+    modal_filter_window:
+        The state of the advanced_filter_popup(visble or invisible).
+
+    rest:
+        All the values of the charachteritsics to use them for further functions.
     """
-    print(params, glob_vars.current_filter)
+
     #get origin of callback
     triggered_id = ctx.triggered_id
 
@@ -672,9 +721,47 @@ def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
            State("modal_import_file", "is_open")],
           prevent_initial_call=True)
 def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, modal_state):
+    """
+    This function handles the import of csv and json files to add a new location or new information to a location.
+    Further it handles the displaying of the import window including error warnings.
+
+    Inputs
+    ----------
+    upload_import_files:
+        The content which was uploaded(strings which describing the files which were uploaded).
+
+    modal_uploaded_csv, modal_uploaded_json:
+        Value of the names of the csv/json files which are already uploaded.
+
+    import_button:
+        Number of clicks on the import button to open the import_file window(if it was pressed).
+
+    modal_import_file_upload_button, modal_import_file_cancel_button:
+        Number of clicks on the cancel/upload button whether the file should be uploaded to the data.
+
+    State
+    ----------
+     upload_import_files:
+        The content(name) which was dropped in the field of this component.
+        (Where the user can import their json and csv file).
+
+    modal_import_file:
+        The current state of the import_file_window(visble or invisible).
+
+    Outputs
+    -------
+    modal_import_file:
+        The current state of the import_file_window(visble or invisible).
+
+    modal_uploaded_csv, modal_uploaded_json:
+        Value of the names of the csv/json files which are already uploaded.
+
+    "modal_import_warning:
+        A lettering describing that a error occured. It is only visible if onne of the conditions are not valified.
+    """
+
     triggered_id = ctx.triggered_id
-    #print(triggered_id)
-    #print(contents, filenames)
+
 
     if triggered_id == "import_button" or triggered_id == "modal_import_file_cancel_button":
         glob_vars.temp_csv = None
