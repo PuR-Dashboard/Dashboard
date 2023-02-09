@@ -24,15 +24,25 @@ def filter_all(df: pd.DataFrame, filter_df: dict[str:str], negative=False)-> pd.
                                                     #maybe max_value ist ein string?????
 def filter_max_value(df: pd.DataFrame, category:str, max_value:int) -> pd.DataFrame:
     """
-    given a dataframe, a category and a value, then filters the dataframe for all values smaller or equal than that value
+    This function creates a dataframe which is based on the given DataFrame and filtered by the category and the maximum value.
 
-    df: Dataframe to be filtered on
-    category: column name in which should be filtered
-    max_value: maximum value for filtering process
+    Parameters
+    ----------
+    df:
+        The Dataframe to be filtered on.
 
-    returns: filtered dataframe
+    category:
+        The column(characteristic) name in which should be filtered.
+
+    max_value:
+        A maximum value for the filtering process. All values for the category which are over this value should be filtered out.
+
+    Returns
+    -------
+    df2:
+        A filtered DataFrame based on the paramters.
     """
-    
+
     #if no value given, dont filter
     if max_value == None:
         return df
@@ -49,14 +59,25 @@ def filter_max_value(df: pd.DataFrame, category:str, max_value:int) -> pd.DataFr
 
 def filter_for_value(df:pd.DataFrame, category:str, set_value:str) -> pd.DataFrame:
     """
-    given a dataframe, a category and a value, then filters the dataframe for all rows that have this value
+    This function creates a dataframe which is based on the given DataFrame and filtered by the category and the certain value of the characteristic.
 
-    df: Dataframe to be filtered on
-    category: column name in which should be filtered
-    set_value:  value for filtering process
+    Parameters
+    ----------
+    df:
+        The Dataframe to be filtered on.
 
-    returns: filtered dataframe 
+    category:
+        The column(characteristic) name in which should be filtered.
+
+    set_value:
+        The value to be filtered by.
+
+    Returns
+    -------
+    df2:
+        A filtered DataFrame based on the paramters.
     """
+
     #if no value given, dont filter
     if set_value == None:
         return df
@@ -72,15 +93,28 @@ def filter_for_value(df:pd.DataFrame, category:str, set_value:str) -> pd.DataFra
 
 def filter_for_list(df:pd.DataFrame, category:str, set_list:list,  filter_occupancy=False) -> pd.DataFrame:
     """
-    given a dataframe, a category and a list of values, then filters the dataframe for all rows that have one of these values
+    This function creates a dataframe which is based on the given DataFrame and filtered by the category and the list of certain values.
 
-    df: Dataframe to be filtered on
-    category: column name in which should be filtered
-    set_list: list of values for filtering process
+    Parameters
+    ----------
+    df:
+        The Dataframe to be filtered on.
 
-    returns: filtered dataframe
+    category:
+        The column(characteristic) name in which should be filtered.
+
+    set_list:
+        A list of value to be filtered by.
+
+    filter_occupancy:
+        Whether it should be filtered by the occupancy.
+
+    Returns
+    -------
+    df2:
+        A filtered DataFrame based on the paramters.
     """
-    print(df, set_list)
+
 
     if filter_occupancy and len(set_list) == 0:
         return df[0:0]
@@ -100,6 +134,7 @@ def filter_for_list(df:pd.DataFrame, category:str, set_list:list,  filter_occupa
 
 #DEPRECATED/SOON TO BE DEPRECATED?
 def filter_for_index(df, index):
+
     df.drop(index)
     df.reset_index(drop = True)
     return df
@@ -108,13 +143,23 @@ def filter_for_index(df, index):
 
 def filter_names(df:pd.DataFrame, filteraspect:str, key:str) -> pd.DataFrame:
     """
-    Function that takes a dataframe, a search entry and a category and filters for all row values that could be meant by the entry
+    This function creates a dataframe which is based on the given DataFrame and filtered in the category by the search entry.
 
-    df: Dataframe to be filtered on
-    filteraspect: search entry, i.e. start of a location("Heid" from "Heidelberg")
-    key: column name to be filtered in
+    Parameters
+    ----------
+    df:
+        The Dataframe to be filtered on.
 
-    returns: filtered dataframe
+    filteraspect:
+        The search entry by filtering of a name of a location.
+
+    key:
+        The column(characteristic) name in which should be filtered.
+
+    Returns
+    -------
+    df2:
+        A filtered DataFrame based on the paramters.
     """
     #initialize and preprocessing
     to_delete = []
@@ -144,7 +189,7 @@ def filter_names(df:pd.DataFrame, filteraspect:str, key:str) -> pd.DataFrame:
                 df.drop(df.loc[df[key]== location].index, inplace = True )
                 df.reset_index(drop = True, inplace = True)
                 break
-                
+
 
             #if all characters up to this point do not match
             elif (filterchar[i] != locationchar[i]):
@@ -163,11 +208,17 @@ def filter_names(df:pd.DataFrame, filteraspect:str, key:str) -> pd.DataFrame:
 
 def get_occupancy_list_from_vals(occupancy_vals:list[str]) -> list[str]:
     """
-    Function to obtain a list of location names that satisfy the given criteria of occupancy.
+    This function obtain a list of location names that satisfy the given criteria of occupancy.
 
-    occupancy_vals: list of acceptable occupancy values for filtering
+    Parameters
+    ----------
+    occupancy_vals:
+        A list of acceptable occupancy values for filtering.
 
-    returns: list of location names that satisfy criteria
+    Returns
+    -------
+    name_list:
+        A list of the location names that satisfy the given criteria.
     """
     #if no list given
     if occupancy_vals == None:
@@ -175,7 +226,7 @@ def get_occupancy_list_from_vals(occupancy_vals:list[str]) -> list[str]:
 
     #read occupancy csv
     occupancy_csv = get_data("Occupancy.csv")
-    
+
     #names that conform to occupancy values
     name_list = []
     #iterate all location names(=column names) for last column value
@@ -189,27 +240,37 @@ def get_occupancy_list_from_vals(occupancy_vals:list[str]) -> list[str]:
 
     #return list
     return name_list
-    
 
 
 
-def filter_data():
+
+def filter_data()-> None:
     """
-    filters the current data with the currently applied filters
+    This function filters the current data with the currently applied filters.
     """
-    #print("Entering Filter Content")
+
     glob_vars.data = filter_content(glob_vars.data, glob_vars.current_filter)
 
 
 
 def filter_content(df: pd.DataFrame, filter_dict:defaultdict) -> pd.DataFrame:
     """
-    df: Dataframe with user content to be filtered
-    filter_dict: default dictionary with all characteristics to be filtered for as keys, value to be filtered for as value and default value as None
+    This function creates a dataframe which is based on the given DataFrame and filtered in the category by the search entry.
 
-    returns: filtered dataframe by standards of filter_dict
+    Parameters
+    ----------
+    df:
+        The Dataframe to be filtered on.
+
+    filter_dict:
+        A default dictionary with all characteristics to be filtered for as keys, value to be filtered for as value and default value as None.
+
+    Returns
+    -------
+    df:
+        The dataframe filtered by the information of the filter_dict.
     """
-    #print("inside filter content")
+
    #iterate over all characteristics/keys of the data
     keys = df.columns.values
     for key in filter_dict:

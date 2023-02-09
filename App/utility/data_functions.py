@@ -359,7 +359,7 @@ def update_occupancies():
         for location in content:
             urls.append(content[location])
         f.close()
-    import time 
+    import time
     for url in urls:
         start_time = time.time()
         occupancies.append(get_occupancy_from_url(url))
@@ -399,7 +399,7 @@ def update_location_occupancy(location: str) -> None:
     with open(path_to_occupancy, 'r') as f:  # Open the csv file
         reader = csv.reader(f)  # Create a csv reader
         lines = list(reader)  # Read the csv file
-    
+
     last_row = lines[-1][1:]  # Get the last row of the csv file (without the time stamp)
 
     new_row = [datetime.now()]  # Create a new row with the current time stamp
@@ -434,7 +434,7 @@ def add_location_to_occ_csv(location: str) -> None:
     lines[0].append(location)  # Add the location to the first row
     for i in range(1, len(lines)):  # Iterate over the rows
         lines[i].append('None')  # Add an empty value to the row
-    
+
     with open(path_to_occupancy, 'w', newline='\n') as f:  # Open the csv file
         writer = csv.writer(f)  # Create a csv writer
         writer.writerows(lines)  # Write the new rows to the csv file
@@ -459,10 +459,10 @@ def remove_location_from_occ_csv(location: str) -> None:
         if lines[0][i] == location:
             index = i
             break
-    
+
     for line in lines:
         del line[index]
-        
+
     with open(path_to_occupancy, 'w', newline='\n') as f:
         writer = csv.writer(f)
         writer.writerows(lines)

@@ -31,7 +31,15 @@ import_button = (html.Div(dbc.Button("Import Locations", color="light", classNam
                     },
                     )))
 
-def get_navbar():
+def get_navbar()-> dbc.Navbar:
+    """
+    This functions define a Dash layout for the navbar.
+
+    Returns
+    -------
+    navbar:
+        An object of the type dbc.Navbar which contains all components of the navbar.
+    """
     navbar = dbc.Navbar(
             dbc.Container(
                 [
@@ -83,7 +91,15 @@ def get_navbar():
 
 
 
-def make_import_modal():
+def make_import_modal()-> dbc.Modal:
+    """
+    This functions defines a Dash layout to create new locations by importing a csv file.
+
+    Returns
+    -------
+    pop_up:
+        A Modal which contains all components of the visualisation of the pop up to import a csv file..
+    """
     return dbc.Modal(  # Modal to display the import file option
                 [
                     dbc.ModalHeader(dbc.ModalTitle("Import Files")),  # Header of the modal

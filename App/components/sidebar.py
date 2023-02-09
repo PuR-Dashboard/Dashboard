@@ -35,8 +35,12 @@ def get_sidebar() -> html.Div:
     """
     This function defines and returns a Dash layout for the sidebar.
 
-    return: The layout of the sidebar of the page.
+    Returns
+    -------
+    sidebar:
+        The layout of the sidebar of the page including the add_location popup and the advanced filter pop up.
     """
+
 
     #documentation for the attributes of single components gets lesser the further down, since its always the same pattern
     sidebar = html.Div(  # Create a div element for the sidebar

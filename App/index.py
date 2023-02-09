@@ -48,56 +48,6 @@ app.layout = html.Div([  # Create a Div containing the navbar and the content
 ])
 
 
-@app.callback(  # Create a callback for the index page
-    Output('page-content', 'children'),  # Output for the page content
-    [Input('url', 'pathname')]  # Input for the current URL of the page
-)
-def display_page(pathname):
-    """
-    This function updates the content of the page based on the URL
-    :param pathname:    The URL of the new page
-    :return:    The new page content
-    """
-    if pathname == '/map_page':  # If the URL is map_page
-        return map_page.layout  # Return the layout of the map page
-    if pathname == '/list_page':  # If the URL is list_page
-        return list_page.layout  # Return the layout of the list page
-    else:  # If the URL is not map_page or list_page
-        return map_page.layout  # Return the layout of the map page
-
-"""
-#callback to periodically refresh
-@app.callback(
-    [Output("update_list_div", "n_clicks"),
-     Output("update_map_div", "n_clicks"),],
-    [Input('url', 'pathname'),
-     Input("auto_refresh_interval", 'n_intervals')],
-    prevent_initial_call=True
-)
-def testing_pls(path, a):
-    ctxx = dash.callback_context
-    triggered_id = ctx.triggered_id
-
-
-    #parse/refresh urls/occupancy
-    if triggered_id == "url":
-        #dont update only because view is changed
-
-        return dash.no_update, dash.no_update
-    
-    #still add url refreshing!!!!!!-----------------------
-    if path == "/list_page":
-        #update list page layout
-        return 1, dash.no_update
-    elif path == "/map_page":
-        #update map page layout
-        return dash.no_update, 1
-
-    
-    #no update else
-    raise PreventUpdate
-"""
-
 def define_chracteristics()->list:
     """
     This functions creates a list with all current characteristics.
@@ -123,9 +73,10 @@ def define_chracteristics()->list:
 
     return characteristics2
 
+
 def define_inputs_add_location(special_ones:list)-> list:
     """
-    This function creates a list of all inpus for the callback to add a new location.
+    This function creates a list of all inputs for the callback to add a new location.
 
     Parameters
     ----------
@@ -183,162 +134,6 @@ def define_outputs_add_loction(special_ones:list)-> list:
         outputs.append(Output("modal_add_location_"+ characs, "value"))
 
     return outputs
-
-
-#callback for adding new locations
-#receives button inputs and inputs from the modal input fields
-@app.callback(define_outputs_add_loction([Output("placeholder_div_adding", "n_clicks"),
-    Output("modal_add_location", "is_open"),
-    Output("modal_field_warning" , "style"),
-    Output("modal_add_location_url" , "value"),
-    Output("modal_add_location_name" , "value")]),
-    define_inputs_add_location([Input("modal_add_location_submit_button" , "n_clicks"),Input("open_modal_add_location_button" , "n_clicks"), Input("modal_add_location_cancel_button", "n_clicks"),Input("modal_add_location_url" , "value"),Input("modal_add_location_name", "value")]),
-    [State("modal_add_location", "is_open")],
-    prevent_initial_call=True,
-    suppress_callback_exceptions=True
-)
-def add_new_location(_1, _2, _3, URL_value, *params):
-    """
-    structure of parameters:
-    - variables with underscore(_1,...) are n_clicks of buttons and not relevant
-    - URL_value is the given url
-    - params is every dash component that is also a characteristic and the pop up open state at the end
-    -> !!! order or parameters is important. Order is matched 1 to 1 to list of characteristics for adding new locations.
-            if new characteristics are added, then the order of the parameters must be changed accordingly!!!
-    Also order of putputs is depending on order of input
-    """
-
-    #get characteristics from data
-    characteristics = list(glob_vars.data.columns.values)
-
-    #latitude and longitude not given by pop up
-    non_changeable = ["lat", "lon"]
-    #remvove lat and lon
-    for n in non_changeable:
-        if n in characteristics:
-            characteristics.remove(n)
-
-    #extract state of pop up and characteristics
-    modal_state = params[-1]
-    characs = params[:-1]
-
-    #check for error
-    assert len(characs) == len(characteristics), "Number of characteristic inputs and characteristics in data must be the same"
-
-    triggered_id = ctx.triggered_id
-
-    #if cancel button was pressed return refresh confirmation, invisible style for error warning and list with empty values
-    if triggered_id == "modal_add_location_cancel_button" :
-        return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
-    #if open modal button was pressed
-    elif triggered_id == "open_modal_add_location_button" :
-        return (dash.no_update, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
-    elif triggered_id == "modal_add_location_submit_button" :
-        #check if URL and name are given
-        #url must be given
-        if URL_value == None or URL_value == "":
-
-            return (dash.no_update, modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
-
-        #location name must be given
-        if characs[0] == None or characs[0] == "":
-
-            return (dash.no_update, modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
-
-
-        #make dictionary for function
-        add_dictionary = {}
-
-        for c, charac in zip(characs, characteristics):
-            add_dictionary[charac] = c
-
-        # NOW FUNCTION TO ADD LOCATION TO CSV
-        add_location(url=URL_value, dic=add_dictionary)
-
-        return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
-    else:
-        raise PreventUpdate
-
-@app.callback(
-        [Output("update_list_div", "n_clicks"),
-        Output("update_map_div", "n_clicks"),
-        Output("sideboard_name_filter", "value"),
-        Output("sideboard_address_filter", "value"),
-        Output("sideboard_occupancy_filter", "value"),
-        Output("sideboard_price_filter", "value"),],
-        [Input('url', 'pathname'),
-        Input("auto_refresh_interval", 'n_intervals'),
-        Input("placeholder_div_filter", "n_clicks"),
-        Input("placeholder_div_adding", "n_clicks"),
-        Input("clear_filter_button", "n_clicks"),
-        Input("refresh_page", "n_clicks"),
-        Input("sideboard_name_filter", "value"),
-        Input("sideboard_address_filter", "value"),
-        Input("sideboard_occupancy_filter", "value"),
-        Input("sideboard_price_filter", "value"),],
-        prevent_initial_call=True
-)
-def choose_correct_update(*args):
-    """
-    last x args are input values from sidebar
-    first args element is name of page
-    order important according to sidebar_characs list
-
-    first output updates list, second one the map
-    """
-    #print(args)
-    triggered_id = ctx.triggered_id
-    
-    #name of current page, important to decide which page to update
-    page_name = args[0]
-
-    #manually write characteristics of quick filters
-    sidebar_characs = ["location", "address", "occupancy", "price"]
-
-    #num is amount of sidebar elements that are quickfilter, i.e. the last num inputs of this callback
-    num = 4
-    sidebar_values = args[-num:]
-    # index of callback input for
-
-
-    if triggered_id == "clear_filter_button":
-        #reset data and filter dictionary
-        glob_vars.reset_data()
-        glob_vars.reset_global_filter()
-        #return refreshed layout with new data and empty value list for inputs
-        sidebar_values = [None for x in sidebar_values]
-
-    elif triggered_id == "sideboard_price_filter" or triggered_id == "sideboard_occupancy_filter" or triggered_id == "sideboard_address_filter" or triggered_id == "sideboard_name_filter":
-        #sidebar filter triggered
-        print("sidebar triggered")
-        #first reset data
-        glob_vars.reset_data()
-        #check for error
-        assert len(sidebar_characs) == len(sidebar_values), "Number of filter inputs in sidebar and hardcoded characteristics must be equal"
-
-        #add filter values to dictionary
-        for s, val in zip(sidebar_characs, sidebar_values):
-
-            if val == "":
-                val = None
-
-            glob_vars.current_filter[s] = val
-
-        #filter with new filter dictionary
-        
-        filter_data()
-
-
-    #if triggered_id == "placeholder_div_filter" or triggered_id == "placeholder_div_adding" or triggered_id == "url" or triggered_id == "refresh_page":
-    if page_name == "/list_page":
-        return (1, dash.no_update) + tuple(sidebar_values)
-    elif page_name == "/map_page":
-        return (dash.no_update, 1) + tuple(sidebar_values)
-    else: #error or page not accounted for
-        #print("Hoffentlich Startcallback")
-        raise PreventUpdate
-
-        #raise ValueError("A Page is not accounted for in the update method")
 
 def define_inputs_advanced_filter(special_ones:list)-> list:
     """
@@ -400,6 +195,400 @@ def define_outputs_advanced_filter(special_ones:list)->list:
     return outputs
 
 
+def check_csv_validity(temp_df: pd.DataFrame) -> bool:
+    """
+    This function cecks the given DataFrame according to conditions:
+    - check if columns align with our columns
+    - check if data is rectangular - is dataframe always rectangular?
+    - check if every row has a location name and no duplicate locations exist
+
+    Parameters
+    ----------
+    temp_df:
+        The dataframe which should be checked.
+
+    Returns
+    -------
+    valid:
+        Whether the DataFrame based all the conditions.
+    """
+
+    #columns do not match
+    for tv, v in zip(list(temp_df.columns.values), list(glob_vars.data.columns.values)):
+        if tv != v:
+            return False
+
+    #check that location name exists for every row
+    location_names = list(temp_df["location"])
+    #check for duplicates
+    temp_set = set(location_names)
+    if len(temp_set) != len(location_names):
+        return False
+
+    assert len(location_names) == len(temp_df)
+
+    #check for None values
+    for l in location_names:
+        if l == None:
+            return False
+
+
+    return True
+
+
+def check_json_validity(json_object:dict[str:str], csv_locations: list[str]) -> bool:
+    """
+    This function checks the given DataFrame according to the acceptance criteria:
+    - every location from the csv file is represenmted in the json file -> meaning every location has a link
+
+    Parameters
+    ----------
+    json_object:
+        A dictionary with key:value pairs as location:api-link.
+
+    csv_locations:
+        The location names from the simultaniouisly uploaded csv file.
+
+    Returns
+    -------
+    valid:
+        Whether the DataFrame based all acceptance criteria.
+    """
+
+    #validity of json file is guaranteed by:
+    #- every location from the csv file is represenmted in the json file -> meaning every location has a link
+    #- maybe also check that links are working? -> time expensive but okay when importing
+
+    for l in csv_locations:
+        if l not in json_object:
+            return False
+
+    return True
+
+
+def parse_contents(contents, filename:str):
+    """
+    This function pareses the information which are in file with the filename into a dictionary/DataFrame if the user uploads a csv or json file.
+
+    Parameters
+    ----------
+    contents:
+        String that holds information on the content of the file to be read.
+    filename:
+        The name of the file which will be parsed.
+
+    Returns
+    -------
+    df:
+        A dirctionary based on the information of the file with the given filename.
+    """
+    content_type, content_string = contents.split(',')
+
+    decoded = base64.b64decode(content_string)
+    try:
+        if '.csv' in filename:
+            # Assume that the user uploaded a CSV file
+            df = pd.read_csv(
+                io.StringIO(decoded.decode('utf-8')))
+        elif '.json' in filename:
+            # Assume that the user uploaded an excel file
+            df = json.loads(decoded)
+        else:
+            df = None
+
+        return df
+
+    except Exception as e:
+        raise e
+
+
+@app.callback(  # Create a callback for the index page
+    Output('page-content', 'children'),  # Output for the page content
+    [Input('url', 'pathname')]  # Input for the current URL of the page
+)
+def display_page(pathname):
+    """
+    This function updates the content of the page based on the URL.
+
+    Parameters
+    ----------
+    pathname:
+        The URL of the new page.
+
+    index:
+        The index of the deleted location.
+
+    Returns
+    -------
+    page-content:
+        The new page content in a layout format.
+    """
+
+    if pathname == '/map_page':  # If the URL is map_page
+        return map_page.layout  # Return the layout of the map page
+    if pathname == '/list_page':  # If the URL is list_page
+        return list_page.layout  # Return the layout of the list page
+    else:  # If the URL is not map_page or list_page
+        return map_page.layout  # Return the layout of the map page
+
+"""
+#callback to periodically refresh
+@app.callback(
+    [Output("update_list_div", "n_clicks"),
+     Output("update_map_div", "n_clicks"),],
+    [Input('url', 'pathname'),
+     Input("auto_refresh_interval", 'n_intervals')],
+    prevent_initial_call=True
+)
+def testing_pls(path, a):
+    ctxx = dash.callback_context
+    triggered_id = ctx.triggered_id
+
+
+    #parse/refresh urls/occupancy
+    if triggered_id == "url":
+        #dont update only because view is changed
+
+        return dash.no_update, dash.no_update
+
+    #still add url refreshing!!!!!!-----------------------
+    if path == "/list_page":
+        #update list page layout
+        return 1, dash.no_update
+    elif path == "/map_page":
+        #update map page layout
+        return dash.no_update, 1
+
+
+    #no update else
+    raise PreventUpdate
+"""
+
+
+
+
+#--------------------callback-functions---------------------------------------------------------
+
+#callback for adding new locations
+#receives button inputs and inputs from the modal input fields
+@app.callback(define_outputs_add_loction([Output("placeholder_div_adding", "n_clicks"),
+    Output("modal_add_location", "is_open"),
+    Output("modal_field_warning" , "style"),
+    Output("modal_add_location_url" , "value"),
+    Output("modal_add_location_name" , "value")]),
+    define_inputs_add_location([Input("modal_add_location_submit_button" , "n_clicks"),Input("open_modal_add_location_button" , "n_clicks"), Input("modal_add_location_cancel_button", "n_clicks"),Input("modal_add_location_url" , "value"),Input("modal_add_location_name", "value")]),
+    [State("modal_add_location", "is_open")],
+    prevent_initial_call=True,
+    suppress_callback_exceptions=True
+)
+def add_new_location(_1, _2, _3, URL_value, *params):
+    """
+    This function adds a new locatin to the list of locations and updates the pages if the conditions are given. Otherwise a warning will be displayed.
+
+    Inputs
+    ----------
+    modal_add_location_submit_button:
+        Number of clicks on the submit button for adding a location(if it was pressed).
+
+    open_modal_add_location_button:
+        Number of clicks on the adding a new location button(if it was pressed).
+
+    modal_add_location_cancel_button
+        Number of clicks on the cancel button for adding a location(if it was pressed).
+
+    modal_add_location_url
+        The input for the URL for the occupancy of the new location.
+
+    modal_add_location_name
+        The input for the name of the new location.
+
+    rest of the params:
+        The value which was typed in the dash components to the corresponding characteristics.
+
+    State
+    ----------
+     modal_add_location:
+        The current state of the add_location_popup(visble or invisible).
+
+    Outputs
+    -------
+    placeholder_div_adding:
+        returns 1 to trigger the update function and update the layout of the list page.
+
+    modal_add_location:
+        The state of the add_location_popup(visble or invisible).
+
+    modal_field_warning:
+        The style of the warning outputs(if some conditions are not verified)
+
+
+    rest:
+        All the values of the charachteritsics to use them for further functions.
+    """
+
+    #get characteristics from data
+    characteristics = list(glob_vars.data.columns.values)
+
+    #latitude and longitude not given by pop up
+    non_changeable = ["lat", "lon"]
+    #remvove lat and lon
+    for n in non_changeable:
+        if n in characteristics:
+            characteristics.remove(n)
+
+    #extract state of pop up and characteristics
+    modal_state = params[-1]
+    characs = params[:-1]
+
+    #check for error
+    assert len(characs) == len(characteristics), "Number of characteristic inputs and characteristics in data must be the same"
+
+    triggered_id = ctx.triggered_id
+
+    #if cancel button was pressed return refresh confirmation, invisible style for error warning and list with empty values
+    if triggered_id == "modal_add_location_cancel_button" :
+        return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
+    #if open modal button was pressed
+    elif triggered_id == "open_modal_add_location_button" :
+        return (dash.no_update, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
+    elif triggered_id == "modal_add_location_submit_button" :
+        #check if URL and name are given
+        #url must be given
+        if URL_value == None or URL_value == "":
+
+            return (dash.no_update, modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
+
+        #location name must be given
+        if characs[0] == None or characs[0] == "":
+
+            return (dash.no_update, modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
+
+
+        #make dictionary for function
+        add_dictionary = {}
+
+        for c, charac in zip(characs, characteristics):
+            add_dictionary[charac] = c
+
+        # NOW FUNCTION TO ADD LOCATION TO CSV
+        add_location(url=URL_value, dic=add_dictionary)
+
+        return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
+    else:
+        raise PreventUpdate
+
+
+
+
+@app.callback(
+        [Output("update_list_div", "n_clicks"),
+        Output("update_map_div", "n_clicks"),
+        Output("sideboard_name_filter", "value"),
+        Output("sideboard_address_filter", "value"),
+        Output("sideboard_occupancy_filter", "value"),
+        Output("sideboard_price_filter", "value"),],
+        [Input('url', 'pathname'),
+        Input("auto_refresh_interval", 'n_intervals'),
+        Input("placeholder_div_filter", "n_clicks"),
+        Input("placeholder_div_adding", "n_clicks"),
+        Input("clear_filter_button", "n_clicks"),
+        Input("refresh_page", "n_clicks"),
+        Input("sideboard_name_filter", "value"),
+        Input("sideboard_address_filter", "value"),
+        Input("sideboard_occupancy_filter", "value"),
+        Input("sideboard_price_filter", "value"),],
+        prevent_initial_call=True
+)
+def choose_correct_update(*args):
+    """
+    This function chooses correctly which page should be updated based on the inputs and instruct further steps for the updating.
+
+    Inputs
+    ----------
+    url:
+        The name of the page(listpage or mappage).
+
+    auto_refresh_interval:
+        The number of intervals to update the page automatically.
+
+    placeholder_div_filter, placeholder_div_adding, clear_filter_button, refresh_page
+        Number of clicks on placeholders or buttons indicating that the page should be refreshed.
+
+    sideboard_name_filter, sideboard_address_filter, sideboard_occupancy_filter, sideboard_price_filter
+        The input filter values from the sidebar.
+
+    Outputs
+    -------
+    update_list_div:
+        returns 1 to trigger the update function in list_page to update the listpage.
+
+    update_map_div:
+        returns 1 to trigger the update function in map_page to update the mappage.
+
+    sideboard_name_filter, sideboard_address_filter, sideboard_occupancy_filter, sideboard_price_filter :
+        The value which was typed in the dash components to the corresponding filters for further functions.
+    """
+
+    #print(args)
+    triggered_id = ctx.triggered_id
+
+    #name of current page, important to decide which page to update
+    page_name = args[0]
+
+    #manually write characteristics of quick filters
+    sidebar_characs = ["location", "address", "occupancy", "price"]
+
+    #num is amount of sidebar elements that are quickfilter, i.e. the last num inputs of this callback
+    num = 4
+    sidebar_values = args[-num:]
+    # index of callback input for
+
+
+    if triggered_id == "clear_filter_button":
+        #reset data and filter dictionary
+        glob_vars.reset_data()
+        glob_vars.reset_global_filter()
+        #return refreshed layout with new data and empty value list for inputs
+        sidebar_values = [None for x in sidebar_values]
+
+    elif triggered_id == "sideboard_price_filter" or triggered_id == "sideboard_occupancy_filter" or triggered_id == "sideboard_address_filter" or triggered_id == "sideboard_name_filter":
+        #sidebar filter triggered
+        print("sidebar triggered")
+        #first reset data
+        glob_vars.reset_data()
+        #check for error
+        assert len(sidebar_characs) == len(sidebar_values), "Number of filter inputs in sidebar and hardcoded characteristics must be equal"
+
+        #add filter values to dictionary
+        for s, val in zip(sidebar_characs, sidebar_values):
+
+            if val == "":
+                val = None
+
+            glob_vars.current_filter[s] = val
+
+        #filter with new filter dictionary
+
+        filter_data()
+
+
+    #if triggered_id == "placeholder_div_filter" or triggered_id == "placeholder_div_adding" or triggered_id == "url" or triggered_id == "refresh_page":
+    if page_name == "/list_page":
+        return (1, dash.no_update) + tuple(sidebar_values)
+    elif page_name == "/map_page":
+        return (dash.no_update, 1) + tuple(sidebar_values)
+    else: #error or page not accounted for
+        #print("Hoffentlich Startcallback")
+        raise PreventUpdate
+
+        #raise ValueError("A Page is not accounted for in the update method")
+
+
+
+
+
+
+
 #callback to handle everything about the advanced filter
 #gets input from the button on the sidebar, the buttons in the modal footer and the input elements in the modal
 @app.callback(
@@ -410,21 +599,49 @@ def define_outputs_advanced_filter(special_ones:list)->list:
     define_inputs_advanced_filter([Input("advanced_filter_button" , "n_clicks"),
                                    Input("modal_filter_submit_button" , "n_clicks"),
                                    Input("modal_filter_cancel_button" , "n_clicks"),
-                                   #Input("modal_advanced_filter_number_parking_lots" , "marks"),
                                    Input("modal_advanced_filter_occupancy" , "value"),
-                                   #Input("modal_advanced_filter_occupancy" , "marks"),
                                    Input("modal_advanced_filter_name", "value")]),
     [State("modal_filter_window" , "is_open")],
     prevent_initial_call=True
 )
 def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
     """
-    - variables with _ are n_clicks and not important
-    - params is list with characteristics and modal state at the end
+    This function handles the advanced filtering. It filters the data according the given filter inputs and displays it on the pages.
+    Further it handles the displaying of the filter window.
 
-    - order of parameters(Input and Output) is important, especially in combination with filter dict handling
+    Inputs
+    ----------
+    advanced_filter_button:
+        Number of clicks on the advanced filter button to open the filter window(if it was pressed).
+
+    modal_filter_submit_button:
+        Number of clicks on the submit button for filtering a location(if it was pressed).
+        The filter should be applied on the location.
+
+    modal_filter_cancel_button:
+        Number of clicks on the cancel button for filtering the location(if it was pressed).
+        The filter should not be applied on the data and the window should be closed.
+
+    rest of the params:
+        The value which was typed in the dash components to the corresponding characteristics.
+
+    State
+    ----------
+     modal_filter_window:
+        The current state of the filter_window(visble or invisible).
+
+    Outputs
+    -------
+    placeholder_div_filter:
+        returns 1 to trigger the update function and update the layout of the list page/map page according to the filter.
+
+    modal_filter_window:
+        The state of the advanced_filter_popup(visble or invisible).
+
+    rest:
+        All the values of the charachteritsics to use them for further functions.
     """
-    print(params, glob_vars.current_filter)
+
     #get origin of callback
     triggered_id = ctx.triggered_id
 
@@ -504,9 +721,47 @@ def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
            State("modal_import_file", "is_open")],
           prevent_initial_call=True)
 def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, modal_state):
+    """
+    This function handles the import of csv and json files to add a new location or new information to a location.
+    Further it handles the displaying of the import window including error warnings.
+
+    Inputs
+    ----------
+    upload_import_files:
+        The content which was uploaded(strings which describing the files which were uploaded).
+
+    modal_uploaded_csv, modal_uploaded_json:
+        Value of the names of the csv/json files which are already uploaded.
+
+    import_button:
+        Number of clicks on the import button to open the import_file window(if it was pressed).
+
+    modal_import_file_upload_button, modal_import_file_cancel_button:
+        Number of clicks on the cancel/upload button whether the file should be uploaded to the data.
+
+    State
+    ----------
+     upload_import_files:
+        The content(name) which was dropped in the field of this component.
+        (Where the user can import their json and csv file).
+
+    modal_import_file:
+        The current state of the import_file_window(visble or invisible).
+
+    Outputs
+    -------
+    modal_import_file:
+        The current state of the import_file_window(visble or invisible).
+
+    modal_uploaded_csv, modal_uploaded_json:
+        Value of the names of the csv/json files which are already uploaded.
+
+    "modal_import_warning:
+        A lettering describing that a error occured. It is only visible if onne of the conditions are not valified.
+    """
+
     triggered_id = ctx.triggered_id
-    #print(triggered_id)
-    #print(contents, filenames)
+
 
     if triggered_id == "import_button" or triggered_id == "modal_import_file_cancel_button":
         glob_vars.temp_csv = None
@@ -528,7 +783,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
             for a in admissible_types:
                 if a in f:
                     valid = True
-            
+
             if not valid:
                 return modal_state, csv_val, json_val, "Wrong file type uploaded!"
 
@@ -548,7 +803,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
                 glob_vars.temp_csv = df
                 csv_val = f
 
-        return modal_state, csv_val, json_val, ""        
+        return modal_state, csv_val, json_val, ""
 
     elif triggered_id == "modal_import_file_upload_button":
         #if one of the necessary files hasnt beent uploaded dont upload
@@ -560,7 +815,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
         if not check_csv_validity(glob_vars.temp_csv):
             glob_vars.temp_csv = None
             return modal_state, None, json_val, "CSV File does not meet conventions!"
-        
+
         #csv data is okay now
         location_names = list(glob_vars.temp_csv["location"])
 
@@ -588,7 +843,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
         #save combined df to csv
         path = get_path_to_csv(name_of_csv="Characteristics.csv")
         temp_data.to_csv(path, index=False)
-        
+
         #add new locations to json
         #read current json file
         path_to_urls = get_path_to_csv("Urls.json")
@@ -604,7 +859,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
 
         #add new locations to occupancy
         occupancy_df = get_data(name_of_csv="Occupancy.csv")
-        
+
         for l in new_locations:
             occupancy_df[l] = None
 
@@ -621,78 +876,13 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
 
         return not modal_state, None, None, ""
     else:
-        
+
         raise PreventUpdate
-    
-
-def check_csv_validity(temp_df: pd.DataFrame) -> bool:
-    #things to check when given a dataframe:
-    #- check if columns align with our columns
-    #- check if data is rectangular - is dataframe always rectangular?
-    #- check if every row has a location name and no duplicate locations exist
-
-    #columns do not match
-    for tv, v in zip(list(temp_df.columns.values), list(glob_vars.data.columns.values)):
-        if tv != v:
-            return False
-    
-    #check that location name exists for every row
-    location_names = list(temp_df["location"])
-    #check for duplicates
-    temp_set = set(location_names)
-    if len(temp_set) != len(location_names):
-        return False
-
-    assert len(location_names) == len(temp_df)
-
-    #check for None values
-    for l in location_names:
-        if l == None:
-            return False
 
 
-    return True
 
-def check_json_validity(json_object:dict[str:str], csv_locations: list[str]) -> bool:
-    """
-    Checks if the given dictionary is according to the acceptance criteria
 
-    json_object: dictionary with key:value pairs as location:api-link
-    csv_locations: location names from the simultaniouisly uploaded csv file 
-    
-    returns: whether the dictionary is valid or not
-    """
-    
-    #validity of json file is guaranteed by:
-    #- every location from the csv file is represenmted in the json file -> meaning every location has a link
-    #- maybe also check that links are working? -> time expensive but okay when importing
-    print(json_object, csv_locations)
 
-    for l in csv_locations:
-        if l not in json_object:
-            return False
-
-    return True
-
-def parse_contents(contents, filename):
-    content_type, content_string = contents.split(',')
-
-    decoded = base64.b64decode(content_string)
-    try:
-        if '.csv' in filename:
-            # Assume that the user uploaded a CSV file
-            df = pd.read_csv(
-                io.StringIO(decoded.decode('utf-8')))
-        elif '.json' in filename:
-            # Assume that the user uploaded an excel file
-            df = json.loads(decoded)
-        else:
-            df = None
-
-        return df
-    
-    except Exception as e:
-        raise e
 
 
 # Run the app on localhost:8050
