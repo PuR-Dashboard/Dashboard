@@ -6,10 +6,11 @@ from dash.dependencies import Input, Output, State
 import dash
 
 FA_icon = html.I(className="fa fa-refresh")
+FA_icon_Import = html.I(className="fa fa-upload", style={"display":"inline-block"})
 refr_button = (html.Div(dbc.Button([FA_icon, " Refresh"], color="light", className="ms-2",id = "refresh_page", value = 0,
                     style={
                         "marginRight": "0%",
-                        "width": "auto",
+                        "width": "120%",
                         "height": "40%",
                         "fontSize": "1em",
                         "color": "white",
@@ -19,10 +20,10 @@ refr_button = (html.Div(dbc.Button([FA_icon, " Refresh"], color="light", classNa
                     )))
 
 
-import_button = (html.Div(dbc.Button("Import Locations", color="light", className="ms-2",id = "import_button", value = 0,
+import_button = (html.Div(dbc.Button([FA_icon_Import, " Import Locations"], color="light", className="ms-2",id = "import_button", value = 0,
                     style={
-                        "marginRight": "20%",
-                        "width": "auto",
+                        "marginRight": "0%",
+                        "width": "165%",
                         "height": "40%",
                         "fontSize": "1em",
                         "color": "white",
@@ -152,11 +153,18 @@ def make_import_modal()-> dbc.Modal:
                             html.Label("", id="modal_import_warning", style={"display":"block", "color":"red"}),
                             dbc.Button(  # Button to import and close the modal
                                 "Upload",  # Text of the button
-                                color="primary",  # Set the color of the button to primary
+                                style = {"background-color":"#b3b3b3",
+                                         "border": "black",
+                                         "color": "black" # Set the color of the button to black
+                                         },  
                                 id="modal_import_file_upload_button"# Set the id of the button
                             ),
                             dbc.Button(  # Button to close the modal, changes will be discarded
-                                "Cancel",  # Text of the button
+                                "Cancel",
+                                 style = {"background-color":"#b3b3b3",
+                                         "border": "black",
+                                         "color": "black" # Set the color of the button to black
+                                         },   # Text of the button
                                 id="modal_import_file_cancel_button"  # Set the id of the button
                             ),
                         ]

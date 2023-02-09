@@ -289,16 +289,16 @@ def create_table(content:list)->dbc.Table :
     table_1:
         A tables which represents all the given data.
     """
-
+   
     table_header = [
-        html.Thead(html.Tr([html.Th("Charakeristiken"), html.Th("")]), style = {"marginTop":"5%"})
+        html.Thead(html.Tr([html.Th("Characteristics"), html.Th("Values")]), style = {"marginTop":"5%"})
     ]
     charakter = define_chracteristics()
-    rows = [html.Tr([html.Td(charakter[i]), html.Td(content[(i+3)*2])]) for i in range (len(charakter))]
+    rows = [html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]) for i in range (len(charakter))]
 
     table_body = [html.Tbody(rows)]
 
-    table_1 = dbc.Table(table_header + table_body, borderless=False, hover=False)
+    table_1 = dbc.Table(table_header + table_body, borderless=False, hover=False, style = {"width":"100%"})
 
     return table_1
 
@@ -386,23 +386,29 @@ def create_layout(names:list[str], content:list[str]) -> list:
 
                 #append collapsible content
         html_list.append(dbc.Collapse(
-            [dbc.CardBody(create_table(content[i]), style ={"width": "60%", "marginLeft": "3%"}), dbc.CardBody(create_plot(),style ={"width": "50%", "color": "#F0F8FF"}) , create_edit_window(i), create_security_window(names[i], i), html.Div(id={"type":"edit_controller", "index":i}, style={"display":"none"}),html.Div(id={"type":"security_id_transmitter", "index":i}, style={"display":"none"})],
-
+            [
+                html.Div(
+                    children=[
+                        dbc.Row([ #getting the table and picture next to each other
+                        dbc.Col(dbc.CardBody(create_table(content[i]), style ={"marginRight":"auto"})),
+                        dbc.Col(dbc.CardImg(src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1", 
+                        style ={"height":"auto", "width":"auto","marginRight":"1%", "marginLeft": "auto", "marginTop": "6%","horizontalAlign": "right"})),
+                    ],
+                    style ={"width": "auto", "marginLeft": "1%"}),
+                    #plot directly under the table
+                    dbc.CardBody(create_plot(),style ={"width": "auto","height":"auto", "color": "#F0F8FF"}),
+                    ],
+                style={"width":"calc(100vw - 260px)","overflow": "scroll", "height": "calc(100vh - 120px)"}
+                ),
+            create_edit_window(i), create_security_window(names[i], i), html.Div(id={"type":"edit_controller", "index":i}, style={"display":"none"}),
+            html.Div(id={"type":"security_id_transmitter", "index":i}, style={"display":"none"}),
+                
+            ],
             id={"type":"content", "index":i},
-            style = {"width":"87%"},
-            is_open=False
+            is_open=False,
+            style={"background-color":"#e6e6e6"},
+           
         ))
-        """
-        [dbc.Row([ #getting the table and picture next to each other
-        dbc.Col(dbc.CardBody(create_table(content[i]), style ={"width": "180%", "marginLeft": "0%"}), width = "auto"),
-        dbc.Col(dbc.CardImg(src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1", style ={"width": "100%", "marginLeft": "90%", "marginTop": "10%"}), width = "auto"),
-        ],
-        style ={"width": "80%", "marginLeft": "1%"}),
-        #plot directly under the table
-        dbc.CardBody(create_plot(),style ={"width": "45%", "color": "#F0F8FF"}),
-        ],
-           #[dbc.CardBody(create_table(content[i]), style ={"width": "60%", "marginLeft": "3%"}), dbc.CardBody(create_plot(),style ={"width": "50%", "color": "#F0F8FF"}) , create_edit_window(i)],"""
-
     #in case no name sare given(normally means filtering was unsuccessful)
     if len(names) == 0:
         html_list.append(html.H3("No results found!"))

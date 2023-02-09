@@ -9,6 +9,7 @@ SIDEBAR_STYLE = {
     "right": 0,
     "bottom": 0,
     "width": "auto",
+    "height": "95%",
     "padding": "2rem 1rem",
     "background-color": "#333333",
     "overflow": "scroll",
