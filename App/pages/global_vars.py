@@ -8,7 +8,7 @@ from collections import defaultdict
 
 
 #global variables defined here will be accesible in files that import this file
-global data, current_filter
+global data, current_filter, occupancy
 #dataframe that stores all location data that is currently displayed
 data = None
 #dictionary with key:value pairs of "characteristic name" : [accepted values of characteristics]
@@ -25,9 +25,10 @@ def init()-> None:
     This function initializes all global variables accirding to the data(chracteristics.csv).
     """
     #initialize data with all data in characteristics csv
-    global data
+    global data,occupancy
     try:
         data = get_data(name_of_csv="Characteristics.csv")
+        occupancy = get_data(name_of_csv="Occupancy.csv")
     except:
         raise Exception("Something went wrong when intialising the global data!")
     #initialise dictionary as default dictionary where not having a value returns None
