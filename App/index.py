@@ -571,7 +571,6 @@ def choose_correct_update(*args):
 
         filter_data()
 
-
     #if triggered_id == "placeholder_div_filter" or triggered_id == "placeholder_div_adding" or triggered_id == "url" or triggered_id == "refresh_page":
     if page_name == "/list_page":
         return (1, dash.no_update) + tuple(sidebar_values)
