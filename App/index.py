@@ -578,7 +578,8 @@ def choose_correct_update(*args):
         return (dash.no_update, 1) + tuple(sidebar_values)
     else: #error or page not accounted for
         #print("Hoffentlich Startcallback")
-        raise PreventUpdate
+        return (dash.no_update, 1) + tuple(sidebar_values)
+        #raise PreventUpdate
 
         #raise ValueError("A Page is not accounted for in the update method")
 
