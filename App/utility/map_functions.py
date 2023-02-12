@@ -262,8 +262,6 @@ def update(data:pd.DataFrame,m:folium.Map)-> folium.Map:
 
     colors= ["orange" if (one[data.iloc[i][0]].split(",")[1][:-1] == " 'wenige vorhanden'") else ("green" if (one[data.iloc[i][0]].split(",")[1][:-1] == " 'ausreichend vorhanden'")else "red") for i in range (len(data))]
 
-
-
     tooltips= ["medium occupancy" if (one[data.iloc[i][0]].split(",")[1][:-1]== " 'wenige vorhanden'") else ("low occupancy" if (one[data.iloc[i][0]].split(",")[1][:-1] == " 'ausreichend vorhanden'")else "high occupancy") for i in range (len(data))]
     html = create_html(data, screensize,colors)
     markers = []
