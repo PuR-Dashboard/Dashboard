@@ -345,6 +345,35 @@ def update_characteristics_in_csv(dic) -> None:
                 writer.writerow(line)  # Write the line to the csv file
 
 
+def add_characteristics_to_csv(charac: str) -> None:
+    """
+    This function adds the characteristics of the location to the csv file.
+
+    Parameters
+    ----------
+    charac : str
+        String containing the characteristics of the location.
+    """
+
+    with open(path_to_characteristics, 'r', newline='') as f:  # Open the csv file
+        reader = csv.reader(f)  # Create a csv reader
+        lines = list(reader)  # Read the csv file
+
+    for i in range(3, len(lines[0])):
+        if charac < lines[0][i]:
+            insert_index = i
+            break
+
+    lines[0].insert(insert_index, charac)
+
+    for i in range(1, len(lines)):
+        lines[i].insert(insert_index, '')
+
+    with open(path_to_characteristics, 'w', newline='') as f:  # Open the csv file
+        writer = csv.writer(f)  # Create a csv writer
+        writer.writerows(lines)  # Write the new content to the csv file
+
+
 # --- Functions for the Occupancy.csv file --- #
 
 # TODO: Add a function that updates the occupancies of all locations
@@ -433,7 +462,7 @@ def add_location_to_occ_csv(location: str) -> None:
 
     lines[0].append(location)  # Add the location to the first row
     for i in range(1, len(lines)):  # Iterate over the rows
-        lines[i].append('None')  # Add an empty value to the row
+        lines[i].append('')  # Add an empty value to the row
 
     with open(path_to_occupancy, 'w', newline='\n') as f:  # Open the csv file
         writer = csv.writer(f)  # Create a csv writer
