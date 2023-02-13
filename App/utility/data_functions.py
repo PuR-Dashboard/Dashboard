@@ -359,15 +359,15 @@ def add_characteristics_to_csv(charac: str) -> None:
         reader = csv.reader(f)  # Create a csv reader
         lines = list(reader)  # Read the csv file
 
-    for i in range(3, len(lines[0])):
-        if charac < lines[0][i]:
-            insert_index = i
-            break
+    for i in range(3, len(lines[0])):  # Iterate over the characteristics, except for the first three (location, lat, lon)
+        if charac < lines[0][i]:  # If the characteristic should be inserted before the current characteristic
+            insert_index = i  # Set the index to the current index
+            break  # Break the loop
 
-    lines[0].insert(insert_index, charac)
+    lines[0].insert(insert_index, charac)  # Insert the characteristic in the header
 
-    for i in range(1, len(lines)):
-        lines[i].insert(insert_index, '')
+    for i in range(1, len(lines)):  # Iterate over the locations
+        lines[i].insert(insert_index, '')  # Insert an empty value for the characteristic
 
     with open(path_to_characteristics, 'w', newline='') as f:  # Open the csv file
         writer = csv.writer(f)  # Create a csv writer
