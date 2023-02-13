@@ -307,7 +307,8 @@ def parse_contents(contents, filename:str):
 
 
 @app.callback(  # Create a callback for the index page
-    Output('page-content', 'children'),  # Output for the page content
+    [Output('page-content', 'children'),
+    Output('url', 'pathname')],  # Output for the page content
     [Input('url', 'pathname')]  # Input for the current URL of the page
 )
 def display_page(pathname):
@@ -329,11 +330,11 @@ def display_page(pathname):
     """
 
     if pathname == '/map_page':  # If the URL is map_page
-        return map_page.layout  # Return the layout of the map page
+        return map_page.layout, pathname  # Return the layout of the map page
     if pathname == '/list_page':  # If the URL is list_page
-        return list_page.layout  # Return the layout of the list page
+        return list_page.layout, pathname  # Return the layout of the list page
     else:  # If the URL is not map_page or list_page
-        return map_page.layout  # Return the layout of the map page
+        return map_page.layout, "/map_page"  # Return the layout of the map page
 
 """
 #callback to periodically refresh
@@ -557,7 +558,7 @@ def choose_correct_update(*args):
 
     elif triggered_id == "sideboard_price_filter" or triggered_id == "sideboard_occupancy_filter" or triggered_id == "sideboard_address_filter" or triggered_id == "sideboard_name_filter":
         #sidebar filter triggered
-        print("sidebar triggered")
+        
         #first reset data
         glob_vars.reset_data()
         #check for error
