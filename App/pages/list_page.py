@@ -303,7 +303,6 @@ def create_table(content:list)->dbc.Table :
     return table_1
 
 
-
 #!!!!Fehlen die Daten, um die Verteilung für die Orte individuell zu gestalten
 def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
     """
@@ -341,7 +340,6 @@ def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
 
 
     return graph
-
 
 
 #----!!! Names and content is at the moment created through the create_content() def, will need new creation function after create_content() is DEPRECATED
@@ -424,7 +422,6 @@ html_list_for_layout = create_layout(names, content)
 layout = html.Div(children=html_list_for_layout, id="list_layout", style = CONTENT_STYLE)
 
 
-
 def edit_data(changed_data:list[str],index:int)-> None:
     """
     This function edits the data according to the changes in the edit_window and displays the changes.
@@ -439,19 +436,11 @@ def edit_data(changed_data:list[str],index:int)-> None:
 
     """
 
-
     temp_data = get_data("Characteristics.csv")
-
 
     characteristics = define_chracteristics()
 
-
-
-
     location = glob_vars.data.iloc[index]["location"]
-
-
-
 
     for i in range (len(temp_data)):
         if temp_data.iloc[i]["location"] == location:
@@ -474,7 +463,6 @@ def edit_data(changed_data:list[str],index:int)-> None:
             array.append(changed_data[i])
 
     update_characteristics_in_csv(array)
-
 
 
 def define_inputs_edit(special_ones:list)->list:
@@ -506,6 +494,34 @@ def define_inputs_edit(special_ones:list)->list:
 
     return inputs
 
+def define_outputs_edit(special_ones:list)->list:
+    """
+    This function creates a list of all inputs for the callback to edit the data for a location.
+
+    Parameters
+    ----------
+    special_ones:
+        A list of inputs which are final.
+
+    Returns
+    -------
+    outputs :
+        A list of all inputs to edit the data of a location.
+
+    """
+
+    outputs = []
+
+    for one in special_ones:
+        outputs.append(one)
+
+    characteristics= define_chracteristics()
+
+    for characs in characteristics:
+        outputs.append(Output({"type": "edit_"+characs, "index": MATCH}, 'value'))
+
+    return outputs
+
 
 def refresh_layout() -> list:
     """
@@ -528,12 +544,7 @@ def refresh_layout() -> list:
 
     return layout
 
-
-
-
 #Callbacks:-----------------------------------------------
-
-
 
 #callback to observe if the delete button has been pressed
 #open security question window as response
@@ -685,20 +696,12 @@ def toggle_collapses(_butts, stats):
         #return opposite state of triggered button for either collapse or expand
         return not stats
 
-
-
-
-
-
 #method which edits the data according to the changes in the edit_window
-
-
 
 @callback(
     Output("placeholder_div_edit" , "n_clicks"),
     [Input({"type": "edit_controller", "index": ALL}, "is_open")]
 )
-
 def edit_window_observer(_n)-> int:
     """
     This helper function for the edit function.
@@ -720,13 +723,9 @@ def edit_window_observer(_n)-> int:
 
 
 
-
-
-
 #method to open the edit window and to close it after pressing the apply button
 @callback(
-    [Output({"type": "edit_window", "index": MATCH}, "is_open"),
-     Output({"type": "edit_controller", "index": MATCH}, "is_open")],
+    define_outputs_edit([Output({"type": "edit_window", "index": MATCH}, "is_open"),Output({"type": "edit_controller", "index": MATCH}, "is_open")]),
      define_inputs_edit([Input({"type": "pen_button", "index": MATCH}, 'n_clicks'),Input({"type": "edit_submit_button", "index": MATCH}, 'n_clicks')]),
     [State({"type": "edit_window", "index": MATCH}, "is_open")],
     prevent_initial_call=True,
@@ -766,16 +765,24 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,*params):
     triggered_id = ctx.triggered_id
 
     #+global data
+    characs = define_chracteristics()
 
     # if the edit button was pressed the edit window opens
     if triggered_id["type"] == "pen_button":
-        return (not params[-1]), dash.no_update
+        row = glob_vars.data.iloc[triggered_id.index]
+
+        display_list = []
+
+        for c in characs:
+            display_list.append(row[c])
+
+        return (not params[-1], dash.no_update) + tuple(display_list)
 
     # if the apply button was pressed the edit window closes and the data updates
     elif triggered_id["type"] == "edit_submit_button" :
-
+        none_list = [None for x in characs]
         edit_data(params[:-1],triggered_id.index)
-        return(not params[-1]),1
+        return (not params[-1],1) + tuple(none_list)
     else:
         raise PreventUpdate
 

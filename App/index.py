@@ -573,7 +573,6 @@ def choose_correct_update(*args):
             glob_vars.current_filter[s] = val
 
         #filter with new filter dictionary
-
         filter_data()
 
 
@@ -587,10 +586,6 @@ def choose_correct_update(*args):
         raise PreventUpdate
 
         #raise ValueError("A Page is not accounted for in the update method")
-
-
-
-
 
 
 
