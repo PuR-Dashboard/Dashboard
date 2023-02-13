@@ -224,7 +224,7 @@ def get_occupancy_list_from_vals(occupancy_vals:list[str]) -> list[str]:
 
     #temporary dictionary while we haven't translated the values yet wil be removed in the end!
     #print(occupancy_vals)
-    translation_dict = {"low":"keine vorhanden", "medium":"wenige vorhanden", "high":"viele vorhanden"} #korrekte bezeichnung für high occupancy???
+    translation_dict = {"low":"keine vorhanden", "medium":"wenige vorhanden", "high":"ausreichend vorhanden"} #korrekte bezeichnung für high occupancy???
     #convert list to german values
     occupancy_vals = [translation_dict[o] for o in occupancy_vals]
     #print(occupancy_vals)

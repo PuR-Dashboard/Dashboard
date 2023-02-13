@@ -22,6 +22,10 @@ import datetime
 import io
 from csv import reader
 
+#make app runnable
+from threading import Timer
+import webbrowser
+
 """
 This is the main index file to control the app layout.
 Further, it includes callback functions for the different pages of the application.
@@ -881,11 +885,14 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
 
 
 
-
+def open_browser():
+    if not os.environ.get("WERKZEUG_RUN_MAIN"):
+        webbrowser.open_new('http://127.0.0.1:8050/')
 
 
 
 # Run the app on localhost:8050
 if __name__ == '__main__':
     update_occupancies()
+    Timer(1, open_browser).start()
     app.run_server(debug=True)
