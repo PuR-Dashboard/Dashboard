@@ -517,7 +517,7 @@ def get_occupancy_from_url(url: str) -> str:
 
     data = get_dict_from_url(url)  # Access the API and get the dictionary with the information
 
-    tendency, occupancy = data['occupancy_tendency'], data['occupancy_label']  # Get the occupancy of the location
+    tendency, occupancy = data['occupancy_tendency'], data['occupancy_label:de']  # Get the occupancy of the location
 
     return tendency, occupancy  # Return the occupancy of the location
 

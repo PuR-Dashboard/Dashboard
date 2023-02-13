@@ -1,4 +1,4 @@
-timestamp,Heidelberg,Zwingenberg,Bamberg
+timestamp,Heidelberg,Eberbach,Bamberg
 2023-02-08 08:53:36.635210,stagnierend,zunehmend,zunehmend
 2023-02-08 08:53:59.858284,stagnierend,zunehmend,zunehmend
 2023-02-08 08:54:18.495229,stagnierend,zunehmend,zunehmend
@@ -22,3 +22,5 @@ timestamp,Heidelberg,Zwingenberg,Bamberg
 2023-02-09 18:16:14.501457,"('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')"
 2023-02-09 18:16:57.002140,"('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')"
 2023-02-09 18:17:18.592137,"('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')"
+2023-02-13 08:25:26.403279,"('increasing', 'keine vorhanden')","('stagnating', 'keine vorhanden')","('increasing', 'wenige vorhanden')"
+2023-02-13 08:25:35.113259,"('increasing', 'keine vorhanden')","('stagnating', 'keine vorhanden')","('increasing', 'wenige vorhanden')"
