@@ -167,7 +167,7 @@ def filter_names(df:pd.DataFrame, filteraspect:str, key:str) -> pd.DataFrame:
     index = []
     Deleted = False
 
-    filterchar = [char for char in filteraspect]
+    filterchar = [char.lower() for char in filteraspect]
 
     #iterate through all rows of the dataframe
     index = 0
@@ -179,7 +179,7 @@ def filter_names(df:pd.DataFrame, filteraspect:str, key:str) -> pd.DataFrame:
         #get value of current row at given key
         location = df.iloc[index][key]
         #preprocess value in row
-        locationchar =  [char for char in location]
+        locationchar =  [char.lower() for char in location]
 
         #compare characterized input and value for similarity
         for i in range(len(filterchar)):
