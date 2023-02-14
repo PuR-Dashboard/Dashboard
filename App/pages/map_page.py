@@ -38,7 +38,6 @@ CONTENT_STYLE = { #style the content of map_page so that it aligns with the side
 def define_chracteristics()-> list:
     """
     This functions creates a list with all current characteristics.
-
     Returns
     -------
     characteristics2:list
@@ -64,12 +63,10 @@ def define_chracteristics()-> list:
 def create_html_map(data:pd.DataFrame)-> list:
     """
     This function creates a map and adds it to the map_page.
-
     Parameters
     ----------
     data: Panda DataFrame
         The data which should be visualized.
-
     Returns
     -------
     html_list:
@@ -106,7 +103,6 @@ layout = html.Div( #creating the layout
 def reverse_Map()->list:
     """
     This function reverses the map (all filters are removed).
-
     Returns
     -------
     html_map :
@@ -124,7 +120,6 @@ def keep_layout_Map()-> list:
     """
     This function replaces the current dataframe with itself.
     Nothing should change.
-
     Returns
     -------
     html_map :
@@ -139,12 +134,10 @@ def keep_layout_Map()-> list:
 def filter_buttons_Map(filter_dict:pd.DataFrame)-> list:
     """
     This function replaces the current dataframe with the filtered version of the original.
-
     Parameters
     -------
     filter_dict :
         The filtered version of the dictionary.
-
     Returns
     -------
     layout:
@@ -162,12 +155,10 @@ def filter_buttons_Map(filter_dict:pd.DataFrame)-> list:
 def update(nr_clicks:int)-> list:
     """
     This function updates the dataframe according to the data (checking for potentiell changes in the data)
-
     Parameters
     -------
     nr_clicks:
         Number of clicks.
-
     Returns
     -------
     layout:
@@ -201,15 +192,12 @@ def update(nr_clicks:int)-> list:
 def update_layout(*args):
     """
     This function updates the layout of the map page by confirmation of other components like the refresh button.
-
     Inputs
     ----------
     update_map_div:
         A placeholder as an integer value to indicate that the map_page should be refreshed(can be from different sources)
-
     refresh_page:
         Number of clicks on the refresh button to refresh/update the page.
-
     Outputs
     -------
     layout_map:

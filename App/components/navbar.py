@@ -7,10 +7,13 @@ import dash
 
 FA_icon = html.I(className="fa fa-refresh")
 FA_icon_Import = html.I(className="fa fa-upload", style={"display":"inline-block"})
-refr_button = (html.Div(dbc.Button([FA_icon, " Refresh"], color="light", className="ms-2",id = "refresh_page", value = 0,
+#plus icon for adding a location
+FA_icon_Plus = html.I(className="fa fa-plus")
+refr_button = (html.Div
+                (dbc.Button([FA_icon, " Refresh"], color="light", className="ms-2",id = "refresh_page", value = 0,
                     style={
-                        "marginRight": "0%",
-                        "width": "120%",
+                        "margin-left":"800%",
+                        "width": "100%",
                         "height": "40%",
                         "fontSize": "1em",
                         "color": "white",
@@ -20,17 +23,34 @@ refr_button = (html.Div(dbc.Button([FA_icon, " Refresh"], color="light", classNa
                     )))
 
 
-import_button = (html.Div(dbc.Button([FA_icon_Import, " Import Locations"], color="light", className="ms-2",id = "import_button", value = 0,
-                    style={
-                        "marginRight": "0%",
-                        "width": "165%",
-                        "height": "40%",
-                        "fontSize": "1em",
-                        "color": "white",
-                        "background-color":"transparent", #set the background color to transparent
-                        "border": "transparent", #set the border color to transparent
+import_button = (html.Div
+                    (dbc.Button([FA_icon_Import, " Import Location"], color="light", className="ms-2",id = "import_button", value = 0,
+                      style={
+                            "marginRight": "40px",
+                            "width": "125%",
+                            "height": "40%",
+                            "fontSize": "1em",
+                            "color": "white",
+                            "background-color":"transparent", #set the background color to transparent
+                            "border": "transparent", #set the border color to transparent
                     },
                     )))
+
+add_location_button =  (html.Div
+                         (dbc.Button([FA_icon_Plus, " Add Location"], color="light", className="ms-2",id = "open_modal_add_location_button", value = 0,
+                            style={
+                                    "marginRight": "40px",
+                                    "width": "105%",
+                                    "height": "40%",
+                                    "fontSize": "1em",
+                                    "color": "white",
+                                    "background-color":"transparent", #set the background color to transparent
+                                    "border": "transparent", #set the border color to transparent
+                    },
+                    )))
+
+
+
 
 def get_navbar()-> dbc.Navbar:
     """
@@ -70,16 +90,19 @@ def get_navbar()-> dbc.Navbar:
 
                     dbc.Row([
                         dbc.Col(
-                           dbc.NavItem(refr_button),
+                           dbc.NavItem(import_button),
                         ),
                         dbc.Col(
-                           dbc.NavItem(import_button),
+                           dbc.NavItem(add_location_button),
+                        ),
+                         dbc.Col(
+                           dbc.NavItem(refr_button),
                         ),
                         dbc.Col(
                            dbc.NavItem(make_import_modal()),
                         )
                     ],
-                    align="center"),
+                    align="right"),
                 ],
             fluid=True
             ),

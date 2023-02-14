@@ -3,6 +3,7 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc, callback, ctx
 from dash.dependencies import Input, Output, State, MATCH, ALL
 import numpy as np
+import pandas as pd
 from dash.exceptions import PreventUpdate
 #from utility.util_functions import *
 from utility.filter_funktion import *
@@ -23,6 +24,7 @@ ARR_BUTTON_STYLE = { #Define the style of the arrow button
     "border": "transparent" #set the border color to transparent
 }
 FA_icon_Arrow = html.I(className="fa fa-chevron-down fa-lg") #arrow icon for the arrow button
+FA_icon_Tendency_Arrow =html.I(className="fa fa-arrow-down")
 
 CONTENT_STYLE = { #style the content of list_page so that it aligns with the sidebar
     "position": "fixed",
@@ -129,7 +131,7 @@ def create_edit_window(index:int)-> dbc.Modal:
                                     id={"type":"edit_address", "index":index},
                                     type="text",  # Set the type of the input field to text
                                     debounce=False,  # Set the debounce-attribute of the input field to True
-                                    placeholder="edit adress",
+                                    placeholder="edit address",
                                     value=None  # Set the value of the input field to an empty string
                     ),
                     dbc.Label("Administration:",style = {"margin-top":"5%"}),
@@ -168,7 +170,7 @@ def create_edit_window(index:int)-> dbc.Modal:
                         id={"type":"edit_number_parking_lots", "index":index}
                     ),
 
-                    dbc.Label("Max Price(\u20ac):",style = {"margin-top":"5%"}),
+                    dbc.Label("Max. Price per Day (\u20ac):",style = {"margin-top":"5%"}),
                     dbc.Input(
                         id={"type":"edit_price", "index":index},
                         type="number",  # Set the type of the input field to text
@@ -293,9 +295,11 @@ def create_table(content:list)->dbc.Table :
     table_header = [
         html.Thead(html.Tr([html.Th("Characteristics"), html.Th("Values")]), style = {"marginTop":"5%"})
     ]
+    
     charakter = define_chracteristics()
     rows = [html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]) for i in range (len(charakter))]
-
+    rows.append(html.Tr([html.Td("Occupancy"), html.Td("High")]))
+    rows.append(html.Tr([html.Td("Occupancy Tendency"), html.Td(FA_icon_Tendency_Arrow)]))
     table_body = [html.Tbody(rows)]
 
     table_1 = dbc.Table(table_header + table_body, borderless=False, hover=False, style = {"width":"100%"})
@@ -738,7 +742,7 @@ def edit_window_observer(_n)-> int:
     prevent_initial_call=True,
 )
 def open_edit_window(n_clicks_edit,n_clicks_submit,*params):
-#adress, parking_lots, accessibility,price, infrastructure, administration,kind, connection, edit_state):
+#address, parking_lots, accessibility,price, infrastructure, administration,kind, connection, edit_state):
 
     """
     This function handels editing the data and open/close the edit window.
@@ -751,7 +755,7 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,*params):
     n_clicks_submit:
         The number of clicks on the submit button to change the data according to the inputs.
 
-    adress, parking_lots, accessibility,price, infrastructure, administration,kind, connection, edit_state:
+    address, parking_lots, accessibility,price, infrastructure, administration,kind, connection, edit_state:
         The values of the charachteritsics which should be added.
 
     State

@@ -326,7 +326,6 @@ def add_new_location(_1, _2, _3, URL_value, *params):
         [Output("update_list_div", "n_clicks"),
         Output("update_map_div", "n_clicks"),
         Output("sideboard_name_filter", "value"),
-        Output("sideboard_address_filter", "value"),
         Output("sideboard_occupancy_filter", "value"),
         Output("sideboard_price_filter", "value"),],
         [Input('url', 'pathname'),
@@ -336,7 +335,6 @@ def add_new_location(_1, _2, _3, URL_value, *params):
         Input("clear_filter_button", "n_clicks"),
         Input("refresh_page", "n_clicks"),
         Input("sideboard_name_filter", "value"),
-        Input("sideboard_address_filter", "value"),
         Input("sideboard_occupancy_filter", "value"),
         Input("sideboard_price_filter", "value"),],
         prevent_initial_call=True
@@ -356,10 +354,10 @@ def choose_correct_update(*args):
     page_name = args[0]
 
     #manually write characteristics of quick filters
-    sidebar_characs = ["location", "address", "occupancy", "price"]
+    sidebar_characs = ["location", "occupancy", "price"]
 
     #num is amount of sidebar elements that are quickfilter, i.e. the last num inputs of this callback
-    num = 4
+    num = 3
     sidebar_values = args[-num:]
     # index of callback input for
 
@@ -371,7 +369,7 @@ def choose_correct_update(*args):
         #return refreshed layout with new data and empty value list for inputs
         sidebar_values = [None for x in sidebar_values]
 
-    elif triggered_id == "sideboard_price_filter" or triggered_id == "sideboard_occupancy_filter" or triggered_id == "sideboard_address_filter" or triggered_id == "sideboard_name_filter":
+    elif triggered_id == "sideboard_price_filter" or triggered_id == "sideboard_occupancy_filter" or triggered_id == "sideboard_name_filter":
         #sidebar filter triggered
         print("sidebar triggered")
         #first reset data
