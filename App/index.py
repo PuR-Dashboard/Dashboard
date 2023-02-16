@@ -22,6 +22,10 @@ import datetime
 import io
 from csv import reader
 
+#make app runnable
+from threading import Timer
+import webbrowser
+
 """
 This is the main index file to control the app layout.
 Further, it includes callback functions for the different pages of the application.
@@ -303,7 +307,8 @@ def parse_contents(contents, filename:str):
 
 
 @app.callback(  # Create a callback for the index page
-    Output('page-content', 'children'),  # Output for the page content
+    [Output('page-content', 'children'),
+    Output('url', 'pathname')],  # Output for the page content
     [Input('url', 'pathname')]  # Input for the current URL of the page
 )
 def display_page(pathname):
@@ -325,11 +330,11 @@ def display_page(pathname):
     """
 
     if pathname == '/map_page':  # If the URL is map_page
-        return map_page.layout  # Return the layout of the map page
+        return map_page.layout, pathname  # Return the layout of the map page
     if pathname == '/list_page':  # If the URL is list_page
-        return list_page.layout  # Return the layout of the list page
+        return list_page.layout, pathname  # Return the layout of the list page
     else:  # If the URL is not map_page or list_page
-        return map_page.layout  # Return the layout of the map page
+        return map_page.layout, "/map_page"  # Return the layout of the map page
 
 """
 #callback to periodically refresh
@@ -553,7 +558,7 @@ def choose_correct_update(*args):
 
     elif triggered_id == "sideboard_price_filter" or triggered_id == "sideboard_occupancy_filter" or triggered_id == "sideboard_address_filter" or triggered_id == "sideboard_name_filter":
         #sidebar filter triggered
-        print("sidebar triggered")
+        
         #first reset data
         glob_vars.reset_data()
         #check for error
@@ -568,7 +573,6 @@ def choose_correct_update(*args):
             glob_vars.current_filter[s] = val
 
         #filter with new filter dictionary
-
         filter_data()
 
 
@@ -582,10 +586,6 @@ def choose_correct_update(*args):
         raise PreventUpdate
 
         #raise ValueError("A Page is not accounted for in the update method")
-
-
-
-
 
 
 
@@ -881,11 +881,14 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
 
 
 
-
+def open_browser():
+    if not os.environ.get("WERKZEUG_RUN_MAIN"):
+        webbrowser.open_new('http://127.0.0.1:8050/')
 
 
 
 # Run the app on localhost:8050
 if __name__ == '__main__':
     update_occupancies()
+    Timer(1, open_browser).start()
     app.run_server(debug=True)

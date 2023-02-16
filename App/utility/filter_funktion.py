@@ -3,6 +3,7 @@ import pandas as pd
 from utility.data_functions import *
 from collections import defaultdict
 import pages.global_vars as glob_vars
+import ast
 
 #CURRENTLY UNUSED/DEPRECATED
 def filter_all(df: pd.DataFrame, filter_df: dict[str:str], negative=False)-> pd.DataFrame:
@@ -166,7 +167,7 @@ def filter_names(df:pd.DataFrame, filteraspect:str, key:str) -> pd.DataFrame:
     index = []
     Deleted = False
 
-    filterchar = [char for char in filteraspect]
+    filterchar = [char.lower() for char in filteraspect]
 
     #iterate through all rows of the dataframe
     index = 0
@@ -178,7 +179,7 @@ def filter_names(df:pd.DataFrame, filteraspect:str, key:str) -> pd.DataFrame:
         #get value of current row at given key
         location = df.iloc[index][key]
         #preprocess value in row
-        locationchar =  [char for char in location]
+        locationchar =  [char.lower() for char in location]
 
         #compare characterized input and value for similarity
         for i in range(len(filterchar)):
@@ -220,7 +221,16 @@ def get_occupancy_list_from_vals(occupancy_vals:list[str]) -> list[str]:
     name_list:
         A list of the location names that satisfy the given criteria.
     """
+
+    #temporary dictionary while we haven't translated the values yet wil be removed in the end!
+    #print(occupancy_vals)
+    translation_dict = {"low":"keine vorhanden", "medium":"wenige vorhanden", "high":"ausreichend vorhanden"} #korrekte bezeichnung für high occupancy???
+    #convert list to german values
+    occupancy_vals = [translation_dict[o] for o in occupancy_vals]
+    #print(occupancy_vals)
+
     #if no list given
+    #print(occupancy_vals)
     if occupancy_vals == None:
         return None
 
@@ -230,13 +240,19 @@ def get_occupancy_list_from_vals(occupancy_vals:list[str]) -> list[str]:
     #names that conform to occupancy values
     name_list = []
     #iterate all location names(=column names) for last column value
-    for col in occupancy_csv.columns.values:
+    for col in occupancy_csv.columns.values[1:]:
         #error prevention if no (valid) values in column then location does not suffice
         if occupancy_csv[col].empty or occupancy_csv[col].tolist()[-1] == None:
             continue
         #if last column value(=latest value) is equal to criteria then add location name
-        elif occupancy_csv[col].tolist()[-1] in occupancy_vals:
+        occ_value_string = occupancy_csv[col].tolist()[-1]
+        #print(occ_value_string, occ_value_string.split("'"))
+        occ_value = ast.literal_eval(occ_value_string)[-1]
+        #print(occ_value)
+        if occ_value in occupancy_vals:
             name_list.append(col)
+
+        #print(occupancy_csv[col].tolist()[-1], type(occupancy_csv[col].tolist()[-1]))
 
     #return list
     return name_list
@@ -284,7 +300,12 @@ def filter_content(df: pd.DataFrame, filter_dict:defaultdict) -> pd.DataFrame:
         #occupancy values have to be preprocessed, and filtering happens on location names based on that, hence own if statement
         elif key == "occupancy":
             #print("gotscha")
-            df = filter_for_list(df, "location", get_occupancy_list_from_vals(filter_dict[key]), filter_occupancy=True)
+            oc = filter_dict[key]
+            #print(type(oc))
+            if type(oc) != list:
+                oc = [oc]
+            #print(type(oc))
+            df = filter_for_list(df, "location", get_occupancy_list_from_vals(oc), filter_occupancy=True)
         #if single string is given, only filter for that value(this statement will probably not be called)
         elif type(filter_dict[key]) == str:
             df = filter_for_value(df, key, filter_dict[key])
