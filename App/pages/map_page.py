@@ -125,7 +125,7 @@ def keep_layout_Map()-> list:
     html_map :
         A list of all components/layout of the map page.
     """
-    reset_data()
+    glob_vars.reset_data()
     filter_data()
 
     return create_html_map(glob_vars.data)

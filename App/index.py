@@ -286,6 +286,7 @@ def add_new_location(_1, _2, _3, URL_value, *params):
 
         # NOW FUNCTION TO ADD LOCATION TO CSV
         add_location(url=URL_value, dic=add_dictionary)
+        update_occupancies()
 
         return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
     else:

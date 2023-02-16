@@ -651,6 +651,8 @@ def delete_location(yes, no):
     row_to_delete = glob_vars.data.iloc[[triggered_id]]
     location_to_delete = row_to_delete["location"].values[0]
 
+    remove_location(location_to_delete)
+    """
     #get path of csv
     path = get_path_to_csv(name_of_csv="Characteristics.csv")
 
@@ -661,7 +663,7 @@ def delete_location(yes, no):
     #save to csv again
     temp_data.to_csv(path, index=False)
     #remove_location_from_json(location=location_to_delete)
-
+    """
     #renew global data
     glob_vars.reset_data()
     filter_data()
