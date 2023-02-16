@@ -139,6 +139,272 @@ def define_outputs_add_loction(special_ones:list)-> list:
 
     return outputs
 
+
+@app.callback(  # Create a callback for the index page
+    Output('page-content', 'children'),  # Output for the page content
+    [Input('url', 'pathname')]  # Input for the current URL of the page
+)
+def display_page(pathname):
+    """
+    This function updates the content of the page based on the URL.
+
+    Parameters
+    ----------
+    pathname:
+        The URL of the new page.
+
+    index:
+        The index of the deleted location.
+
+    Returns
+    -------
+    page-content:
+        The new page content in a layout format.
+    """
+
+    if pathname == '/map_page':  # If the URL is map_page
+        return map_page.layout  # Return the layout of the map page
+    if pathname == '/list_page':  # If the URL is list_page
+        return list_page.layout  # Return the layout of the list page
+    else:  # If the URL is not map_page or list_page
+        return map_page.layout  # Return the layout of the map page
+
+"""
+#callback to periodically refresh
+@app.callback(
+    [Output("update_list_div", "n_clicks"),
+     Output("update_map_div", "n_clicks"),],
+    [Input('url', 'pathname'),
+     Input("auto_refresh_interval", 'n_intervals')],
+    prevent_initial_call=True
+)
+def testing_pls(path, a):
+    ctxx = dash.callback_context
+    triggered_id = ctx.triggered_id
+
+
+    #parse/refresh urls/occupancy
+    if triggered_id == "url":
+        #dont update only because view is changed
+
+        return dash.no_update, dash.no_update
+
+    #still add url refreshing!!!!!!-----------------------
+    if path == "/list_page":
+        #update list page layout
+        return 1, dash.no_update
+    elif path == "/map_page":
+        #update map page layout
+        return dash.no_update, 1
+
+
+    #no update else
+    raise PreventUpdate
+"""
+
+
+
+
+
+
+#callback for adding new locations
+#receives button inputs and inputs from the modal input fields
+@app.callback(define_outputs_add_loction([Output("placeholder_div_adding", "n_clicks"),
+    Output("modal_add_location", "is_open"),
+    Output("modal_field_warning" , "style"),
+    Output("modal_add_location_url" , "value"),
+    Output("modal_add_location_name" , "value")]),
+    define_inputs_add_location([Input("modal_add_location_submit_button" , "n_clicks"),Input("open_modal_add_location_button" , "n_clicks"), Input("modal_add_location_cancel_button", "n_clicks"),Input("modal_add_location_url" , "value"),Input("modal_add_location_name", "value")]),
+    [State("modal_add_location", "is_open")],
+    prevent_initial_call=True,
+    suppress_callback_exceptions=True
+)
+def add_new_location(_1, _2, _3, URL_value, *params):
+    """
+    This function deletes a row from csv and give deletion confirmation to placeholder div.
+    Furthermore it checks if yes or no was pressed on security question and acts according to this.
+
+    Inputs
+    ----------
+    modal_add_location_submit_button:
+        Number of clicks on the submit button for adding a location(if it was pressed).
+
+    open_modal_add_location_button:
+        Number of clicks on the adding a new location button(if it was pressed).
+
+    modal_add_location_cancel_button
+        Number of clicks on the cancel button for adding a location(if it was pressed).
+
+    modal_add_location_url
+        The input for the URL for the occupancy of the new location.
+
+    modal_add_location_name
+        The input for the name of the new location.
+
+    rest of the params:
+        The value which was typed in the dash components to the corresponding characteristics.
+
+    State
+    ----------
+     modal_add_location:
+        The current state of the add_location_popup(visble or invisible).
+
+    Outputs
+    -------
+    placeholder_div_adding:
+        returns 1 to trigger the update function and update the layout of the list page.
+
+    modal_add_location:
+        The state of the add_location_popup(visble or invisible).
+
+    modal_field_warning:
+
+
+    modal_add_location_url
+
+    modal_add_location_name
+
+    """
+    """
+    structure of parameters:
+    - variables with underscore(_1,...) are n_clicks of buttons and not relevant
+    - URL_value is the given url
+    - params is every dash component that is also a characteristic and the pop up open state at the end
+    -> !!! order or parameters is important. Order is matched 1 to 1 to list of characteristics for adding new locations.
+            if new characteristics are added, then the order of the parameters must be changed accordingly!!!
+    Also order of putputs is depending on order of input
+    """
+
+    #get characteristics from data
+    characteristics = list(glob_vars.data.columns.values)
+
+    #latitude and longitude not given by pop up
+    non_changeable = ["lat", "lon"]
+    #remvove lat and lon
+    for n in non_changeable:
+        if n in characteristics:
+            characteristics.remove(n)
+
+    #extract state of pop up and characteristics
+    modal_state = params[-1]
+    characs = params[:-1]
+
+    #check for error
+    assert len(characs) == len(characteristics), "Number of characteristic inputs and characteristics in data must be the same"
+
+    triggered_id = ctx.triggered_id
+
+    #if cancel button was pressed return refresh confirmation, invisible style for error warning and list with empty values
+    if triggered_id == "modal_add_location_cancel_button" :
+        return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
+    #if open modal button was pressed
+    elif triggered_id == "open_modal_add_location_button" :
+        return (dash.no_update, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
+    elif triggered_id == "modal_add_location_submit_button" :
+        #check if URL and name are given
+        #url must be given
+        if URL_value == None or URL_value == "":
+
+            return (dash.no_update, modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
+
+        #location name must be given
+        if characs[0] == None or characs[0] == "":
+
+            return (dash.no_update, modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
+
+
+        #make dictionary for function
+        add_dictionary = {}
+
+        for c, charac in zip(characs, characteristics):
+            add_dictionary[charac] = c
+
+        # NOW FUNCTION TO ADD LOCATION TO CSV
+        add_location(url=URL_value, dic=add_dictionary)
+
+        return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
+    else:
+        raise PreventUpdate
+
+@app.callback(
+        [Output("update_list_div", "n_clicks"),
+        Output("update_map_div", "n_clicks"),
+        Output("sideboard_name_filter", "value"),
+        Output("sideboard_occupancy_filter", "value"),
+        Output("sideboard_price_filter", "value"),],
+        [Input('url', 'pathname'),
+        Input("auto_refresh_interval", 'n_intervals'),
+        Input("placeholder_div_filter", "n_clicks"),
+        Input("placeholder_div_adding", "n_clicks"),
+        Input("clear_filter_button", "n_clicks"),
+        Input("refresh_page", "n_clicks"),
+        Input("sideboard_name_filter", "value"),
+        Input("sideboard_occupancy_filter", "value"),
+        Input("sideboard_price_filter", "value"),],
+        prevent_initial_call=True
+)
+def choose_correct_update(*args):
+    """
+    last x args are input values from sidebar
+    first args element is name of page
+    order important according to sidebar_characs list
+
+    first output updates list, second one the map
+    """
+    #print(args)
+    triggered_id = ctx.triggered_id
+
+    #name of current page, important to decide which page to update
+    page_name = args[0]
+
+    #manually write characteristics of quick filters
+    sidebar_characs = ["location", "occupancy", "price"]
+
+    #num is amount of sidebar elements that are quickfilter, i.e. the last num inputs of this callback
+    num = 3
+    sidebar_values = args[-num:]
+    # index of callback input for
+
+
+    if triggered_id == "clear_filter_button":
+        #reset data and filter dictionary
+        glob_vars.reset_data()
+        glob_vars.reset_global_filter()
+        #return refreshed layout with new data and empty value list for inputs
+        sidebar_values = [None for x in sidebar_values]
+
+    elif triggered_id == "sideboard_price_filter" or triggered_id == "sideboard_occupancy_filter" or triggered_id == "sideboard_name_filter":
+        #sidebar filter triggered
+        print("sidebar triggered")
+        #first reset data
+        glob_vars.reset_data()
+        #check for error
+        assert len(sidebar_characs) == len(sidebar_values), "Number of filter inputs in sidebar and hardcoded characteristics must be equal"
+
+        #add filter values to dictionary
+        for s, val in zip(sidebar_characs, sidebar_values):
+
+            if val == "":
+                val = None
+
+            glob_vars.current_filter[s] = val
+
+        #filter with new filter dictionary
+
+        filter_data()
+
+
+    #if triggered_id == "placeholder_div_filter" or triggered_id == "placeholder_div_adding" or triggered_id == "url" or triggered_id == "refresh_page":
+    if page_name == "/list_page":
+        return (1, dash.no_update) + tuple(sidebar_values)
+    elif page_name == "/map_page":
+        return (dash.no_update, 1) + tuple(sidebar_values)
+    else: #error or page not accounted for
+        #print("Hoffentlich Startcallback")
+        raise PreventUpdate
+
+        #raise ValueError("A Page is not accounted for in the update method")
+
 def define_inputs_advanced_filter(special_ones:list)-> list:
     """
     This function creates a list of all inpus for the callback to conduct the advanced filter.
@@ -306,286 +572,6 @@ def parse_contents(contents, filename:str):
         raise e
 
 
-@app.callback(  # Create a callback for the index page
-    [Output('page-content', 'children'),
-    Output('url', 'pathname')],  # Output for the page content
-    [Input('url', 'pathname')]  # Input for the current URL of the page
-)
-def display_page(pathname):
-    """
-    This function updates the content of the page based on the URL.
-
-    Parameters
-    ----------
-    pathname:
-        The URL of the new page.
-
-    index:
-        The index of the deleted location.
-
-    Returns
-    -------
-    page-content:
-        The new page content in a layout format.
-    """
-
-    if pathname == '/map_page':  # If the URL is map_page
-        return map_page.layout, pathname  # Return the layout of the map page
-    if pathname == '/list_page':  # If the URL is list_page
-        return list_page.layout, pathname  # Return the layout of the list page
-    else:  # If the URL is not map_page or list_page
-        return map_page.layout, "/map_page"  # Return the layout of the map page
-
-"""
-#callback to periodically refresh
-@app.callback(
-    [Output("update_list_div", "n_clicks"),
-     Output("update_map_div", "n_clicks"),],
-    [Input('url', 'pathname'),
-     Input("auto_refresh_interval", 'n_intervals')],
-    prevent_initial_call=True
-)
-def testing_pls(path, a):
-    ctxx = dash.callback_context
-    triggered_id = ctx.triggered_id
-
-
-    #parse/refresh urls/occupancy
-    if triggered_id == "url":
-        #dont update only because view is changed
-
-        return dash.no_update, dash.no_update
-
-    #still add url refreshing!!!!!!-----------------------
-    if path == "/list_page":
-        #update list page layout
-        return 1, dash.no_update
-    elif path == "/map_page":
-        #update map page layout
-        return dash.no_update, 1
-
-
-    #no update else
-    raise PreventUpdate
-"""
-
-
-
-
-#--------------------callback-functions---------------------------------------------------------
-
-#callback for adding new locations
-#receives button inputs and inputs from the modal input fields
-@app.callback(define_outputs_add_loction([Output("placeholder_div_adding", "n_clicks"),
-    Output("modal_add_location", "is_open"),
-    Output("modal_field_warning" , "style"),
-    Output("modal_add_location_url" , "value"),
-    Output("modal_add_location_name" , "value")]),
-    define_inputs_add_location([Input("modal_add_location_submit_button" , "n_clicks"),Input("open_modal_add_location_button" , "n_clicks"), Input("modal_add_location_cancel_button", "n_clicks"),Input("modal_add_location_url" , "value"),Input("modal_add_location_name", "value")]),
-    [State("modal_add_location", "is_open")],
-    prevent_initial_call=True,
-    suppress_callback_exceptions=True
-)
-def add_new_location(_1, _2, _3, URL_value, *params):
-    """
-    This function adds a new locatin to the list of locations and updates the pages if the conditions are given. Otherwise a warning will be displayed.
-
-    Inputs
-    ----------
-    modal_add_location_submit_button:
-        Number of clicks on the submit button for adding a location(if it was pressed).
-
-    open_modal_add_location_button:
-        Number of clicks on the adding a new location button(if it was pressed).
-
-    modal_add_location_cancel_button
-        Number of clicks on the cancel button for adding a location(if it was pressed).
-
-    modal_add_location_url
-        The input for the URL for the occupancy of the new location.
-
-    modal_add_location_name
-        The input for the name of the new location.
-
-    rest of the params:
-        The value which was typed in the dash components to the corresponding characteristics.
-
-    State
-    ----------
-     modal_add_location:
-        The current state of the add_location_popup(visble or invisible).
-
-    Outputs
-    -------
-    placeholder_div_adding:
-        returns 1 to trigger the update function and update the layout of the list page.
-
-    modal_add_location:
-        The state of the add_location_popup(visble or invisible).
-
-    modal_field_warning:
-        The style of the warning outputs(if some conditions are not verified)
-
-
-    rest:
-        All the values of the charachteritsics to use them for further functions.
-    """
-
-    #get characteristics from data
-    characteristics = list(glob_vars.data.columns.values)
-
-    #latitude and longitude not given by pop up
-    non_changeable = ["lat", "lon"]
-    #remvove lat and lon
-    for n in non_changeable:
-        if n in characteristics:
-            characteristics.remove(n)
-
-    #extract state of pop up and characteristics
-    modal_state = params[-1]
-    characs = params[:-1]
-
-    #check for error
-    assert len(characs) == len(characteristics), "Number of characteristic inputs and characteristics in data must be the same"
-
-    triggered_id = ctx.triggered_id
-
-    #if cancel button was pressed return refresh confirmation, invisible style for error warning and list with empty values
-    if triggered_id == "modal_add_location_cancel_button" :
-        return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
-    #if open modal button was pressed
-    elif triggered_id == "open_modal_add_location_button" :
-        return (dash.no_update, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
-    elif triggered_id == "modal_add_location_submit_button" :
-        #check if URL and name are given
-        #url must be given
-        if URL_value == None or URL_value == "":
-
-            return (dash.no_update, modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
-
-        #location name must be given
-        if characs[0] == None or characs[0] == "":
-
-            return (dash.no_update, modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
-
-
-        #make dictionary for function
-        add_dictionary = {}
-
-        for c, charac in zip(characs, characteristics):
-            add_dictionary[charac] = c
-
-        # NOW FUNCTION TO ADD LOCATION TO CSV
-        add_location(url=URL_value, dic=add_dictionary)
-
-        return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
-    else:
-        raise PreventUpdate
-
-
-
-
-@app.callback(
-        [Output("update_list_div", "n_clicks"),
-        Output("update_map_div", "n_clicks"),
-        Output("sideboard_name_filter", "value"),
-        Output("sideboard_address_filter", "value"),
-        Output("sideboard_occupancy_filter", "value"),
-        Output("sideboard_price_filter", "value"),],
-        [Input('url', 'pathname'),
-        Input("auto_refresh_interval", 'n_intervals'),
-        Input("placeholder_div_filter", "n_clicks"),
-        Input("placeholder_div_adding", "n_clicks"),
-        Input("clear_filter_button", "n_clicks"),
-        Input("refresh_page", "n_clicks"),
-        Input("sideboard_name_filter", "value"),
-        Input("sideboard_address_filter", "value"),
-        Input("sideboard_occupancy_filter", "value"),
-        Input("sideboard_price_filter", "value"),],
-        prevent_initial_call=True
-)
-def choose_correct_update(*args):
-    """
-    This function chooses correctly which page should be updated based on the inputs and instruct further steps for the updating.
-
-    Inputs
-    ----------
-    url:
-        The name of the page(listpage or mappage).
-
-    auto_refresh_interval:
-        The number of intervals to update the page automatically.
-
-    placeholder_div_filter, placeholder_div_adding, clear_filter_button, refresh_page
-        Number of clicks on placeholders or buttons indicating that the page should be refreshed.
-
-    sideboard_name_filter, sideboard_address_filter, sideboard_occupancy_filter, sideboard_price_filter
-        The input filter values from the sidebar.
-
-    Outputs
-    -------
-    update_list_div:
-        returns 1 to trigger the update function in list_page to update the listpage.
-
-    update_map_div:
-        returns 1 to trigger the update function in map_page to update the mappage.
-
-    sideboard_name_filter, sideboard_address_filter, sideboard_occupancy_filter, sideboard_price_filter :
-        The value which was typed in the dash components to the corresponding filters for further functions.
-    """
-
-    #print(args)
-    triggered_id = ctx.triggered_id
-
-    #name of current page, important to decide which page to update
-    page_name = args[0]
-
-    #manually write characteristics of quick filters
-    sidebar_characs = ["location", "address", "occupancy", "price"]
-
-    #num is amount of sidebar elements that are quickfilter, i.e. the last num inputs of this callback
-    num = 4
-    sidebar_values = args[-num:]
-    # index of callback input for
-
-
-    if triggered_id == "clear_filter_button":
-        #reset data and filter dictionary
-        glob_vars.reset_data()
-        glob_vars.reset_global_filter()
-        #return refreshed layout with new data and empty value list for inputs
-        sidebar_values = [None for x in sidebar_values]
-
-    elif triggered_id == "sideboard_price_filter" or triggered_id == "sideboard_occupancy_filter" or triggered_id == "sideboard_address_filter" or triggered_id == "sideboard_name_filter":
-        #sidebar filter triggered
-        
-        #first reset data
-        glob_vars.reset_data()
-        #check for error
-        assert len(sidebar_characs) == len(sidebar_values), "Number of filter inputs in sidebar and hardcoded characteristics must be equal"
-
-        #add filter values to dictionary
-        for s, val in zip(sidebar_characs, sidebar_values):
-
-            if val == "":
-                val = None
-
-            glob_vars.current_filter[s] = val
-
-        #filter with new filter dictionary
-        filter_data()
-
-    #if triggered_id == "placeholder_div_filter" or triggered_id == "placeholder_div_adding" or triggered_id == "url" or triggered_id == "refresh_page":
-    if page_name == "/list_page":
-        return (1, dash.no_update) + tuple(sidebar_values)
-    elif page_name == "/map_page":
-        return (dash.no_update, 1) + tuple(sidebar_values)
-    else: #error or page not accounted for
-        #print("Hoffentlich Startcallback")
-        return (dash.no_update, 1) + tuple(sidebar_values)
-        #raise PreventUpdate
-
-        #raise ValueError("A Page is not accounted for in the update method")
 
 
 

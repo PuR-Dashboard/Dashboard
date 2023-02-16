@@ -6,10 +6,14 @@ from dash.dependencies import Input, Output, State
 import dash
 
 FA_icon = html.I(className="fa fa-refresh")
-refr_button = (html.Div(dbc.Button([FA_icon, " Refresh"], color="light", className="ms-2",id = "refresh_page", value = 0,
+FA_icon_Import = html.I(className="fa fa-upload", style={"display":"inline-block"})
+#plus icon for adding a location
+FA_icon_Plus = html.I(className="fa fa-plus")
+refr_button = (html.Div
+                (dbc.Button([FA_icon, " Refresh"], color="light", className="ms-2",id = "refresh_page", value = 0,
                     style={
-                        "marginRight": "0%",
-                        "width": "auto",
+                        "margin-left":"800%",
+                        "width": "100%",
                         "height": "40%",
                         "fontSize": "1em",
                         "color": "white",
@@ -19,17 +23,34 @@ refr_button = (html.Div(dbc.Button([FA_icon, " Refresh"], color="light", classNa
                     )))
 
 
-import_button = (html.Div(dbc.Button("Import Locations", color="light", className="ms-2",id = "import_button", value = 0,
-                    style={
-                        "marginRight": "20%",
-                        "width": "auto",
-                        "height": "40%",
-                        "fontSize": "1em",
-                        "color": "white",
-                        "background-color":"transparent", #set the background color to transparent
-                        "border": "transparent", #set the border color to transparent
+import_button = (html.Div
+                    (dbc.Button([FA_icon_Import, " Import Location"], color="light", className="ms-2",id = "import_button", value = 0,
+                      style={
+                            "marginRight": "40px",
+                            "width": "125%",
+                            "height": "40%",
+                            "fontSize": "1em",
+                            "color": "white",
+                            "background-color":"transparent", #set the background color to transparent
+                            "border": "transparent", #set the border color to transparent
                     },
                     )))
+
+add_location_button =  (html.Div
+                         (dbc.Button([FA_icon_Plus, " Add Location"], color="light", className="ms-2",id = "open_modal_add_location_button", value = 0,
+                            style={
+                                    "marginRight": "40px",
+                                    "width": "105%",
+                                    "height": "40%",
+                                    "fontSize": "1em",
+                                    "color": "white",
+                                    "background-color":"transparent", #set the background color to transparent
+                                    "border": "transparent", #set the border color to transparent
+                    },
+                    )))
+
+
+
 
 def get_navbar()-> dbc.Navbar:
     """
@@ -69,16 +90,19 @@ def get_navbar()-> dbc.Navbar:
 
                     dbc.Row([
                         dbc.Col(
-                           dbc.NavItem(refr_button),
+                           dbc.NavItem(import_button),
                         ),
                         dbc.Col(
-                           dbc.NavItem(import_button),
+                           dbc.NavItem(add_location_button),
+                        ),
+                         dbc.Col(
+                           dbc.NavItem(refr_button),
                         ),
                         dbc.Col(
                            dbc.NavItem(make_import_modal()),
                         )
                     ],
-                    align="center"),
+                    align="right"),
                 ],
             fluid=True
             ),
@@ -152,11 +176,18 @@ def make_import_modal()-> dbc.Modal:
                             html.Label("", id="modal_import_warning", style={"display":"block", "color":"red"}),
                             dbc.Button(  # Button to import and close the modal
                                 "Upload",  # Text of the button
-                                color="primary",  # Set the color of the button to primary
+                                style = {"background-color":"#b3b3b3",
+                                         "border": "black",
+                                         "color": "black" # Set the color of the button to black
+                                         },  
                                 id="modal_import_file_upload_button"# Set the id of the button
                             ),
                             dbc.Button(  # Button to close the modal, changes will be discarded
-                                "Cancel",  # Text of the button
+                                "Cancel",
+                                 style = {"background-color":"#b3b3b3",
+                                         "border": "black",
+                                         "color": "black" # Set the color of the button to black
+                                         },   # Text of the button
                                 id="modal_import_file_cancel_button"  # Set the id of the button
                             ),
                         ]

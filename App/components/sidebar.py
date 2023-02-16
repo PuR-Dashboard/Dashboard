@@ -9,6 +9,7 @@ SIDEBAR_STYLE = {
     "right": 0,
     "bottom": 0,
     "width": "auto",
+    "height": "93%",
     "padding": "2rem 1rem",
     "background-color": "#333333",
     "overflow": "scroll",
@@ -27,8 +28,7 @@ BUTTON_STYLE = {
 #symbols for the buttons:
 #trash icon for clearing all filters(?)
 FA_icon_Trash = html.I(className="fa fa-trash fa-lg")
-#plus icon for adding a location
-FA_icon_Plus = html.I(className="fa fa-plus fa-lg")
+
 
 
 def get_sidebar() -> html.Div:
@@ -48,6 +48,8 @@ def get_sidebar() -> html.Div:
             #sidebar visible components
             dbc.Nav(
                 [
+                    html.H4("Filter Options",style={'color': 'white'}),
+                    html.Div(html.Hr(),style={"color": "#b3b3b3"}),
                     html.H5("Location",style={'color': 'white'}),  # Label of the name search bar
                     dbc.Input(  # Input field for the name
                         id="sideboard_name_filter"  ,  # Set the id of the input field to sideboard_name_filter
@@ -58,16 +60,6 @@ def get_sidebar() -> html.Div:
                         autofocus=True  # Set the autofocus-attribute of the input field to True
                     ),
                     html.Hr(), #method to leave space between elements
-                       html.H5("Address",style={'color': 'white'}),  # Label of the address search bar
-                    dbc.Input(  # Input field
-                        id="sideboard_address_filter" , #ID
-                        type="text",  # Set the type of the input field to text
-                        debounce=False,  # Set the debounce-attribute of the input field to False
-                        value=None,  # Set the value of the input field
-                        placeholder="Address",  # Set the placeholder of the input field
-                        autofocus=False #no autofocus to not clash with name filter
-                    ),
-                    html.Hr(),
                     html.H5("Occupancy:",style={'color': 'white'}),  # Label for the occupancy input field
                     dbc.RadioItems(  # Radio buttons to select the occupancy
                         options=[  # Define the options of the radio buttons
@@ -82,7 +74,7 @@ def get_sidebar() -> html.Div:
                         style={'color': 'white'} #style of the buttons
                     ),
                     html.Hr(),
-                    html.H5("Price",style={'color': 'white'}),  # Label of the price filter
+                    html.H5("Max. Price per Day (\u20ac)",style={'color': 'white'}),  # Label of the price filter
                     dbc.Input(  # Input field
                         id="sideboard_price_filter" , #ID
                         type="number",  # Set the type of the input field to number
@@ -93,7 +85,7 @@ def get_sidebar() -> html.Div:
                     ),
                     html.Hr(),
                     dbc.Button(  # Button to filter the locations With all filters / open the advanced filter pop up
-                        "Advanced",  # Text of the button
+                        "Advanced Filter",  # Text of the button
                         id="advanced_filter_button" ,  # Set the id of the button to advanced_filter_button
                         value=999,
                         size= "md",
@@ -107,13 +99,7 @@ def get_sidebar() -> html.Div:
                         style=BUTTON_STYLE  # Set the style of the button to BUTTON_STYLE
                     ),
                     html.Br(),  # Line break
-                    dbc.Button(  # Button to add a new location
-                        [FA_icon_Plus, " Add Location"],  # icon + Text of the button
-                        id="open_modal_add_location_button" ,  # Set the id of the button to open_modal_add_location_button
-                        size= "md",
-                        class_name= "outline-dark",
-                        style=BUTTON_STYLE  # Set the style of the button to BUTTON_STYLE
-                    ),
+                  
                 ],
                 vertical=True, # allign elements vertically
                 pills=True, # "pill" style for components
@@ -187,7 +173,7 @@ def get_sidebar() -> html.Div:
                                  id='modal_advanced_filter_number_parking_lots' ,
                                  multi=True,
                              ),
-                             dbc.Label("Max. price(\u20ac):",style = {"margin-top":"2%"}),
+                             dbc.Label("Max. Price per Day (\u20ac):",style = {"margin-top":"2%"}),
                              dbc.Input(
                                  id="modal_advanced_filter_price" ,
                                  type="number",  # Set the type of the input field to text
@@ -319,7 +305,7 @@ def get_sidebar() -> html.Div:
                                 placeholder="Specify Number of parking spots",
                                 id="modal_add_location_number_parking_lots"
                             ),
-                            dbc.Label("Max Price:(\u20ac)",style = {"margin-top":"2%"}),
+                            dbc.Label("Max Price per Day (\u20ac):",style = {"margin-top":"2%"}),
                             dbc.Input(
                                 placeholder="Specify the max price in \u20ac",
                                 id="modal_add_location_price" ,
