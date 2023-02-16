@@ -43,14 +43,14 @@ def filter_max_value(df: pd.DataFrame, category:str, max_value:int) -> pd.DataFr
     df2:
         A filtered DataFrame based on the paramters.
     """
-    print(type(max_value))
+    #print(type(max_value))
     #if no value given, dont filter
     if max_value == None:
         return df
 
     #filtering process
     try:
-        df2 = df.drop(df.loc[df[category] > max_value].index)
+        df2 = df.drop(df.loc[df[category] > str(max_value)].index)
     except Exception as e:
         raise e("Something went wrong while filtering for a maximum value!")
     #reset the index and return df
