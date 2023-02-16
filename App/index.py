@@ -361,7 +361,7 @@ def choose_correct_update(*args):
 
     elif triggered_id == "sideboard_price_filter" or triggered_id == "sideboard_occupancy_filter" or triggered_id == "sideboard_name_filter":
         #sidebar filter triggered
-        print("sidebar triggered")
+        #print("sidebar triggered")
         #first reset data
         glob_vars.reset_data()
         #check for error

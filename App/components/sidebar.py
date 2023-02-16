@@ -91,7 +91,8 @@ def get_sidebar() -> html.Div:
                         size= "md",
                         style=BUTTON_STYLE  # Set the style of the button to BUTTON_STYLE
                     ),
-                    html.Br(),  # Line break
+                    html.Hr(),
+                    #html.Br(),  # Line break
                     dbc.Button(  # Button to clear all filters
                         [FA_icon_Trash, " Clear Filter"],  # Icon + Text of the button
                         id="clear_filter_button" ,  # Set the id of the button to clear_filter_button

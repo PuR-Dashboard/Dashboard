@@ -1,40 +1,52 @@
-timestamp,Heidelberg,Zwingenberg,Bamberg
-2023-02-08 08:53:36.635210,stagnierend,zunehmend,zunehmend
-2023-02-08 08:53:59.858284,stagnierend,zunehmend,zunehmend
-2023-02-08 08:54:18.495229,stagnierend,zunehmend,zunehmend
-2023-02-08 08:54:38.168177,stagnierend,zunehmend,zunehmend
-2023-02-08 08:54:58.059188,stagnierend,zunehmend,zunehmend
-2023-02-08 08:57:33.879097,stagnierend,zunehmend,zunehmend
-2023-02-08 09:02:51.769022,stagnierend,stagnierend,zunehmend
-2023-02-08 09:19:57.464599,stagnierend,stagnierend,zunehmend
-2023-02-08 09:25:22.734319,stagnierend,stagnierend,zunehmend
-2023-02-08 09:25:32.057004,stagnierend,stagnierend,zunehmend
-2023-02-08 09:25:41.567279,stagnierend,stagnierend,zunehmend
-2023-02-08 09:25:51.359009,stagnierend,stagnierend,zunehmend
-2023-02-08 09:26:00.736182,stagnierend,stagnierend,zunehmend
-2023-02-08 09:26:09.680064,stagnierend,stagnierend,zunehmend
-2023-02-08 09:26:19.225055,stagnierend,stagnierend,zunehmend
-2023-02-08 09:26:38.725228,stagnierend,stagnierend,zunehmend
-2023-02-08 09:26:29.064186,stagnierend,stagnierend,zunehmend
-2023-02-08 09:26:48.535337,stagnierend,stagnierend,zunehmend
-2023-02-09 18:08:22.591169,abnehmend,abnehmend,abnehmend
-2023-02-09 18:08:44.589965,abnehmend,abnehmend,abnehmend
-2023-02-09 18:16:14.501457,"('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')"
-2023-02-09 18:16:57.002140,"('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')"
-2023-02-09 18:17:18.592137,"('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')"
-2023-02-11 19:46:22.042961,"('abnehmend', 'wenige vorhanden')","('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')"
-2023-02-11 19:46:33.868965,"('abnehmend', 'wenige vorhanden')","('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')"
-2023-02-12 11:33:34.359544,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'ausreichend vorhanden')","('stagnierend', 'wenige vorhanden')"
-2023-02-12 11:33:40.926980,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'ausreichend vorhanden')","('stagnierend', 'wenige vorhanden')"
-2023-02-12 11:37:06.533461,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'ausreichend vorhanden')","('stagnierend', 'wenige vorhanden')"
-2023-02-13 08:11:49.801160,"('zunehmend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')"
-2023-02-13 08:11:59.993126,"('zunehmend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')"
-2023-02-13 08:27:53.385462,"('zunehmend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')","('zunehmend', 'wenige vorhanden')"
-2023-02-13 08:28:01.795282,"('zunehmend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')","('zunehmend', 'wenige vorhanden')"
-2023-02-13 08:30:37.918614,"('zunehmend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')"
-2023-02-13 08:31:15.675278,"('zunehmend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')"
-2023-02-13 08:31:47.429814,"('zunehmend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')"
-2023-02-13 08:31:57.699516,"('zunehmend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')"
-2023-02-13 08:37:15.795528,"('zunehmend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')"
-2023-02-13 09:14:10.888399,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')"
-2023-02-13 09:14:20.991661,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')"
+timestamp,Heidelberg,Zwingenberg,Bamberg,Eberbach
+2023-02-08 08:53:36.635210,stagnierend,zunehmend,zunehmend,None
+2023-02-08 08:53:59.858284,stagnierend,zunehmend,zunehmend,None
+2023-02-08 08:54:18.495229,stagnierend,zunehmend,zunehmend,None
+2023-02-08 08:54:38.168177,stagnierend,zunehmend,zunehmend,None
+2023-02-08 08:54:58.059188,stagnierend,zunehmend,zunehmend,None
+2023-02-08 08:57:33.879097,stagnierend,zunehmend,zunehmend,None
+2023-02-08 09:02:51.769022,stagnierend,stagnierend,zunehmend,None
+2023-02-08 09:19:57.464599,stagnierend,stagnierend,zunehmend,None
+2023-02-08 09:25:22.734319,stagnierend,stagnierend,zunehmend,None
+2023-02-08 09:25:32.057004,stagnierend,stagnierend,zunehmend,None
+2023-02-08 09:25:41.567279,stagnierend,stagnierend,zunehmend,None
+2023-02-08 09:25:51.359009,stagnierend,stagnierend,zunehmend,None
+2023-02-08 09:26:00.736182,stagnierend,stagnierend,zunehmend,None
+2023-02-08 09:26:09.680064,stagnierend,stagnierend,zunehmend,None
+2023-02-08 09:26:19.225055,stagnierend,stagnierend,zunehmend,None
+2023-02-08 09:26:38.725228,stagnierend,stagnierend,zunehmend,None
+2023-02-08 09:26:29.064186,stagnierend,stagnierend,zunehmend,None
+2023-02-08 09:26:48.535337,stagnierend,stagnierend,zunehmend,None
+2023-02-09 18:08:22.591169,abnehmend,abnehmend,abnehmend,None
+2023-02-09 18:08:44.589965,abnehmend,abnehmend,abnehmend,None
+2023-02-09 18:16:14.501457,"('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')",None
+2023-02-09 18:16:57.002140,"('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')",None
+2023-02-09 18:17:18.592137,"('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')",None
+2023-02-11 19:46:22.042961,"('abnehmend', 'wenige vorhanden')","('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')",None
+2023-02-11 19:46:33.868965,"('abnehmend', 'wenige vorhanden')","('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')",None
+2023-02-12 11:33:34.359544,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'ausreichend vorhanden')","('stagnierend', 'wenige vorhanden')",None
+2023-02-12 11:33:40.926980,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'ausreichend vorhanden')","('stagnierend', 'wenige vorhanden')",None
+2023-02-12 11:37:06.533461,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'ausreichend vorhanden')","('stagnierend', 'wenige vorhanden')",None
+2023-02-13 08:11:49.801160,"('zunehmend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')",None
+2023-02-13 08:11:59.993126,"('zunehmend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')",None
+2023-02-13 08:27:53.385462,"('zunehmend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')","('zunehmend', 'wenige vorhanden')",None
+2023-02-13 08:28:01.795282,"('zunehmend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')","('zunehmend', 'wenige vorhanden')",None
+2023-02-13 08:30:37.918614,"('zunehmend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')",None
+2023-02-13 08:31:15.675278,"('zunehmend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')",None
+2023-02-13 08:31:47.429814,"('zunehmend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')",None
+2023-02-13 08:31:57.699516,"('zunehmend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')",None
+2023-02-13 08:37:15.795528,"('zunehmend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')",None
+2023-02-13 09:14:10.888399,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')",None
+2023-02-13 09:14:20.991661,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'wenige vorhanden')",None
+2023-02-16 09:40:00.961106,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'keine vorhanden')",None
+2023-02-16 09:40:08.541456,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'keine vorhanden')",None
+2023-02-16 09:41:26.944911,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'keine vorhanden')",None
+2023-02-16 09:42:17.042765,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'keine vorhanden')",None
+2023-02-16 09:44:43.676742,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'keine vorhanden')",None
+2023-02-16 09:45:07.738419,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'keine vorhanden')",None
+2023-02-16 09:45:56.153581,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'keine vorhanden')",None
+2023-02-16 09:46:26.884159,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'keine vorhanden')",None
+2023-02-16 09:46:39.572290,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'keine vorhanden')",None
+2023-02-16 09:50:00.170698,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'keine vorhanden')",None
+2023-02-16 09:51:15.770769,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('zunehmend', 'keine vorhanden')",None
+2023-02-16 10:00:08.326852,"('stagnierend', 'keine vorhanden')","('zunehmend', 'keine vorhanden')"

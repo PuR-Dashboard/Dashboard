@@ -43,7 +43,7 @@ def filter_max_value(df: pd.DataFrame, category:str, max_value:int) -> pd.DataFr
     df2:
         A filtered DataFrame based on the paramters.
     """
-
+    print(type(max_value))
     #if no value given, dont filter
     if max_value == None:
         return df
@@ -224,7 +224,7 @@ def get_occupancy_list_from_vals(occupancy_vals:list[str]) -> list[str]:
 
     #temporary dictionary while we haven't translated the values yet wil be removed in the end!
     #print(occupancy_vals)
-    translation_dict = {"low":"keine vorhanden", "medium":"wenige vorhanden", "high":"ausreichend vorhanden"} #korrekte bezeichnung für high occupancy???
+    translation_dict = {"high":"keine vorhanden", "medium":"wenige vorhanden", "low":"ausreichend vorhanden"} #korrekte bezeichnung für high occupancy???
     #convert list to german values
     occupancy_vals = [translation_dict[o] for o in occupancy_vals]
     #print(occupancy_vals)
