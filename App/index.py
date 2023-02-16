@@ -141,7 +141,8 @@ def define_outputs_add_loction(special_ones:list)-> list:
 
 
 @app.callback(  # Create a callback for the index page
-    Output('page-content', 'children'),  # Output for the page content
+    [Output('page-content', 'children'),
+    Output('url', 'pathname')],  # Output for the page content
     [Input('url', 'pathname')]  # Input for the current URL of the page
 )
 def display_page(pathname):
@@ -159,51 +160,15 @@ def display_page(pathname):
     Returns
     -------
     page-content:
-        The new page content in a layout format.
+        The new page content in a layout format and the name of the page.
     """
 
     if pathname == '/map_page':  # If the URL is map_page
-        return map_page.layout  # Return the layout of the map page
+        return map_page.layout, pathname  # Return the layout of the map page
     if pathname == '/list_page':  # If the URL is list_page
-        return list_page.layout  # Return the layout of the list page
+        return list_page.layout, pathname  # Return the layout of the list page
     else:  # If the URL is not map_page or list_page
-        return map_page.layout  # Return the layout of the map page
-
-"""
-#callback to periodically refresh
-@app.callback(
-    [Output("update_list_div", "n_clicks"),
-     Output("update_map_div", "n_clicks"),],
-    [Input('url', 'pathname'),
-     Input("auto_refresh_interval", 'n_intervals')],
-    prevent_initial_call=True
-)
-def testing_pls(path, a):
-    ctxx = dash.callback_context
-    triggered_id = ctx.triggered_id
-
-
-    #parse/refresh urls/occupancy
-    if triggered_id == "url":
-        #dont update only because view is changed
-
-        return dash.no_update, dash.no_update
-
-    #still add url refreshing!!!!!!-----------------------
-    if path == "/list_page":
-        #update list page layout
-        return 1, dash.no_update
-    elif path == "/map_page":
-        #update map page layout
-        return dash.no_update, 1
-
-
-    #no update else
-    raise PreventUpdate
-"""
-
-
-
+        return map_page.layout, "/map_page"  # Return the layout of the map page
 
 
 
@@ -345,11 +310,32 @@ def add_new_location(_1, _2, _3, URL_value, *params):
 )
 def choose_correct_update(*args):
     """
-    last x args are input values from sidebar
-    first args element is name of page
-    order important according to sidebar_characs list
+    This function chooses correctly which page should be updated based on the inputs and instruct further steps for the updating.
 
-    first output updates list, second one the map
+    Inputs
+    ----------
+    url:
+        The name of the page(listpage or mappage).
+
+    auto_refresh_interval:
+        The number of intervals to update the page automatically.
+
+    placeholder_div_filter, placeholder_div_adding, clear_filter_button, refresh_page
+        Number of clicks on placeholders or buttons indicating that the page should be refreshed.
+
+    sideboard_name_filter, sideboard_address_filter, sideboard_occupancy_filter, sideboard_price_filter
+        The input filter values from the sidebar.
+
+    Outputs
+    -------
+    update_list_div:
+        returns 1 to trigger the update function in list_page to update the listpage.
+
+    update_map_div:
+        returns 1 to trigger the update function in map_page to update the mappage.
+
+    sideboard_name_filter, sideboard_address_filter, sideboard_occupancy_filter, sideboard_price_filter :
+        The value which was typed in the dash components to the corresponding filters for further functions.
     """
     #print(args)
     triggered_id = ctx.triggered_id
