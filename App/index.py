@@ -887,6 +887,5 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
 
 # Run the app on localhost:8050
 if __name__ == '__main__':
-    add_characteristics_to_csv("best")
-    """ update_occupancies()
-    app.run_server(debug=True) """
+    update_occupancies()
+    app.run_server(debug=True)
