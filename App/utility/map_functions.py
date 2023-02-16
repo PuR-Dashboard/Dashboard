@@ -15,6 +15,7 @@ import dash_bootstrap_components as dbc
 from dash import Input, Output, State, html
 import branca
 from utility.data_functions import *
+import pages.global_vars as glob_vars
 
 
 
@@ -77,12 +78,17 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
         Contains all Pop ups for all markers.
     """
     result = []
+    occupancy = glob_vars.occupancy
+
+    one = occupancy.iloc[len(occupancy)-1]
+
 
 
     for i in range (len(data)):
         one_location_previous = data.iloc[i]
+        one_occupancy = one[one_location_previous[0]].split(",")
         one_location = ["not specified" if (one_location_previous[i] == None) else one_location_previous[i] for i in range (len(one_location_previous)) ]
-        arrow = "&#x2B06;" if (one_location[3] == "increasing") else ("&#x2B07;" if (one_location[3] == "decreasing")else "&#x2B05;")
+        arrow = "&#x2B06;" if (one_occupancy[0][1:] == "zunehmend") else ("&#x2B07;" if (one_occupancy[0][1:] == "abnehmend")else "&#x2B05;")
         html=f"""
             <!DOCTYPE html>
             <html>
@@ -96,7 +102,7 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
                        <li style= "font-size: 15px"> <B><font face="Arial">Number of Parking Lots: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["number_parking_lots"]}</font></li>&thinsp;
                        <li style= "font-size: 15px"> <B><font face="Arial">Type of Facility:</font></B></font><font face="Arial">&emsp;{data.iloc[i]["kind"]}</font></li>&thinsp;
                        <li style= "font-size: 15px"> <B><font face="Arial">Public Transport Connections: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["public_transport"]}</font></li>&thinsp;
-                       <li style= "font-size: 15px"> <B><font face="Arial">Current Occupancy:</font></B> <font color = {colors[i]}>&emsp; {"None"}  </font>&emsp;{arrow}</li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">Current Occupancy:</font></B> <font color = {colors[i]}>&emsp; {one_occupancy[1][:-1]}  </font>&emsp;{arrow}</li>&thinsp;
                    </ul>
 
                        <table style= "border:1px solid black; background-color:#E3EFFA; text-align:center; font-size: 14px; width:100%; height:100%">
@@ -119,7 +125,7 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
                        <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
                        <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
                        <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
-                       <td><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td><font face="Arial"> <font color = {colors[i]}>&emsp; {one_occupancy[1]}  </font>&emsp;{arrow}</li></font></td>
                        </tr>
                        </table>
 
@@ -250,8 +256,13 @@ def update(data:pd.DataFrame,m:folium.Map)-> folium.Map:
 
     screensize = Bildschirmgroesse()
 
-    colors= ["orange" if (data.iloc[i][6] == "wenige vorhanden") else ("green" if (data.iloc[i][6] == "ausreichend vorhanden")else "red") for i in range (len(data))]
-    tooltips= ["mittlere Auslastung" if (data.iloc[i][6] == "wenige vorhanden") else ("geringe Auslastung" if (data.iloc[i][6] == "ausreichend vorhanden")else "starke Auslastung") for i in range (len(data))]
+    occupancy = glob_vars.occupancy
+    one = occupancy.iloc[len(occupancy)-1]
+
+
+    colors= ["orange" if (one[data.iloc[i][0]].split(",")[1][:-1] == " 'wenige vorhanden'") else ("green" if (one[data.iloc[i][0]].split(",")[1][:-1] == " 'ausreichend vorhanden'")else "red") for i in range (len(data))]
+
+    tooltips= ["medium occupancy" if (one[data.iloc[i][0]].split(",")[1][:-1]== " 'wenige vorhanden'") else ("low occupancy" if (one[data.iloc[i][0]].split(",")[1][:-1] == " 'ausreichend vorhanden'")else "high occupancy") for i in range (len(data))]
     html = create_html(data, screensize,colors)
     markers = []
     for  i in range (len(data)):

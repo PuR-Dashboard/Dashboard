@@ -575,7 +575,6 @@ def choose_correct_update(*args):
         #filter with new filter dictionary
         filter_data()
 
-
     #if triggered_id == "placeholder_div_filter" or triggered_id == "placeholder_div_adding" or triggered_id == "url" or triggered_id == "refresh_page":
     if page_name == "/list_page":
         return (1, dash.no_update) + tuple(sidebar_values)
@@ -583,7 +582,8 @@ def choose_correct_update(*args):
         return (dash.no_update, 1) + tuple(sidebar_values)
     else: #error or page not accounted for
         #print("Hoffentlich Startcallback")
-        raise PreventUpdate
+        return (dash.no_update, 1) + tuple(sidebar_values)
+        #raise PreventUpdate
 
         #raise ValueError("A Page is not accounted for in the update method")
 
