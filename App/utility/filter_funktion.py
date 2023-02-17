@@ -22,7 +22,7 @@ def filter_all(df: pd.DataFrame, filter_df: dict[str:str], negative=False)-> pd.
     else:
         return df
 
-                                                    #maybe max_value ist ein string?????
+                                                    
 def filter_max_value(df: pd.DataFrame, category:str, max_value:int) -> pd.DataFrame:
     """
     This function creates a dataframe which is based on the given DataFrame and filtered by the category and the maximum value.
@@ -43,7 +43,7 @@ def filter_max_value(df: pd.DataFrame, category:str, max_value:int) -> pd.DataFr
     df2:
         A filtered DataFrame based on the paramters.
     """
-    #print(type(max_value))
+   
     #if no value given, dont filter
     if max_value == None:
         return df
@@ -223,14 +223,11 @@ def get_occupancy_list_from_vals(occupancy_vals:list[str]) -> list[str]:
     """
 
     #temporary dictionary while we haven't translated the values yet wil be removed in the end!
-    #print(occupancy_vals)
     translation_dict = {"high":"keine vorhanden", "medium":"wenige vorhanden", "low":"ausreichend vorhanden"} #korrekte bezeichnung für high occupancy???
     #convert list to german values
     occupancy_vals = [translation_dict[o] for o in occupancy_vals]
-    #print(occupancy_vals)
-
+    
     #if no list given
-    #print(occupancy_vals)
     if occupancy_vals == None:
         return None
 
@@ -246,15 +243,11 @@ def get_occupancy_list_from_vals(occupancy_vals:list[str]) -> list[str]:
             continue
         #if last column value(=latest value) is equal to criteria then add location name
         occ_value_string = occupancy_csv[col].tolist()[-1]
-        #print(occ_value_string, occ_value_string.split("'"))
         occ_value = ast.literal_eval(occ_value_string)[-1]
-        #print(occ_value)
+        
         if occ_value in occupancy_vals:
             name_list.append(col)
 
-        #print(occupancy_csv[col].tolist()[-1], type(occupancy_csv[col].tolist()[-1]))
-
-    #return list
     return name_list
 
 
@@ -287,7 +280,7 @@ def filter_content(df: pd.DataFrame, filter_dict:defaultdict) -> pd.DataFrame:
         The dataframe filtered by the information of the filter_dict.
     """
 
-   #iterate over all characteristics/keys of the data
+    #iterate over all characteristics/keys of the data
     keys = df.columns.values
     for key in filter_dict:
          #if None then no value to filter for was given, so no filtering
@@ -296,15 +289,11 @@ def filter_content(df: pd.DataFrame, filter_dict:defaultdict) -> pd.DataFrame:
         #location and address are filtered by the autocomplete method filter names
         elif key == "location" or key == "address":
             df = filter_names(df, filter_dict[key], key)
-            #print("New Location filtered DF is: ", df)
         #occupancy values have to be preprocessed, and filtering happens on location names based on that, hence own if statement
         elif key == "occupancy":
-            #print("gotscha")
             oc = filter_dict[key]
-            #print(type(oc))
             if type(oc) != list:
                 oc = [oc]
-            #print(type(oc))
             df = filter_for_list(df, "location", get_occupancy_list_from_vals(oc), filter_occupancy=True)
         #if single string is given, only filter for that value(this statement will probably not be called)
         elif type(filter_dict[key]) == str:
@@ -316,5 +305,4 @@ def filter_content(df: pd.DataFrame, filter_dict:defaultdict) -> pd.DataFrame:
         elif type(filter_dict[key]) == int or type(filter_dict[key]) == float:
             df = filter_max_value(df, key, filter_dict[key])
 
-    #print("New DF is: ", df)
     return df

@@ -5,7 +5,6 @@ from dash.dependencies import Input, Output, State, MATCH, ALL
 import numpy as np
 import pandas as pd
 from dash.exceptions import PreventUpdate
-#from utility.util_functions import *
 from utility.filter_funktion import *
 from utility.data_functions import *
 from components.sidebar import get_sidebar
@@ -33,14 +32,8 @@ CONTENT_STYLE = { #style the content of list_page so that it aligns with the sid
     "flex-grow": "1",
     "seamless":"True"
 }
-#global sid
-#seitentag = "_list"
-
-#generate sidebar for this page
-#sid = get_sidebar(seitentag)
 
 
-# TODO: Move to other file
 def define_chracteristics()->list:
     """
     This functions creates a list with all current characteristics.
@@ -365,8 +358,6 @@ def create_layout(names:list[str], content:list[str]) -> list:
         A list of python dash and dash.html elements representing the layout of the list_page.
     """
     #currently content is list of strings, datatype will vary in the future
-    #global sid
-
 
     #init list of components
     html_list = []
@@ -416,7 +407,7 @@ def create_layout(names:list[str], content:list[str]) -> list:
         html_list.append(html.H3("No results found!"))
         html_list.append(html.Hr())
 
-    #html_list.append(sid)
+    
     html_list.append(
                 #placeholder div for output of location delete
                 html.Div(id="placeholder_div_delete_list", style={"display":"none"}))
@@ -652,18 +643,7 @@ def delete_location(yes, no):
     location_to_delete = row_to_delete["location"].values[0]
 
     remove_location(location_to_delete)
-    """
-    #get path of csv
-    path = get_path_to_csv(name_of_csv="Characteristics.csv")
-
-    #make temporary data and delete row
-    temp_data = get_data(name_of_csv="Characteristics.csv")
-    temp_data = temp_data[temp_data["location"] != location_to_delete]
-
-    #save to csv again
-    temp_data.to_csv(path, index=False)
-    #remove_location_from_json(location=location_to_delete)
-    """
+    
     #renew global data
     glob_vars.reset_data()
     filter_data()

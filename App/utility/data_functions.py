@@ -3,20 +3,12 @@ import requests
 import json
 import validators
 from datetime import datetime
-#from utility.util_functions import *
 from requests import Response
-
-#marcs imports aus util_functions
 import pandas as pd
 import os
 import pathlib
 from collections import defaultdict
-#import pages.global_vars as glob_vars
 
-
-
-#-------------------
-#marcs fucntions from util functions
 
 #get the top directory of our app, regardless of depth
 #TO-DO: Error if while loop breaks and nothing matching was found
@@ -43,8 +35,7 @@ def get_path_to_csv(name_of_csv="Characteristics.csv", app_name="App"):
 
 #get data stored in our Location Data and return DataFrame
 def get_data(name_of_csv="Location_Data.csv", app_name="App"):
-    #data_path = get_root_dir(app_name)
-    #print(os.path.join(data_path, os.path.join("Data", name_of_csv)))
+    
     df = pd.read_csv(get_path_to_csv(name_of_csv, app_name))
     return df
 
@@ -205,7 +196,6 @@ def remove_location_from_json(location: str) -> None:
 
     with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
         content = json.load(f)  # Load the content of the json file
-        print(content)
 
     del content[location]  # Delete the link for the location
 
@@ -347,7 +337,6 @@ def update_characteristics_in_csv(dic) -> None:
 
 # --- Functions for the Occupancy.csv file --- #
 
-# TODO: Add a function that updates the occupancies of all locations
 def update_occupancies():
     """
     This function updates the occupancies of all locations given in the Urls.json file.

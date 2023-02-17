@@ -2,7 +2,6 @@
 from dash import html, dcc, ctx
 from dash.dependencies import Input, Output, State
 import dash
-#from components import sidebar
 # Connect to main app.py file
 from app import app
 import dash_bootstrap_components as dbc
@@ -34,7 +33,6 @@ Further, it includes callback functions for the different pages of the applicati
 
 nav = navbar.get_navbar()  # Create the navbar
 sid = sidebar.get_sidebar()
-# sid = sidebar.get_sidebar()  # Create the sidebar
 
 app.layout = html.Div([  # Create a Div containing the navbar and the content
     dcc.Location(id='url', refresh=True),  # Track current URL of the page
@@ -269,14 +267,11 @@ def add_new_location(_1, _2, _3, URL_value, *params):
         #check if URL and name are given
         #url must be given
         if URL_value == None or URL_value == "":
-
             return (dash.no_update, modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
 
         #location name must be given
         if characs[0] == None or characs[0] == "":
-
             return (dash.no_update, modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
-
 
         #make dictionary for function
         add_dictionary = {}
@@ -338,7 +333,7 @@ def choose_correct_update(*args):
     sideboard_name_filter, sideboard_address_filter, sideboard_occupancy_filter, sideboard_price_filter :
         The value which was typed in the dash components to the corresponding filters for further functions.
     """
-    #print(args)
+    
     triggered_id = ctx.triggered_id
 
     #name of current page, important to decide which page to update
@@ -377,19 +372,14 @@ def choose_correct_update(*args):
             glob_vars.current_filter[s] = val
 
         #filter with new filter dictionary
-
         filter_data()
 
-
-    #if triggered_id == "placeholder_div_filter" or triggered_id == "placeholder_div_adding" or triggered_id == "url" or triggered_id == "refresh_page":
     if page_name == "/list_page":
         return (1, dash.no_update) + tuple(sidebar_values)
     elif page_name == "/map_page":
         return (dash.no_update, 1) + tuple(sidebar_values)
     else: #error or page not accounted for
-        #print("Hoffentlich Startcallback")
         raise PreventUpdate
-
         #raise ValueError("A Page is not accounted for in the update method")
 
 def define_inputs_advanced_filter(special_ones:list)-> list:
@@ -406,7 +396,6 @@ def define_inputs_advanced_filter(special_ones:list)-> list:
     inputs :
         A list of all inputs to conduct the advanced filter.
     """
-
 
     inputs = []
 
@@ -436,15 +425,12 @@ def define_outputs_advanced_filter(special_ones:list)->list:
         A list of all outputs to to conduct the advanced filter.
     """
 
-
     outputs = []
 
     for one in special_ones:
         outputs.append(one)
 
-
     characteristics= define_chracteristics()
-
 
     for characs in characteristics:
         outputs.append(Output("modal_advanced_filter_"+ characs, "value"))
@@ -488,7 +474,6 @@ def check_csv_validity(temp_df: pd.DataFrame) -> bool:
     for l in location_names:
         if l == None:
             return False
-
 
     return True
 
@@ -659,7 +644,6 @@ def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
             #assign values to filter dictionary
             glob_vars.current_filter[chara] = c
 
-        #print(glob_vars.current_filter)
         #filter data with filter dictionary
         filter_data()
         #return confirmation to filter placeholder, modal state and input values
@@ -747,7 +731,6 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
             glob_vars.temp_json = None
             return modal_state, csv_val, json_val, "Too many files uploaded!"
 
-
         #check if correct file types were uploaded
         admissible_types = [".json", ".csv"]
 
@@ -797,7 +780,6 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
             return modal_state, csv_val, None, "JSON File does not meet conventions!"
 
         #add both files to existing files
-
         #obtain which locations are new
         new_locations = []
         old_locatiions = list(glob_vars.data["location"])
@@ -845,7 +827,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
         filter_data()
 
         #TO-DO:
-        #update Occupancy for every location
+        update_occupancies()
 
         return not modal_state, None, None, ""
     else:
@@ -853,11 +835,9 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
         raise PreventUpdate
 
 
-
 def open_browser():
     if not os.environ.get("WERKZEUG_RUN_MAIN"):
         webbrowser.open_new('http://127.0.0.1:8050/')
-
 
 
 # Run the app on localhost:8050
