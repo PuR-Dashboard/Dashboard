@@ -5,8 +5,7 @@ from dash.dependencies import Input, Output, State, MATCH, ALL
 import numpy as np
 import pandas as pd
 from dash.exceptions import PreventUpdate
-#from utility.util_functions import *
-from utility.filter_funktion import *
+from utility.filter_function import *
 from utility.data_functions import *
 from components.sidebar import get_sidebar
 import plotly.express as px
@@ -291,11 +290,11 @@ def create_table(content:list)->dbc.Table :
     table_1:
         A tables which represents all the given data.
     """
-   
+
     table_header = [
         html.Thead(html.Tr([html.Th("Characteristics"), html.Th("Values")]), style = {"marginTop":"5%"})
     ]
-    
+
     charakter = define_chracteristics()
     rows = [html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]) for i in range (len(charakter))]
     rows.append(html.Tr([html.Td("Occupancy"), html.Td("High")]))
@@ -393,7 +392,7 @@ def create_layout(names:list[str], content:list[str]) -> list:
                     children=[
                         dbc.Row([ #getting the table and picture next to each other
                         dbc.Col(dbc.CardBody(create_table(content[i]), style ={"marginRight":"auto"})),
-                        dbc.Col(dbc.CardImg(src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1", 
+                        dbc.Col(dbc.CardImg(src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1",
                         style ={"height":"auto", "width":"auto","marginRight":"1%", "marginLeft": "auto", "marginTop": "6%","horizontalAlign": "right"})),
                     ],
                     style ={"width": "auto", "marginLeft": "1%"}),
@@ -404,12 +403,12 @@ def create_layout(names:list[str], content:list[str]) -> list:
                 ),
             create_edit_window(i), create_security_window(names[i], i), html.Div(id={"type":"edit_controller", "index":i}, style={"display":"none"}),
             html.Div(id={"type":"security_id_transmitter", "index":i}, style={"display":"none"}),
-                
+
             ],
             id={"type":"content", "index":i},
             is_open=False,
             style={"background-color":"#e6e6e6"},
-           
+
         ))
     #in case no name sare given(normally means filtering was unsuccessful)
     if len(names) == 0:

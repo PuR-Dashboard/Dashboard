@@ -3,30 +3,44 @@ import requests
 import json
 import validators
 from datetime import datetime
-#from utility.util_functions import *
+
 from requests import Response
 
-#marcs imports aus util_functions
+
 import pandas as pd
 import os
 import pathlib
 from collections import defaultdict
-#import pages.global_vars as glob_vars
+
 
 
 
 #-------------------
-#marcs fucntions from util functions
+#util functions
 
-#get the top directory of our app, regardless of depth
 #TO-DO: Error if while loop breaks and nothing matching was found
-def get_root_dir(name_of_top_folder="App"):
-    current_path = pathlib.Path(__file__).parent.resolve()
-    parent_path = current_path
-    while os.path.basename(parent_path) != name_of_top_folder:
-        parent_path = parent_path.parent.absolute()
+def get_root_dir(name_of_top_folder="App")-> str:
+    """
+    This function builds dynamically the directory to the parentfolder of the file we are searching independent of the folder depth.
 
-        if parent_path.parent.absolute() == parent_path:
+    Parameters
+    ----------
+    name_of_top_folder : str
+        Name of the topfolder of the file we want to have.
+
+    Returns
+    -------
+    parent_path:
+        The directory to the parentfolder of the file we are searching for.
+
+    """
+    current_path = pathlib.Path(__file__).parent.resolve()  # determining the current path
+    parent_path = current_path
+
+    while os.path.basename(parent_path) != name_of_top_folder: # searching for the given name_of_top_folder starting with the current path
+        parent_path = parent_path.parent.absolute() # searching on depth deeper
+
+        if parent_path.parent.absolute() == parent_path:  # if we found the corrcet name_of_top_folder we are stopping the search
             break
 
 
@@ -35,17 +49,49 @@ def get_root_dir(name_of_top_folder="App"):
     return parent_path
 
 
-def get_path_to_csv(name_of_csv="Characteristics.csv", app_name="App"):
-    data_path = get_root_dir(app_name)
+def get_path_to_csv(name_of_csv="Characteristics.csv", app_name="App")-> str:
+    """
+    This function builds dynamically the directory to the csv-file.
 
-    return os.path.join(data_path, os.path.join("Data", name_of_csv))
+    Parameters
+    ----------
+    name_of_csv : str
+        Name of the csv we are searching for.
+
+    app_name:
+        The name of the parent folder of the file we are searching for.
+
+    Returns
+    -------
+    path:
+        The directory to the csv file we are searching for.
+
+    """
+    data_path = get_root_dir(app_name) # determining the directory to the parent folder.
+
+    return os.path.join(data_path, os.path.join("Data", name_of_csv)) # creating the path to the name_of_csv filr by joining the directory of the parent folder with the given name of the csv.
 
 
-#get data stored in our Location Data and return DataFrame
-def get_data(name_of_csv="Location_Data.csv", app_name="App"):
-    #data_path = get_root_dir(app_name)
-    #print(os.path.join(data_path, os.path.join("Data", name_of_csv)))
-    df = pd.read_csv(get_path_to_csv(name_of_csv, app_name))
+
+def get_data(name_of_csv="Location_Data.csv", app_name="App")-> pd.DataFrame:
+    """
+    This function stores all the data in a DataFrame which are stored in the given csv file.
+
+    Parameters
+    ----------
+    name_of_csv : str
+        Name of the csv we are searching for.
+
+    app_name:
+        The name of the parent folder of the file we are searching for.
+
+    Returns
+    -------
+    df:
+        The DataFrame with all the data of the csv File.
+
+    """
+    df = pd.read_csv(get_path_to_csv(name_of_csv, app_name))  #transforming the data of the csv in a datframe.
     return df
 
 #----------------------------
@@ -63,7 +109,7 @@ path_to_occupancy = get_path_to_csv("Occupancy.csv") # Path to the csv file cont
 
 # --- General functions --- #
 
-def add_location(dic, url) -> None:
+def add_location(dic: pd.DataFrame, url:str) -> None:
     """
     This function adds the location with the corresponding url for the API access to the Urls.json file and adds the
     location with its corresponding characteristics to the Characteristics.csv file.
@@ -225,14 +271,14 @@ def update_url_in_json(location: str, url: str) -> None:
         The new url for the location.
     """
 
-    if not type(location) == str:
-        raise Exception('The given location is not a string')
+    if not type(location) == str:# If the location is not a string
+        raise Exception('The given location is not a string')  # Raise an exception
 
-    if not type(url) == str:
-        raise Exception('The given url is not a string')
+    if not type(url) == str: # If the URL is not a string
+        raise Exception('The given url is not a string') # Raise an exception
 
-    if not check_location_exists(location):
-        raise Exception('The location {} does not exist'.format(location))
+    if not check_location_exists(location):  # If the location does not exist
+        raise Exception('The location {} does not exist'.format(location))  # Raise an exception
 
     add_url_to_json(location, url)  # Update the link in the json file by calling the add_link_to_json function
 
@@ -316,7 +362,8 @@ def remove_location_from_csv(location: str) -> None:
                 writer.writerow(line)  # Write the line to the csv file
 
 
-def update_characteristics_in_csv(dic) -> None:
+
+def update_characteristics_in_csv(dic:pd.DataFrame) -> None:
     """
     This function updates the characteristics of the location in the csv file.
 
@@ -357,13 +404,15 @@ def update_occupancies():
     with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
         content = json.load(f)  # Load the content of the json file
         for location in content:
-            urls.append(content[location])
+            urls.append(content[location])#append the urls of the locations  of the json file
         f.close()
-    import time
-    for url in urls:
-        start_time = time.time()
-        occupancies.append(get_occupancy_from_url(url))
-        print("--- %s seconds ---" % (time.time() - start_time))
+
+    import time# importing the libary time
+
+    for url in urls:  #iterating through the all arrays
+        start_time = time.time()  #saving the starting time(current time)
+        occupancies.append(get_occupancy_from_url(url))  #getting the occupancy of the location by using the url of the location
+        print("--- %s seconds ---" % (time.time() - start_time))  #printing the time needed to get the occupancy informations
 
     with open(path_to_occupancy, 'a', newline='\n') as f:  # Open the csv file
         writer = csv.writer(f)  # Create a csv writer
@@ -404,11 +453,11 @@ def update_location_occupancy(location: str) -> None:
 
     new_row = [datetime.now()]  # Create a new row with the current time stamp
 
-    for i in range(len(all_locations)):
-        if all_locations[i] == location:
-            new_row.append((tendency, occupancy))
+    for i in range(len(all_locations)):  #iterating through all locations
+        if all_locations[i] == location:  #if the given location was found (already exist)
+            new_row.append((tendency, occupancy)) #adding th tendency and the occupancy of the location
         else:
-            new_row.append(last_row[i])
+            new_row.append(last_row[i])#for all other location we are storing the value of the last call
 
     with open(path_to_occupancy, 'a', newline='\n') as f:  # Open the csv file
         writer = csv.writer(f)  # Create a csv writer
@@ -451,21 +500,21 @@ def remove_location_from_occ_csv(location: str) -> None:
         The location that should be removed.
     """
 
-    with open(path_to_occupancy, 'r') as f:
-        reader = csv.reader(f)
-        lines = list(reader)
+    with open(path_to_occupancy, 'r') as f: # opening the occupancy file
+        reader = csv.reader(f)  # creating a reader for the file
+        lines = list(reader)  #storing the informations of the file in a list
 
-    for i in range(len(lines[0])):
-        if lines[0][i] == location:
+    for i in range(len(lines[0])):  #iterating through this list of occupancies
+        if lines[0][i] == location:  #if the location was found which should be deleted
             index = i
             break
 
-    for line in lines:
+    for line in lines:  # deleting the row
         del line[index]
 
-    with open(path_to_occupancy, 'w', newline='\n') as f:
-        writer = csv.writer(f)
-        writer.writerows(lines)
+    with open(path_to_occupancy, 'w', newline='\n') as f: # opening the occupancy file
+        writer = csv.writer(f) # creating a writer for the file
+        writer.writerows(lines) #writing all lines which are left in the file
         f.close()
 
 
@@ -537,16 +586,16 @@ def get_dict_from_url(url: str) -> dict:
         Dictionary containing the information for the facility.
     """
 
-    request = get_response_from_url(url)  # Send a request to the url and get the response
+    response = get_response_from_url(url)  # Send a request to the url and get the response
 
-    data = request.json()  # Extract the json data from the response
+    data = response.json()  # Extract the json data from the response
 
     return data[0]  # Return the first element of the list (that is, the dictionary)
 
 
 def get_response_from_url(url: str) -> Response:
     """
-    This function sends a request to the url and returns the response.
+    This function sends a request to the url and returns the response. The response is defined as the content saved in the IRL.
 
     Parameters
     ----------

@@ -10,10 +10,9 @@ from utility import map_functions
 from utility.map_functions import *
 from pandas import read_csv
 from pages import list_page
-#from utility.util_functions import *
 from components.sidebar import get_sidebar
 from utility.data_functions import *
-from utility.filter_funktion import *
+from utility.filter_function import *
 import pages.global_vars as glob_vars
 from collections import defaultdict
 from csv import reader
