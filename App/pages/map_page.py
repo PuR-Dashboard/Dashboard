@@ -18,14 +18,12 @@ from collections import defaultdict
 from csv import reader
 
 
-
-CONTENT_STYLE = { #style the content of map_page so that it aligns with the sidebar
+ #style the content of map_page so that it aligns with the sidebar
+CONTENT_STYLE = {
     "position": "fixed",
     "width": "calc(100vw - 250px)",
     "height": "calc(100vh - 50px)",
-   # "resize":"both",
     "flex-grow": "1",
-    #"border":"none",
     "seamless":"True"
 
 }
@@ -36,24 +34,27 @@ CONTENT_STYLE = { #style the content of map_page so that it aligns with the side
 
 def define_chracteristics()-> list:
     """
-    This functions creates a list with all current characteristics.
+    This functions creates a list with the names of all current characteristics.
+
     Returns
     -------
     characteristics2:list
         A list of all chracters in the data.
     """
 
-    temp_data = get_data("Characteristics.csv")
-    csv_reader = reader(temp_data)
+    temp_data = get_data("Characteristics.csv") # the current data of the locations
+    csv_reader = reader(temp_data) # a reader to work with the csv filter
+
     characteristics2 = []
 
     counter = 0
 
+    #iterating through all the data and save the names of the current characteristics
     for row in csv_reader:
-        if counter < 3:
+        if counter < 3: # the first three characteristics(name, location(lat,lon)) are unimportant
             counter +=1
             continue
-        characteristics2.append(row[0])
+        characteristics2.append(row[0]) #
 
     return characteristics2
 
@@ -62,10 +63,12 @@ def define_chracteristics()-> list:
 def create_html_map(data:pd.DataFrame)-> list:
     """
     This function creates a map and adds it to the map_page.
+
     Parameters
     ----------
     data: Panda DataFrame
         The data which should be visualized.
+
     Returns
     -------
     html_list:
@@ -86,12 +89,12 @@ def create_html_map(data:pd.DataFrame)-> list:
 
                      ))
 
-    #html_list.append(sid)
-
 
     return html_list
 
-layout = html.Div( #creating the layout
+
+ #creating the layout of the map_page
+layout = html.Div(
                     children = create_html_map(glob_vars.data), # the elements of the layout
                     id = "layout_map", # the ID of the layout
                     style = CONTENT_STYLE #style the content of the page
@@ -102,16 +105,17 @@ layout = html.Div( #creating the layout
 def reverse_Map()->list:
     """
     This function reverses the map (all filters are removed).
+
     Returns
     -------
     html_map :
         A list of all components of the map page with the reversed data.
     """
 
-    #lobal data
 
-    glob_vars.data = get_data(name_of_csv="Characteristics.csv")
+    glob_vars.data = get_data(name_of_csv="Characteristics.csv") # reversing the global variable data based on the data in the characteristics csv
 
+    #redefining and creating the map page based on the reversed data
     return create_html_map(glob_vars.data)
 
 
@@ -119,24 +123,28 @@ def keep_layout_Map()-> list:
     """
     This function replaces the current dataframe with itself.
     Nothing should change.
+
     Returns
     -------
     html_map :
         A list of all components/layout of the map page.
     """
-    glob_vars.reset_data()
-    filter_data()
+    glob_vars.reset_data() # resting the data
+    filter_data() #filters the data based on the current filter
 
+    #redefining and creating the map page based on the reseted data
     return create_html_map(glob_vars.data)
 
 
 def filter_buttons_Map(filter_dict:pd.DataFrame)-> list:
     """
     This function replaces the current dataframe with the filtered version of the original.
+
     Parameters
     -------
     filter_dict :
         The filtered version of the dictionary.
+
     Returns
     -------
     layout:
@@ -146,18 +154,21 @@ def filter_buttons_Map(filter_dict:pd.DataFrame)-> list:
     global data, temp_data
     temp_data = data.copy(deep=True)
 
-    temp_data = filter_content(temp_data, filter_dict)
+    temp_data = filter_content(temp_data, filter_dict) # filtering the data based on the given filter aspects
 
+    #creating the map page based on the filtered data
     return create_html_map(temp_data)
 
 
 def update(nr_clicks:int)-> list:
     """
     This function updates the dataframe according to the data (checking for potentiell changes in the data)
+
     Parameters
     -------
     nr_clicks:
         Number of clicks.
+
     Returns
     -------
     layout:
@@ -165,18 +176,20 @@ def update(nr_clicks:int)-> list:
     """
     global data, temp_data
 
-    if nr_clicks == None:
+    if nr_clicks == None: #the map page should only be updated if a button was clicked which should lead to updating the page
         raise PreventUpdate
-    data = get_data()
+
+
+    data = get_data() # getting the stored data
     temp_data = data.copy(deep=True)
 
+    #creating the map page based on the data
     return create_html_map(temp_data)
 
+
+
 #---------------------------------------------------------------------
-#Callbacks:
-
-
-#------
+#Callback functions
 
 
 
@@ -191,21 +204,25 @@ def update(nr_clicks:int)-> list:
 def update_layout(*args):
     """
     This function updates the layout of the map page by confirmation of other components like the refresh button.
+
     Inputs
     ----------
     update_map_div:
         A placeholder as an integer value to indicate that the map_page should be refreshed(can be from different sources)
     refresh_page:
         Number of clicks on the refresh button to refresh/update the page.
+
     Outputs
     -------
     layout_map:
         A list of all components which will represent the new layout of page.
     """
-    triggered_id = ctx.triggered_id
 
-    if triggered_id == "refresh_page":
+    triggered_id = ctx.triggered_id # the id of the triggered input
+
+    if triggered_id == "refresh_page": # if the function was triggered by the component "refresh_page" the data should be reseted
         glob_vars.reset_data()
         create_html_map(glob_vars.data)
 
+    # the page should be recreated any way
     return create_html_map(glob_vars.data)

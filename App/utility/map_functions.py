@@ -251,7 +251,6 @@ def add_legend(folium_map:folium.Map)-> folium.Map:
 
 
 
-    #updaten der Map
 def update(data:pd.DataFrame,m:folium.Map)-> folium.Map:
     """
     This function updates the given map according to potential changes in the data.
