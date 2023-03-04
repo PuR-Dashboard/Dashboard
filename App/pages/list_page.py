@@ -325,9 +325,9 @@ def create_plot(content:list[str] = [-1,-1,-1,-1,-1,-1])-> dcc.Graph:
     })
 
     fig = px.bar(df, x="", y="occupancy rate")
-    fig.add_hline(y=1,line_color="red",  annotation_text="high occupancy")
-    fig.add_hline(y=0.5,line_color="yellow", annotation_text="medium occupancy")
-    fig.add_hline(y=0,line_color="green", annotation_text="low occupancy")
+    fig.add_hline(y=1,line_color="red",  annotation_text="<b>high occupancy</b>")
+    fig.add_hline(y=0.5,line_color="yellow", annotation_text="<b>medium occupancy</b>")
+    fig.add_hline(y=0,line_color="green", annotation_text="<b>low occupancy</b>")
 
     fig.update_layout(
         title = {
