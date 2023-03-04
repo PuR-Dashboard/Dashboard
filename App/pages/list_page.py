@@ -322,6 +322,10 @@ def create_history(name:str)-> list:
 
         one = occupancy.iloc[i]
 
+
+        if one[name] == 'None':
+            continue
+
         splitted_one = one[name].split(",")
 
         value = 0 if (splitted_one[1][:-1] == " 'keine vorhanden'") else (1 if (splitted_one[1][:-1] == " 'wenige vorhanden'")else 2)
@@ -398,7 +402,7 @@ def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
 
     df = pd.DataFrame({
     "": ["Monday","Tuesday", "Wednesday", "Thursday","Friday", "WE"],
-    "occupancy rate": [liste[0],liste[1],liste[2],liste[3],liste[4],liste[5]]
+    "occupancy rate": [content[0],content[1],content[2],content[3],content[4],content[5]]
     })
 
     fig = px.bar(df, x="", y="occupancy rate")
@@ -471,7 +475,7 @@ def create_layout(names:list[str], content:list[str]) -> list:
                     ],
                     style ={"width": "auto", "marginLeft": "1%"}),
                     #plot directly under the table
-                    dbc.CardBody(create_plot(),style ={"width": "auto","height":"auto", "color": "#F0F8FF"}),
+                    dbc.CardBody(create_plot(create_history(names[i])),style ={"width": "auto","height":"auto", "color": "#F0F8FF"}),
                     ],
                 style={"width":"calc(100vw - 260px)","overflow": "scroll", "height": "calc(100vh - 120px)"}
                 ),
