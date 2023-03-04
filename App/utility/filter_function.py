@@ -26,6 +26,11 @@ def filter_max_value(df: pd.DataFrame, category:str, max_value:int) -> pd.DataFr
     -------
     df2:
         A filtered DataFrame based on the paramters.
+
+    Raises
+    ------
+    Exception
+        If filtering the df based on the category and the max value went wrrong.
     """
 
     #if no value given, dont filter
@@ -62,6 +67,11 @@ def filter_for_value(df:pd.DataFrame, category:str, set_value:str) -> pd.DataFra
     -------
     df2:
         A filtered DataFrame based on the paramters.
+
+    Raises
+    ------
+    Exception
+        If filtering the df based on the category and the set value went wrrong.
     """
 
     #if no value given, dont filter
@@ -103,6 +113,11 @@ def filter_for_list(df:pd.DataFrame, category:str, set_list:list,  filter_occupa
     -------
     df2:
         A filtered DataFrame based on the paramters.
+
+    Raises
+    ------
+    Exception
+        If filtering the df based on the category and the set list went wrrong.
     """
 
     #if we want to filter for the occupany but the set list is empty returning the first element of the dataframe

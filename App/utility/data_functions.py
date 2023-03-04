@@ -125,6 +125,8 @@ def add_location(dic: pd.DataFrame, url:str) -> None:
     ------
     Exception
         If the location already exists.
+        If the characteristics lat and lon of an location does not exist.
+        If the given dic is not from the type dictionary
     """
 
     check_url(url)  # Check if the url is valid
@@ -174,6 +176,12 @@ def check_url(url: str) -> bool:
     -------
     valid : bool
         Boolean indicating if the url is valid.
+
+    Raises
+    ------
+    Exception
+        If the url is not a string.
+        If the url is not a valid URL.
     """
 
     if not type(url) == str:  # If the url is not a string
@@ -191,6 +199,12 @@ def remove_location(location: str) -> None:
     ----------
     location : str
         The location that should be removed.
+
+    Raises
+    ------
+    Exception
+        If the location is not a string.
+        If the location does not exist.
     """
 
     if not type(location) == str:  # If the location is not a string
@@ -220,6 +234,11 @@ def check_location_exists(location: str) -> bool:
     -------
     exists : bool
         Boolean indicating if the location exists.
+
+    Raises
+    ------
+    Exception
+        If the location is not a string.
     """
 
     if not type(location) == str:  # If the location is not a string
@@ -241,6 +260,12 @@ def remove_location_from_json(location: str) -> None:
     ----------
     location : str
         The location for which the link should be deleted.
+
+    Raises
+    ------
+    Exception
+        If the location is not a string.
+        If the location does not exist.
     """
 
     if not type(location) == str:  # If the location is not a string
@@ -251,7 +276,6 @@ def remove_location_from_json(location: str) -> None:
 
     with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
         content = json.load(f)  # Load the content of the json file
-        print(content)
 
     del content[location]  # Delete the link for the location
 
@@ -269,6 +293,13 @@ def update_url_in_json(location: str, url: str) -> None:
         The location for which the link should be updated.
     url : str
         The new url for the location.
+
+    Raises
+    ------
+    Exception
+        If the location is not a string.
+        If the URL is not a string.
+        If the location does not exist.
     """
 
     if not type(location) == str:# If the location is not a string
@@ -294,6 +325,12 @@ def add_url_to_json(location: str, url: str) -> None:
         The location for which the link should be added.
     url : str
         The url for the location.
+
+    Raises
+    ------
+    Exception
+        If the location is not a string.
+        If the URL is not a string.
     """
 
     if not type(location) == str:  # If the location is not a string
@@ -324,6 +361,12 @@ def get_url_from_json(location: str) -> str:
     -------
     url : str
         The url for the given location.
+
+    Raises
+    ------
+    Exception
+        If the location is not a string.
+        If the location does not exist.
     """
 
     if not type(location) == str:  # If the location is not a string
@@ -431,6 +474,11 @@ def update_location_occupancy(location: str) -> None:
     ----------
     location : str
         The location for which the occupancy should be updated.
+
+    Raises
+    ------
+    Exception
+        If the location does not exist.
     """
 
     if not check_location_exists(location):  # If the location does not exist

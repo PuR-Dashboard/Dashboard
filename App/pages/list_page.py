@@ -291,6 +291,7 @@ def create_table(content:list)->dbc.Table :
         A tables which represents all the given data.
     """
 
+
     table_header = [
         html.Thead(html.Tr([html.Th("Characteristics"), html.Th("Values")]), style = {"marginTop":"5%"})
     ]
