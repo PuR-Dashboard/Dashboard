@@ -300,8 +300,8 @@ def create_table(content:list)->dbc.Table :
     return table_1
 
 
-#!!!!Fehlen die Daten, um die Verteilung für die Orte individuell zu gestalten
-def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
+
+def create_plot(content:list[str] = [-1,-1,-1,-1,-1,-1])-> dcc.Graph:
     """
     This function creates a plot to visualize the prediction over the week.
 
@@ -322,6 +322,9 @@ def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
     })
 
     fig = px.bar(df, x="", y="occupancy rate")
+    fig.add_hline(y=1,line_color="red",  annotation_text="high occupancy")
+    fig.add_hline(y=0.5,line_color="yellow", annotation_text="medium occupancy")
+    fig.add_hline(y=0,line_color="green", annotation_text="low occupancy")
 
     fig.update_layout(
         title = {
