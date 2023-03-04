@@ -14,6 +14,7 @@ from collections import defaultdict
 import fontstyle
 from csv import reader
 
+#icons for delete and edit buttons
 FA_icon_trash= html.I(className="fa fa-trash fa-lg")
 FA_icon_pen= html.I(className="fa fa-pencil fa-lg")
 
@@ -43,7 +44,7 @@ def define_chracteristics()->list:
     characteristics2:list
         A list of all chracters in the data.
     """
-
+    #read data
     temp_data = get_data("Characteristics.csv")
     csv_reader = reader(temp_data)
     characteristics2 = []
@@ -252,13 +253,14 @@ def create_content(df: pd.DataFrame)-> tuple[list[str], list[str]]:
 
     content = []
     names = []
-
+    #read location names and data content for list veiw
     for i in range(len(df)):
         row = df.iloc[[i]]
 
         names.append(row["location"].values[0])
 
         inhalt = []
+        #build dash component oriented contents
         for c in cols:
             mini = str(row[c].values[0])
 
@@ -284,11 +286,11 @@ def create_table(content:list)->dbc.Table :
     table_1:
         A tables which represents all the given data.
     """
-   
+    #head of the table
     table_header = [
         html.Thead(html.Tr([html.Th("Characteristics"), html.Th("Values")]), style = {"marginTop":"5%"})
     ]
-    
+    #define inputs of the list view table -> data values + occupancy
     charakter = define_chracteristics()
     rows = [html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]) for i in range (len(charakter))]
     rows.append(html.Tr([html.Td("Occupancy"), html.Td("High")]))
@@ -315,19 +317,21 @@ def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
     graph:
         A graph which visualize the occupancy prediction for the whole week.
     """
-
+    #create dataframe that will be data for plot
     df = pd.DataFrame({
     "": ["Monday","Tuesday", "Wednesday", "Thursday","Friday", "WE"],
     "occupancy rate": [content[0],content[1],content[2],content[3],content[4],content[5]]
     })
 
-    fig = px.bar(df, x="", y="occupancy rate")
 
+    #set title and axis of graph
+    fig = px.bar(df, x="", y="occupancy rate")
     fig.update_layout(
         title = {
             'text' : "<b>Prediction over a week</b>",
         }
     )
+    #create dash graph
     graph = dcc.Graph(
         figure =  fig,
         config={
@@ -436,13 +440,12 @@ def edit_data(changed_data:list[str],index:int)-> None:
         The index of the location.
 
     """
-
+    #read data and characteristics
     temp_data = get_data("Characteristics.csv")
-
     characteristics = define_chracteristics()
 
+    #find out index of location to be edited among general data, since current view can be different
     location = glob_vars.data.iloc[index]["location"]
-
     for i in range (len(temp_data)):
         if temp_data.iloc[i]["location"] == location:
             position = i
@@ -453,8 +456,8 @@ def edit_data(changed_data:list[str],index:int)-> None:
     array.append(temp_data.iloc[position]["location"])
     dic["location"] =  temp_data.iloc[position]["location"]
 
+    #edit data end rewrite it to df
     for i  in range(len(characteristics)):
-
         if changed_data[i] == None:
             array.append(np.squeeze(temp_data.iloc[position][characteristics[i]]))
             dic[characteristics[i]] = np.squeeze(temp_data.iloc[position][characteristics[i]])
@@ -463,6 +466,7 @@ def edit_data(changed_data:list[str],index:int)-> None:
             dic[characteristics[i]] = changed_data[i]
             array.append(changed_data[i])
 
+    #update data csv
     update_characteristics_in_csv(array)
 
 
@@ -482,14 +486,13 @@ def define_inputs_edit(special_ones:list)->list:
 
     """
 
-
     inputs = []
-
+    #append non standard inputs
     for one in special_ones:
         inputs.append(one)
 
     characteristics= define_chracteristics()
-
+    #append characteristics according to naming scheme
     for characs in characteristics:
         inputs.append(Input({"type": "edit_"+characs, "index": MATCH}, 'value'))
 
@@ -512,12 +515,12 @@ def define_outputs_edit(special_ones:list)->list:
     """
 
     outputs = []
-
+    #append non standard outputs
     for one in special_ones:
         outputs.append(one)
 
     characteristics= define_chracteristics()
-
+    #append characteristics according to naming scheme
     for characs in characteristics:
         outputs.append(Output({"type": "edit_"+characs, "index": MATCH}, 'value'))
 
@@ -659,7 +662,7 @@ def delete_location(yes, no):
     [Input({"type": "arrow_button","index": MATCH}, "n_clicks")],
     [State({"type": "content", "index": MATCH}, "is_open")],
 )
-def toggle_collapses(_butts, stats):
+def toggle_collapses(_buts, stats):
     """
     This function collapses and expands the list items/collapsibles.
 
@@ -779,9 +782,6 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,*params):
         raise PreventUpdate
 
 
-
-
-
 #--------
 #gets confirmation of deletion, update filter etc through placeholder, also inputs from sidebar
 @callback(
@@ -813,4 +813,5 @@ def update_layout(*args):
     """
     triggered_id = ctx.triggered_id
 
+    #update the layout of the page
     return refresh_layout()

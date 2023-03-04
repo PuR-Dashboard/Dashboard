@@ -45,14 +45,16 @@ def filter_max_value(df: pd.DataFrame, category:str, max_value:int) -> pd.DataFr
     """
    
     #if no value given, dont filter
+    
     if max_value == None:
         return df
 
     #filtering process
     try:
-        df2 = df.drop(df.loc[df[category] > str(max_value)].index)
+        df2 = df.drop(df.loc[df[category] > float(max_value)].index)
     except Exception as e:
-        raise e("Something went wrong while filtering for a maximum value!")
+        
+        raise Exception("Something went wrong while filtering for a maximum value!")
     #reset the index and return df
     df2 = df2.reset_index(drop = True)
     return df2
@@ -84,9 +86,9 @@ def filter_for_value(df:pd.DataFrame, category:str, set_value:str) -> pd.DataFra
         return df
     #filtering process
     try:
-        df2 = df.drop(df.loc[df[category] != set_value].index)
+        df2 = df.drop(df.loc[df[category].apply(lambda x: x.lower()) != set_value.lower()].index)
     except Exception as e:
-        raise e("Something went wrong when filtering for a value!")
+        raise Exception("Something went wrong when filtering for a value!")
     #reset index and return df
     df2 = df2.reset_index(drop = True)
     return df2
@@ -127,7 +129,7 @@ def filter_for_list(df:pd.DataFrame, category:str, set_list:list,  filter_occupa
     try:
         df2 = df.drop(df.loc[~df[category].isin(set_list)].index)
     except Exception as e:
-        raise e("Something went wrong when filtering for a list of values!")
+        raise Exception("Something went wrong when filtering for a list of values!")
     #drop index and return df
     df2 = df2.reset_index(drop = True)
     return df2
@@ -257,8 +259,10 @@ def filter_data()-> None:
     """
     This function filters the current data with the currently applied filters.
     """
-
-    glob_vars.data = filter_content(glob_vars.data, glob_vars.current_filter)
+    try:
+        glob_vars.data = filter_content(glob_vars.data, glob_vars.current_filter)
+    except Exception as e:
+        raise e
 
 
 
@@ -304,5 +308,5 @@ def filter_content(df: pd.DataFrame, filter_dict:defaultdict) -> pd.DataFrame:
         #if number is given, filter for maximum number
         elif type(filter_dict[key]) == int or type(filter_dict[key]) == float:
             df = filter_max_value(df, key, filter_dict[key])
-
+            
     return df

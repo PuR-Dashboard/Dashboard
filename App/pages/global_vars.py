@@ -15,6 +15,9 @@ current_filter = None
 temp_csv = None
 temp_json = None
 
+#error message that gets passed between callbacks
+#lazy solution that prevents adding a couple more invisible components
+curr_error = None
 
 def init()-> None:
     """
