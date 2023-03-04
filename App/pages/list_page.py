@@ -338,6 +338,94 @@ def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
 
     return graph
 
+def create_history(name:str)-> list:
+    
+    """
+    This method creates the average occupancy of one location over a week. 
+
+    Parameters
+    -----------
+    name: 
+        Name of the location 
+
+    Returns
+    -----------
+    averages: 
+        list of the average occupancy of each day in a week
+        -> Index 0: monday
+        -> Index 1: tuesday
+        -> Index 2: wednesday
+        -> Index 3: thursday
+        -> Index 4: friday
+        -> Index 5: weekend
+
+        if there are noc occupancy values, it returns a list of -1 
+
+    """
+
+    occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
+    monday = []
+    tuesday = []
+    wednesday = []
+    thursday = []
+    friday =[]
+    weekend = []
+    if (len(occupancy)==0):
+        return [-1,-1,-1,-1,-1,-1]
+
+    for i in range (21,len(occupancy)):
+
+        one = occupancy.iloc[i]
+        if one[name] == 'None':
+            continue
+
+        splitted_one = one[name].split(",")
+
+        value = 0 if (splitted_one[1][:-1] == " 'keine vorhanden'") else (1 if (splitted_one[1][:-1] == " 'wenige vorhanden'")else 2)
+
+        timestamp = one["timestamp"].split(" ")
+        temp = pd.Timestamp(timestamp[0])
+
+        day_of_the_week = temp.day_name()
+
+        if day_of_the_week == "Saturday" or  day_of_the_week == "Sunday":
+            weekend.append(value)
+
+        elif  day_of_the_week == "Monday":
+            monday.append(value)
+
+        elif  day_of_the_week == "Tuesday":
+            tuesday.append(value)
+
+        elif  day_of_the_week == "Wednesday":
+            wednesday.append(value)
+
+        elif  day_of_the_week == "Thursday":
+            thursday.append(value)
+
+        elif  day_of_the_week == "Friday":
+            friday.append(value)
+
+
+        all = [monday,tuesday,wednesday,thursday,friday,weekend]
+        averages = []
+
+        for i in range(6):
+
+
+            if len(all[i]) == 0:
+                averages.append(0)
+
+            elif i == 5:
+                averages.append(sum(all[i])/len(all[i]))
+
+            else:
+                averages.append(sum(all[i])/len(all[i]))
+
+
+
+
+    return averages
 
 #----!!! Names and content is at the moment created through the create_content() def, will need new creation function after create_content() is DEPRECATED
 def create_layout(names:list[str], content:list[str]) -> list:
@@ -362,6 +450,8 @@ def create_layout(names:list[str], content:list[str]) -> list:
     #init list of components
     html_list = []
 
+    if (content == [-1,-1,-1,-1,-1,-1]): 
+        return None
 
     #iterate through names(names and content must have the same length)
     for i in range(len(names)):
@@ -389,7 +479,7 @@ def create_layout(names:list[str], content:list[str]) -> list:
                     ],
                     style ={"width": "auto", "marginLeft": "1%"}),
                     #plot directly under the table
-                    dbc.CardBody(create_plot(),style ={"width": "auto","height":"auto", "color": "#F0F8FF"}),
+                    dbc.CardBody(create_plot(create_history(names[i])),style ={"width": "auto","height":"auto", "color": "#F0F8FF"}),
                     ],
                 style={"width":"calc(100vw - 260px)","overflow": "scroll", "height": "calc(100vh - 120px)"}
                 ),
