@@ -328,7 +328,7 @@ def create_history(name:str)-> list:
 
         splitted_one = one[name].split(",")
 
-        value = 0 if (splitted_one[1][:-1] == " 'keine vorhanden'") else (1 if (splitted_one[1][:-1] == " 'wenige vorhanden'")else 2)
+        value = 0 if (splitted_one[1][:-1] == " 'keine vorhanden'") else (0.5 if (splitted_one[1][:-1] == " 'wenige vorhanden'")else 1)
 
         timestamp = one["timestamp"].split(" ")
         temp = pd.Timestamp(timestamp[0])
