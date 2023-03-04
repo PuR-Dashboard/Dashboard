@@ -54,7 +54,10 @@ def define_chracteristics()->list:
         if counter < 3:
             counter +=1
             continue
-        characteristics2.append(row[0])
+        value = row[0].split("_")
+        value = " ".join(value)
+        
+        characteristics2.append(value)
 
     return characteristics2
 
