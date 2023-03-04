@@ -22,7 +22,7 @@ refr_button = (html.Div
 
 
 import_button = (html.Div
-                    (dbc.Button([FA_icon_Import, " Import Location"], color="light", className="ms-2",id = "import_button", value = 0,
+                    (dbc.Button([FA_icon_Import, " Import Data"], color="light", className="ms-2",id = "import_button", value = 0,
                       style={
                             "marginRight": "40px",
                             "width": "125%",

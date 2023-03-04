@@ -1,73 +1,79 @@
 timestamp,Heidelberg,Bamberg,Eberbach
-2023-02-08 08:53:36.635210,stagnierend,zunehmend,None
-2023-02-08 08:53:59.858284,stagnierend,zunehmend,None
-2023-02-08 08:54:18.495229,stagnierend,zunehmend,None
-2023-02-08 08:54:38.168177,stagnierend,zunehmend,None
-2023-02-08 08:54:58.059188,stagnierend,zunehmend,None
-2023-02-08 08:57:33.879097,stagnierend,zunehmend,None
-2023-02-08 09:02:51.769022,stagnierend,zunehmend,None
-2023-02-08 09:19:57.464599,stagnierend,zunehmend,None
-2023-02-08 09:25:22.734319,stagnierend,zunehmend,None
-2023-02-08 09:25:32.057004,stagnierend,zunehmend,None
-2023-02-08 09:25:41.567279,stagnierend,zunehmend,None
-2023-02-08 09:25:51.359009,stagnierend,zunehmend,None
-2023-02-08 09:26:00.736182,stagnierend,zunehmend,None
-2023-02-08 09:26:09.680064,stagnierend,zunehmend,None
-2023-02-08 09:26:19.225055,stagnierend,zunehmend,None
-2023-02-08 09:26:38.725228,stagnierend,zunehmend,None
-2023-02-08 09:26:29.064186,stagnierend,zunehmend,None
-2023-02-08 09:26:48.535337,stagnierend,zunehmend,None
-2023-02-09 18:08:22.591169,abnehmend,abnehmend,None
-2023-02-09 18:08:44.589965,abnehmend,abnehmend,None
-2023-02-09 18:16:14.501457,"('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')",None
-2023-02-09 18:16:57.002140,"('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')",None
-2023-02-09 18:17:18.592137,"('abnehmend', 'wenige vorhanden')","('abnehmend', 'wenige vorhanden')",None
-2023-02-13 08:25:26.403279,"('increasing', 'keine vorhanden')","('increasing', 'wenige vorhanden')",None
-2023-02-13 08:25:35.113259,"('increasing', 'keine vorhanden')","('increasing', 'wenige vorhanden')",None
-2023-02-16 10:45:41.962618,"('stagnierend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')",None
-2023-02-16 10:45:56.364437,"('stagnierend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')",None
-2023-02-16 10:46:51.571396,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')"
-2023-02-16 11:03:51.633830,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('abnehmend', 'wenige vorhanden')"
-2023-02-16 11:06:44.287291,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')"
-2023-02-16 11:06:57.123994,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')"
-2023-02-16 11:15:18.025654,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')"
-2023-02-16 11:15:32.624787,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')"
-2023-03-04 10:50:09.114657,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 10:50:18.589348,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 10:53:40.033914,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:01:53.590996,"('abnehmend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:03:32.608272,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:04:01.499255,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:05:37.293318,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:05:46.530145,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:07:21.808181,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:08:41.212420,"('abnehmend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:09:03.238995,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:09:45.998737,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:10:31.714005,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:10:49.406417,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:11:35.030631,"('abnehmend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:13:10.527120,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:13:33.018026,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:13:45.123735,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:14:37.820308,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:14:47.615513,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:17:00.299185,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:17:18.091583,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:18:37.898581,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:18:47.734271,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:23:34.110788,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:24:33.326263,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:24:54.403081,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:25:22.721661,"('stagnierend', 'keine vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:28:58.790364,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
-2023-03-04 11:59:28.506453,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')"
-2023-03-04 11:59:39.581345,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')"
-2023-03-04 12:02:13.799896,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')"
-2023-03-04 12:03:29.711734,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')"
-2023-03-04 12:04:09.721119,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')"
-2023-03-04 14:45:40.592193,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')"
-2023-03-04 14:45:54.566672,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')"
-2023-03-04 14:46:56.285171,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')"
-2023-03-04 14:52:30.878934,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')"
-2023-03-04 14:52:44.885336,"('stagnierend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'wenige vorhanden')"
+2023-02-08 08:53:36.635210,stagnierend,,
+2023-02-08 08:53:59.858284,stagnierend,,
+2023-02-08 08:54:18.495229,stagnierend,,
+2023-02-08 08:54:38.168177,stagnierend,,
+2023-02-08 08:54:58.059188,stagnierend,,
+2023-02-08 08:57:33.879097,stagnierend,,
+2023-02-08 09:02:51.769022,stagnierend,,
+2023-02-08 09:19:57.464599,stagnierend,,
+2023-02-08 09:25:22.734319,stagnierend,,
+2023-02-08 09:25:32.057004,stagnierend,,
+2023-02-08 09:25:41.567279,stagnierend,,
+2023-02-08 09:25:51.359009,stagnierend,,
+2023-02-08 09:26:00.736182,stagnierend,,
+2023-02-08 09:26:09.680064,stagnierend,,
+2023-02-08 09:26:19.225055,stagnierend,,
+2023-02-08 09:26:38.725228,stagnierend,,
+2023-02-08 09:26:29.064186,stagnierend,,
+2023-02-08 09:26:48.535337,stagnierend,,
+2023-02-09 18:08:22.591169,abnehmend,,
+2023-02-09 18:08:44.589965,abnehmend,,
+2023-02-09 18:16:14.501457,"('abnehmend', 'wenige vorhanden')",,
+2023-02-09 18:16:57.002140,"('abnehmend', 'wenige vorhanden')",,
+2023-02-09 18:17:18.592137,"('abnehmend', 'wenige vorhanden')",,
+2023-02-13 08:25:26.403279,"('increasing', 'keine vorhanden')",,
+2023-02-13 08:25:35.113259,"('increasing', 'keine vorhanden')",,
+2023-02-16 10:45:41.962618,"('stagnierend', 'keine vorhanden')",,
+2023-02-16 10:45:56.364437,"('stagnierend', 'keine vorhanden')",,
+2023-02-16 10:46:51.571396,"('stagnierend', 'keine vorhanden')",,
+2023-02-16 11:03:51.633830,"('stagnierend', 'keine vorhanden')",,
+2023-02-16 11:06:44.287291,"('stagnierend', 'keine vorhanden')",,
+2023-02-16 11:06:57.123994,"('stagnierend', 'keine vorhanden')",,
+2023-02-16 11:15:18.025654,"('stagnierend', 'keine vorhanden')",,
+2023-02-16 11:15:32.624787,"('stagnierend', 'keine vorhanden')",,
+2023-03-04 10:50:09.114657,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 10:50:18.589348,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 10:53:40.033914,"('stagnierend', 'keine vorhanden')",,
+2023-03-04 11:01:53.590996,"('abnehmend', 'wenige vorhanden')",,
+2023-03-04 11:03:32.608272,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:04:01.499255,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:05:37.293318,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:05:46.530145,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:07:21.808181,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:08:41.212420,"('abnehmend', 'wenige vorhanden')",,
+2023-03-04 11:09:03.238995,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:09:45.998737,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:10:31.714005,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:10:49.406417,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:11:35.030631,"('abnehmend', 'wenige vorhanden')",,
+2023-03-04 11:13:10.527120,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:13:33.018026,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:13:45.123735,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:14:37.820308,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:14:47.615513,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:17:00.299185,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:17:18.091583,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:18:37.898581,"('stagnierend', 'keine vorhanden')",,
+2023-03-04 11:18:47.734271,"('stagnierend', 'keine vorhanden')",,
+2023-03-04 11:23:34.110788,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:24:33.326263,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:24:54.403081,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:25:22.721661,"('stagnierend', 'keine vorhanden')",,
+2023-03-04 11:28:58.790364,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:59:28.506453,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 11:59:39.581345,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 12:02:13.799896,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 12:03:29.711734,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 12:04:09.721119,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 14:45:40.592193,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 14:45:54.566672,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 14:46:56.285171,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 14:52:30.878934,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 14:52:44.885336,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 18:40:19.053171,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 18:40:32.549969,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 18:41:23.767272,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 18:54:26.239314,"('stagnierend', 'wenige vorhanden')",,
+2023-03-04 18:56:39.450236,"('abnehmend', 'wenige vorhanden')",,
+2023-03-04 19:00:44.749645,"('abnehmend', 'wenige vorhanden')","('stagnierend', 'keine vorhanden')","('stagnierend', 'ausreichend vorhanden')"
