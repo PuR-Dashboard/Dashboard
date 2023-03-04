@@ -82,7 +82,9 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
     result = []
     occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
 
+
     one = occupancy.iloc[len(occupancy)-1] # getting the last row of the dataframe which is representing the currenct occupancys
+    
 
 
     # creating for each marker the pop up according to the saved information about this location

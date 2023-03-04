@@ -307,6 +307,77 @@ def create_table(content:list)->dbc.Table :
     return table_1
 
 
+def create_history(name:str)-> list:
+
+
+    occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
+    monday = []
+    tuesday = []
+    wednesday = []
+    thursday = []
+    friday =[]
+    weekend = []
+
+    for i in range (21,len(occupancy)):
+
+        one = occupancy.iloc[i]
+
+        splitted_one = one[name].split(",")
+
+        value = 0 if (splitted_one[1][:-1] == " 'keine vorhanden'") else (1 if (splitted_one[1][:-1] == " 'wenige vorhanden'")else 2)
+
+        timestamp = one["timestamp"].split(" ")
+        temp = pd.Timestamp(timestamp[0])
+
+        day_of_the_week = temp.day_name()
+
+        if day_of_the_week == "Saturday" or  day_of_the_week == "Sunday":
+            weekend.append(value)
+
+        elif  day_of_the_week == "Monday":
+            monday.append(value)
+
+        elif  day_of_the_week == "Tuesday":
+            tuesday.append(value)
+
+        elif  day_of_the_week == "Wednesday":
+            wednesday.append(value)
+
+        elif  day_of_the_week == "Thursday":
+            thursday.append(value)
+
+        elif  day_of_the_week == "Friday":
+            friday.append(value)
+
+
+        all = [monday,tuesday,wednesday,thursday,friday,weekend]
+        averages = []
+
+        for i in range(6):
+
+
+            if len(all[i]) == 0:
+                averages.append(0)
+
+            elif i == 5:
+                averages.append(sum(all[i])/len(all[i]))
+
+            else:
+                averages.append(sum(all[i])/len(all[i]))
+
+
+
+
+    return averages
+
+
+
+
+
+
+
+
+
 #!!!!Fehlen die Daten, um die Verteilung für die Orte individuell zu gestalten
 def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
     """
@@ -323,9 +394,11 @@ def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
         A graph which visualize the occupancy prediction for the whole week.
     """
 
+    liste = create_history("Heidelberg")
+
     df = pd.DataFrame({
     "": ["Monday","Tuesday", "Wednesday", "Thursday","Friday", "WE"],
-    "occupancy rate": [content[0],content[1],content[2],content[3],content[4],content[5]]
+    "occupancy rate": [liste[0],liste[1],liste[2],liste[3],liste[4],liste[5]]
     })
 
     fig = px.bar(df, x="", y="occupancy rate")
