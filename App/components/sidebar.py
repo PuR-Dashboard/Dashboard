@@ -10,7 +10,7 @@ SIDEBAR_STYLE = {
     "bottom": 0,
     "width": "auto",
     "height": "93%",
-    "padding": "2rem 1rem",
+    "padding": "2rem 1rem", #spaces between the content
     "background-color": "#333333",
     "overflow": "scroll",
 }
@@ -25,8 +25,7 @@ BUTTON_STYLE = {
     "color": "black"
 }
 
-#symbols for the buttons:
-#trash icon for clearing all filters(?)
+#trash icon for clearing all filters
 FA_icon_Trash = html.I(className="fa fa-trash fa-lg")
 
 
@@ -92,7 +91,6 @@ def get_sidebar() -> html.Div:
                         style=BUTTON_STYLE  # Set the style of the button to BUTTON_STYLE
                     ),
                     html.Hr(),
-                    #html.Br(),  # Line break
                     dbc.Button(  # Button to clear all filters
                         [FA_icon_Trash, " Clear Filter"],  # Icon + Text of the button
                         id="clear_filter_button" ,  # Set the id of the button to clear_filter_button
@@ -100,7 +98,7 @@ def get_sidebar() -> html.Div:
                         style=BUTTON_STYLE  # Set the style of the button to BUTTON_STYLE
                     ),
                     html.Br(),  # Line break
-                  
+
                 ],
                 vertical=True, # allign elements vertically
                 pills=True, # "pill" style for components
@@ -111,7 +109,7 @@ def get_sidebar() -> html.Div:
                     dbc.ModalHeader(dbc.ModalTitle("Filter all Categories")),  # Header of the modal
                     dbc.ModalBody(  # Body of the modal
                         [
-                            dbc.Label("Name of Location:",style = {"margin-top":"2%"}), # name filter
+                            dbc.Label("Name of Location:",style = {"margin-top":"2%"}), # name of the characteristic of the filter
                             dbc.Input(
                                 id="modal_advanced_filter_name" , # name filter id
                                 type="text",  # Set the type of the input field to text
@@ -119,23 +117,23 @@ def get_sidebar() -> html.Div:
                                 placeholder="Specify location name",
                                 value=None  # Set the value of the input field
                             ),
-                           dbc.Label("Occupancy:",style = {"margin-top":"2%"}), # occupancy filter
+                           dbc.Label("Occupancy:",style = {"margin-top":"2%"}), # name of the characteristic of the filter
                             dcc.Dropdown(
-                                options=[ #options
+                                options=[ #options visalized as a dropdown
                                     {'label': 'High', 'value': 'high'},
                                     {'label': 'Medium', 'value': 'medium'},
                                     {'label': 'Low', 'value': 'low'},
                                 ],
-                                placeholder="Specify occupancy",
-                                id="modal_advanced_filter_occupancy" ,
+                                placeholder="Specify occupancy",  #the text which is vialized as long as nothing is choosen
+                                id="modal_advanced_filter_occupancy" , # individuell id of this component
                                 multi=True,#multiple values can be selected
                             ),
                             dbc.Label("Address:",style = {"margin-top":"2%"}), # adress filter
                             dbc.Input(
-                                id="modal_advanced_filter_address" ,
+                                id="modal_advanced_filter_address" , # individuell id of this component
                                 type="text",  # Set the type of the input field to text
                                 debounce=True,  # Set the debounce-attribute of the input field to True
-                                placeholder="Specify address",
+                                placeholder="Specify address", #the text which is vialized as long as nothing is choosen
                                 value=None  # Set default value
                             ),
                             dbc.Label("Administration:",style = {"margin-top":"2%"}), #administration filter, no dropdown since only two options
@@ -149,74 +147,74 @@ def get_sidebar() -> html.Div:
                                 inline=True,  # Set the inline-attribute of the radio buttons
                                 id="modal_advanced_filter_administration"   # Set the id
                             ),
-                            dbc.Label("Type of Facility:",style = {"margin-top":"2%"}), #kind filter
+                            dbc.Label("Type of Facility:",style = {"margin-top":"2%"}), # name of the characteristic of the filter
                             dcc.Dropdown(
-                                options=[
+                                options=[ # options of this charakteristic visalized as a dropdown
                                     {'label': 'Car Park', 'value': 'Car Park'},
                                     {'label': 'Separate Area', 'value': 'Separate Area'},
                                     {'label': 'At the edge of the road / on the road', 'value': 'At the edge of the road / on the road'},
                                 ],
-                                placeholder="Specify the type of the facility",
-                                id="modal_advanced_filter_kind" ,
-                                multi=True,
+                                placeholder="Specify the type of the facility",#the text which is vialized as long as nothing is choosen
+                                id="modal_advanced_filter_kind" , # individuell id of this component
+                                multi=True, #multiple inputs are possible
                             ),
 
                             dbc.Label("Number of Parking Lots:",style = {"margin-top":"2%"}), # parking lot filter(no slider like in sidebar above, this time dropdown)
                              dcc.Dropdown(
-                                 options=[
+                                 options=[ # options of this charakteristic visalized as a dropdown
                                      {'label': '1-25', 'value': '1-25'},
                                      {'label': '25-50', 'value': '25-50'},
                                      {'label': '50-100', 'value': '50-100'},
                                      {'label': '100-200', 'value': '100-200'},
                                      {'label': '200-1200', 'value': '200-1200'},
                                  ],
-                                 placeholder="Specify number of parking slots",
-                                 id='modal_advanced_filter_number_parking_lots' ,
-                                 multi=True,
+                                 placeholder="Specify number of parking slots", #the text which is vialized as long as nothing is choosen
+                                 id='modal_advanced_filter_number_parking_lots' , # individuell id of this component
+                                 multi=True, #multiple inputs are possible
                              ),
-                             dbc.Label("Max. Price per Day (\u20ac):",style = {"margin-top":"2%"}),
+                             dbc.Label("Max. Price per Day (\u20ac):",style = {"margin-top":"2%"}),# name of the characteristic of the filter
                              dbc.Input(
-                                 id="modal_advanced_filter_price" ,
+                                 id="modal_advanced_filter_price" , # individuell id of this component
                                  type="number",  # Set the type of the input field to text
                                  debounce=False,  # Set the debounce-attribute of the input field to True
-                                 placeholder="Price in \u20ac",
+                                 placeholder="Price in \u20ac", #the text which is vialized as long as nothing is choosen
                                  value=None  # Set the value of the input field to an empty string
                              ),
-                             dbc.Label("Public Transport Accessibility",style = {"margin-top":"2%"}),
+                             dbc.Label("Public Transport Accessibility",style = {"margin-top":"2%"}), # name of the characteristic of the filter
                              dbc.Input(
-                                 id="modal_advanced_filter_public_transport" ,
+                                 id="modal_advanced_filter_public_transport" , # individuell id of this component
                                  type="number",  # Set the type of the input field to text
                                  debounce=False,  # Set the debounce-attribute of the input field to True
-                                 placeholder="Specify the public transport accessibility",
+                                 placeholder="Specify the public transport accessibility", #the text which is vialized as long as nothing is choosen
                                  value=None  # Set the value of the input field to an empty string
                              ),
 
-                            dbc.Label("Transport Connection:",style = {"margin-top":"2%"}),
+                            dbc.Label("Transport Connection:",style = {"margin-top":"2%"}), # name of the characteristic of the filter
                             dcc.Dropdown(
-                                options=[
+                                options=[ # options of this charakteristic visalized as a dropdown
                                     {'label': 'Superordinate network within the city (interstate)', 'value': 'Superordinate network within the city (interstate)'},
                                     {'label': 'Superordinate network out of town (interstate)', 'value': 'Superordinate network out of town (interstate)'},
                                     {'label': 'Subordinate network within the city', 'value': 'Subordinate network within the city'},
                                     {'label': 'Subordinate network out of town', 'value': 'Subordinate network out of town'},
                                 ],
-                                placeholder="Specify connection",
-                                id="modal_advanced_filter_road_network_connection" ,
-                                multi=True,
+                                placeholder="Specify connection", #the text which is visualized as long as long as nothing is choosen
+                                id="modal_advanced_filter_road_network_connection" , # individuell id of this component
+                                multi=True, #multiple inputs are possible
                             ),
 
 
-                            dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"2%"}),
+                            dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"2%"}), # name of the characteristic of the filter
                             dcc.Dropdown(
-                                options=[
+                                options=[# options of this charakteristic visalized as a dropdown
                                     {'label': 'Green Spaces', 'value': 'Green Spaces'},
                                     {'label': 'Living Spaces', 'value': 'Living Spaces'},
                                     {'label': 'Industrial Areas', 'value': 'Industrial Areas'},
                                     {'label': 'Industrial Parks', 'value': 'Industrial Parks'},
                                     {'label': 'Mixed Areas', 'value': 'Mixed Areas'},
                                 ],
-                                placeholder="Specify surrounding infrastructure",
-                                id="modal_advanced_filter_surrounding_infrastructure" ,
-                                multi=True,
+                                placeholder="Specify surrounding infrastructure", #the text which is visualized as long as long as nothing is choosen
+                                id="modal_advanced_filter_surrounding_infrastructure" , # individuell id of this component
+                                multi=True, #multiple inputs are possible
                             ),
 
 
@@ -249,105 +247,105 @@ def get_sidebar() -> html.Div:
                      dbc.ModalBody(  # Body of the modal
                         [
                             html.H4("Mandatory Fields:"), # url and location name are mandatory attributes
-                            dbc.Label("URL:",style = {"margin-top":"2%"}), # url input field
+                            dbc.Label("URL:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dbc.Input(
-                                placeholder="Specify the URL",
-                                id="modal_add_location_url" ,
+                                placeholder="Specify the URL", #the text which is visualized as long as long as nothing is choosen
+                                id="modal_add_location_url" , # individuell id of this component
                                 type="text",  # Set the type of the input field
                                 debounce=True,  # Set the debounce-attribute of the input field
                                 value=None  # Set the value of the input field
                             ),
-                            dbc.Label("Location Name:",style = {"margin-top":"2%"}), # name input field
+                            dbc.Label("Location Name:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dbc.Input(
-                                placeholder="Specify the location name",
-                                id="modal_add_location_name" ,
+                                placeholder="Specify the location name", #the text which is visualized as long as long as nothing is choosen
+                                id="modal_add_location_name" , # individuell id of this component
                                 type="text",  # Set the type of the input field to text
                                 debounce=True,  # Set the debounce-attribute of the input field to True
                                 value=None  # Set the value of the input field
                             ),
                             html.H4("Optional Fields",style = {"margin-top":"5%"}), # nice to have but none of these attributes are necessary to add location
-                            dbc.Label("Address:",style = {"margin-top":"2%"}), # adress
+                            dbc.Label("Address:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dbc.Input(
-                                placeholder="Specify the address",
-                                id="modal_add_location_address" ,
+                                placeholder="Specify the address", #the text which is visualized as long as long as nothing is choosen
+                                id="modal_add_location_address" , # individuell id of this component
                                 type="text",  # Set the type of the input field to text
                                 debounce=True,  # Set the debounce-attribute of the input field to True
                                 value=None  # Set the value of the input field
                             ),
-                            dbc.Label("Administration:",style = {"margin-top":"2%"}), #administration
+                            dbc.Label("Administration:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dcc.Dropdown(
-                                options=[
+                                options=[ # options of this charakteristic visalized as a dropdown
                                     {'label': 'Yes', 'value': 'Yes'},
                                     {'label': 'No', 'value': 'No'},
                                 ],
-                                placeholder="Specify administration",
-                                id="modal_add_location_administration"
+                                placeholder="Specify administration", #the text which is visualized as long as long as nothing is choosen
+                                id="modal_add_location_administration" # individuell id of this component
                             ),
-                            dbc.Label("Type of Facility:",style = {"margin-top":"2%"}), #kind
+                            dbc.Label("Type of Facility:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dcc.Dropdown(
-                                options=[
+                                options=[ # options of this charakteristic visalized as a dropdown
                                     {'label': 'Car Park', 'value': 'Car Park'},
                                     {'label': 'Separate Area', 'value': 'Separate Area'},
                                     {'label': 'At the edge of the road / on the road', 'value': 'At the edge of the road / on the road'},
                                 ],
-                                placeholder="Specify the type of the facility",
-                                id="modal_add_location_kind"
+                                placeholder="Specify the type of the facility", #the text which is visualized as long as long as nothing is choosen
+                                id="modal_add_location_kind" # individuell id of this component
                             ),
 
-                            dbc.Label("Number of Parking Spots:",style = {"margin-top":"2%"}), #number of parking lots
+                            dbc.Label("Number of Parking Spots:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dcc.Dropdown(
-                                options=[
+                                options=[ # options of this charakteristic visalized as a dropdown
                                     {'label': '1-25', 'value': '1-25'},
                                     {'label': '25-50', 'value': '25-50'},
                                     {'label': '50-100', 'value': '50-100'},
                                     {'label': '100-200', 'value': '100-200'},
                                     {'label': '200-1200', 'value': '200-1200'},
                                 ],
-                                placeholder="Specify Number of parking spots",
+                                placeholder="Specify Number of parking spots", #the text which is visualized as long as long as nothing is choosen
                                 id="modal_add_location_number_parking_lots"
                             ),
-                            dbc.Label("Max Price per Day (\u20ac):",style = {"margin-top":"2%"}),
+                            dbc.Label("Max Price per Day (\u20ac):",style = {"margin-top":"2%"}),# name of the characteristic as a label
                             dbc.Input(
-                                placeholder="Specify the max price in \u20ac",
-                                id="modal_add_location_price" ,
+                                placeholder="Specify the max price in \u20ac", #the text which is visualized as long as long as nothing is choosen
+                                id="modal_add_location_price" , # individuell id of this component
                                 type="number",  # Set the type of the input field
                                 debounce=True,  # Set the debounce-attribute of the input field
                                 value=None  # Set the value of the input field
                             ),
 
-                            dbc.Label("Public Transport Accessibility:",style = {"margin-top":"2%"}),
+                            dbc.Label("Public Transport Accessibility:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dbc.Input(
-                                placeholder="Specify the public transport accessibility",
-                                id="modal_add_location_public_transport" ,
+                                placeholder="Specify the public transport accessibility", #the text which is visualized as long as long as nothing is choosen
+                                id="modal_add_location_public_transport" , # individuell id of this component
                                 type="number",  # Set the type
                                 debounce=True,  # Set the debounce-attribute
                                 value=None  # Set the default value
                             ),
 
-                            dbc.Label("Transport Connection:",style = {"margin-top":"2%"}), #connection input
+                            dbc.Label("Transport Connection:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dcc.Dropdown(
-                                options=[
+                                options=[ # options of this charakteristic visalized as a dropdown
                                     {'label': 'Superordinate network within the city (interstate)', 'value': 'Superordinate network within the city (interstate)'},
                                     {'label': 'Superordinate network out of town (interstate)', 'value': 'Superordinate network out of town (interstate)'},
                                     {'label': 'Subordinate network in the city', 'value': 'Subordinate network in the city'},
                                     {'label': 'Subordinate network out of town', 'value': 'Subordinate network out of town'},
                                 ],
-                                placeholder="Specify the transport connection",
-                                id="modal_add_location_road_network_connection"
+                                placeholder="Specify the transport connection", #the text which is visualized as long as long as nothing is choosen
+                                id="modal_add_location_road_network_connection" # individuell id of this component
                             ),
 
 
-                            dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"2%"}),
+                            dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dcc.Dropdown(
-                                options=[
+                                options=[ # options of this charakteristic visalized as a dropdown
                                     {'label': 'Green Spaces', 'value': 'Green Spaces'},
                                     {'label': 'Living Spaces', 'value': 'Living Spaces'},
                                     {'label': 'Industrial Areas', 'value': 'Industrial Areas'},
                                     {'label': 'Industrial Parks', 'value': 'Industrial Parks'},
                                     {'label': 'Mixed Areas', 'value': 'Mixed Areas'},
                                 ],
-                                placeholder="Specify the surrounding infrastructure",
-                                id="modal_add_location_surrounding_infrastructure"
+                                placeholder="Specify the surrounding infrastructure", #the text which is visualized as long as long as nothing is choosen
+                                id="modal_add_location_surrounding_infrastructure" # individuell id of this component
                             ),
 
 
