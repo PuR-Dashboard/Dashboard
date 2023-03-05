@@ -2,7 +2,6 @@
 from dash import html, dcc, ctx
 from dash.dependencies import Input, Output, State
 import dash
-#from components import sidebar
 # Connect to main app.py file
 from app import app
 import dash_bootstrap_components as dbc
@@ -33,21 +32,22 @@ Further, it includes callback functions for the different pages of the applicati
 
 
 nav = navbar.get_navbar()  # Create the navbar
-sid = sidebar.get_sidebar()
-# sid = sidebar.get_sidebar()  # Create the sidebar
+sid = sidebar.get_sidebar() # create the sidebar
 
 app.layout = html.Div([  # Create a Div containing the navbar and the content
     dcc.Location(id='url', refresh=True),  # Track current URL of the page
     nav,  # Add the navbar
-    dcc.Interval(
+    dcc.Interval(#interval counting for auto refresh rates
             id='auto_refresh_interval',
             interval=60 * 60 * 1000, #factor meaning left to right: minutes, seconds, miliseconds, current refresh rate every 60 minutes
             n_intervals=0
     ),
+    #invisible components for tracking callback order
     html.Div(id="placeholder_interval_check", style={"display":"none"}),
     html.Div(id="update_list_div", style={"display":"none"}),
     html.Div(id="update_map_div", style={"display":"none"}),
-    html.Div(id='page-content', children=[]),  # Add the page content
+    # Add the page content
+    html.Div(id='page-content', children=[]),
     sid,  # Add the sidebar
 ])
 
@@ -61,14 +61,14 @@ def define_chracteristics()->list:
     characteristics2:list
         A list of all chracters in the data.
     """
-
+    #read data columns with csv reader
     temp_data = get_data("Characteristics.csv")
     csv_reader = reader(temp_data)
     characteristics2 = []
 
     counter = 0
 
-
+    #iterate over rows
     for row in csv_reader:
         if counter < 3:
             counter +=1
@@ -94,19 +94,18 @@ def define_inputs_add_location(special_ones:list)-> list:
     """
 
     inputs = []
-
+    #append non standard charateristics which are given
     for one in special_ones:
         inputs.append(one)
 
 
     characteristics= define_chracteristics()
 
-
+    #append characteristics with naming convention to input list
     for characs in characteristics:
         inputs.append(Input("modal_add_location_"+ characs, "value"))
 
     return inputs
-
 
 
 def define_outputs_add_loction(special_ones:list)-> list:
@@ -126,14 +125,14 @@ def define_outputs_add_loction(special_ones:list)-> list:
 
 
     outputs = []
-
+    #append non standard outputs to list
     for one in special_ones:
         outputs.append(one)
 
 
     characteristics= define_chracteristics()
 
-
+    #append characteristics names according to naming scheme
     for characs in characteristics:
         outputs.append(Output("modal_add_location_"+ characs, "value"))
 
@@ -169,6 +168,40 @@ def display_page(pathname):
         return list_page.layout, pathname  # Return the layout of the list page
     else:  # If the URL is not map_page or list_page
         return map_page.layout, "/map_page"  # Return the layout of the map page
+
+
+#callback to handle error messages that are made visible to the user
+@app.callback([Output("modal_error", "is_open"),
+               Output("modal_dynamic_error", "children")],
+              [Input("placeholder_error_message", "n_clicks"),
+               Input("modal_error_ok_button", "n_clicks")],
+              State("modal_error", "is_open"))
+def error_modal_handling(message, clicks, state):
+    """
+    This function handles the general error window which informs the user that an error has occured.
+
+    message: clicks of the placeholder div indicating that the modal shoud be be opened
+    clicks: the button of the modal
+    state: whether the modal is open or closed
+    """
+
+    triggered_id = ctx.triggered_id
+    #close modal and reset error label
+    if triggered_id == "modal_ok_button":
+        return not state, "Unidentified Error"
+    elif triggered_id == "placeholder_error_message":
+        #no error triggered
+        if message == 0:
+            glob_vars.curr_error = None
+            return False, dash.no_update
+        else: #positive number means that the error message is in global error and can be printed
+            if glob_vars.curr_error == None:
+                return not state, "Unidentified Error"
+            #reset global error
+            temp = glob_vars.curr_error
+            glob_vars.curr_error = None
+
+            return not state, str(temp)
 
 
 
@@ -269,14 +302,11 @@ def add_new_location(_1, _2, _3, URL_value, *params):
         #check if URL and name are given
         #url must be given
         if URL_value == None or URL_value == "":
-
             return (dash.no_update, modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
 
         #location name must be given
         if characs[0] == None or characs[0] == "":
-
             return (dash.no_update, modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
-
 
         #make dictionary for function
         add_dictionary = {}
@@ -293,7 +323,8 @@ def add_new_location(_1, _2, _3, URL_value, *params):
         raise PreventUpdate
 
 @app.callback(
-        [Output("update_list_div", "n_clicks"),
+        [Output("placeholder_error_message", "n_clicks"),
+        Output("update_list_div", "n_clicks"),
         Output("update_map_div", "n_clicks"),
         Output("sideboard_name_filter", "value"),
         Output("sideboard_occupancy_filter", "value"),
@@ -329,6 +360,9 @@ def choose_correct_update(*args):
 
     Outputs
     -------
+    placeholder_error_message:
+        if an error has occured
+
     update_list_div:
         returns 1 to trigger the update function in list_page to update the listpage.
 
@@ -338,8 +372,9 @@ def choose_correct_update(*args):
     sideboard_name_filter, sideboard_address_filter, sideboard_occupancy_filter, sideboard_price_filter :
         The value which was typed in the dash components to the corresponding filters for further functions.
     """
-    #print(args)
+    
     triggered_id = ctx.triggered_id
+    error_occurred = False
 
     #name of current page, important to decide which page to update
     page_name = args[0]
@@ -362,7 +397,7 @@ def choose_correct_update(*args):
 
     elif triggered_id == "sideboard_price_filter" or triggered_id == "sideboard_occupancy_filter" or triggered_id == "sideboard_name_filter":
         #sidebar filter triggered
-        #print("sidebar triggered")
+        
         #first reset data
         glob_vars.reset_data()
         #check for error
@@ -377,19 +412,31 @@ def choose_correct_update(*args):
             glob_vars.current_filter[s] = val
 
         #filter with new filter dictionary
+        #error handling
+        try:
+            filter_data()
+        except Exception as e:
+            #set error messaage
+            glob_vars.curr_error = e
+            error_occurred = True
+            #reset filters
+            for s, val in zip(sidebar_characs, sidebar_values):
+                glob_vars.current_filter[s] = None
+            #restore data
+            filter_data()
+            sidebar_values = [None for x in sidebar_values]
+    #check if error has happened
+    if error_occurred:
+        err_var = 1
+    else:
+        err_var = 0
 
-        filter_data()
-
-
-    #if triggered_id == "placeholder_div_filter" or triggered_id == "placeholder_div_adding" or triggered_id == "url" or triggered_id == "refresh_page":
     if page_name == "/list_page":
-        return (1, dash.no_update) + tuple(sidebar_values)
+        return (err_var, 1, dash.no_update) + tuple(sidebar_values)
     elif page_name == "/map_page":
-        return (dash.no_update, 1) + tuple(sidebar_values)
+        return (err_var, dash.no_update, 1) + tuple(sidebar_values)
     else: #error or page not accounted for
-        #print("Hoffentlich Startcallback")
         raise PreventUpdate
-
         #raise ValueError("A Page is not accounted for in the update method")
 
 def define_inputs_advanced_filter(special_ones:list)-> list:
@@ -407,14 +454,13 @@ def define_inputs_advanced_filter(special_ones:list)-> list:
         A list of all inputs to conduct the advanced filter.
     """
 
-
     inputs = []
-
+    #append non standard inputs
     for one in special_ones:
         inputs.append(one)
 
     characteristics= define_chracteristics()
-
+    #apppend characteristics according to naming scheme
     for characs in characteristics:
         inputs.append(Input("modal_advanced_filter_"+ characs, "value"))
 
@@ -436,16 +482,13 @@ def define_outputs_advanced_filter(special_ones:list)->list:
         A list of all outputs to to conduct the advanced filter.
     """
 
-
     outputs = []
-
+    #append non standard outputs
     for one in special_ones:
         outputs.append(one)
 
-
     characteristics= define_chracteristics()
-
-
+    #append characteristics ouputs acording to naming scheme
     for characs in characteristics:
         outputs.append(Output("modal_advanced_filter_"+ characs, "value"))
 
@@ -454,7 +497,7 @@ def define_outputs_advanced_filter(special_ones:list)->list:
 
 def check_csv_validity(temp_df: pd.DataFrame) -> bool:
     """
-    This function cecks the given DataFrame according to conditions:
+    This function checks the given DataFrame according to conditions:
     - check if columns align with our columns
     - check if data is rectangular - is dataframe always rectangular?
     - check if every row has a location name and no duplicate locations exist
@@ -488,7 +531,6 @@ def check_csv_validity(temp_df: pd.DataFrame) -> bool:
     for l in location_names:
         if l == None:
             return False
-
 
     return True
 
@@ -539,8 +581,8 @@ def parse_contents(contents, filename:str):
     df:
         A dirctionary based on the information of the file with the given filename.
     """
+    #parse file
     content_type, content_string = contents.split(',')
-
     decoded = base64.b64decode(content_string)
     try:
         if '.csv' in filename:
@@ -556,7 +598,7 @@ def parse_contents(contents, filename:str):
         return df
 
     except Exception as e:
-        raise e
+        raise Exception("Error when parsing imported files")
 
 
 
@@ -659,7 +701,6 @@ def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
             #assign values to filter dictionary
             glob_vars.current_filter[chara] = c
 
-        #print(glob_vars.current_filter)
         #filter data with filter dictionary
         filter_data()
         #return confirmation to filter placeholder, modal state and input values
@@ -680,7 +721,8 @@ def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
         raise PreventUpdate
 
 
-@app.callback([Output("modal_import_file", "is_open"),
+@app.callback([#Output("placeholder_error_message", "n_clicks"),
+            Output("modal_import_file", "is_open"),
            Output("modal_uploaded_csv", "value"),
            Output("modal_uploaded_json", "value"),
            Output("modal_import_warning", "children")],
@@ -734,8 +776,9 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
     """
 
     triggered_id = ctx.triggered_id
+    error_occured = False
 
-
+    #if modal should be closed -> import is done
     if triggered_id == "import_button" or triggered_id == "modal_import_file_cancel_button":
         glob_vars.temp_csv = None
         glob_vars.temp_json = None
@@ -747,16 +790,13 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
             glob_vars.temp_json = None
             return modal_state, csv_val, json_val, "Too many files uploaded!"
 
-
         #check if correct file types were uploaded
         admissible_types = [".json", ".csv"]
-
         for f in filenames:
             valid = False
             for a in admissible_types:
                 if a in f:
                     valid = True
-
             if not valid:
                 return modal_state, csv_val, json_val, "Wrong file type uploaded!"
 
@@ -765,8 +805,11 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
             try:
                 #read content from given file
                 df = parse_contents(c, f)
-            except: #exception at parse contents means wrong file type? maybe somewhere else?
+            except Exception as e: #exception at parse contents means wrong file type? maybe somewhere else?
+                glob_vars.curr_error = e
+
                 raise PreventUpdate
+                #return 1, False, None, None, ""
             #if json file then save json file and update check input
             if ".json" in f:
                 glob_vars.temp_json = df
@@ -797,7 +840,6 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
             return modal_state, csv_val, None, "JSON File does not meet conventions!"
 
         #add both files to existing files
-
         #obtain which locations are new
         new_locations = []
         old_locatiions = list(glob_vars.data["location"])
@@ -806,62 +848,68 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
             if l not in old_locatiions:
                 new_locations.append(l)
 
-        #add new locations to characteristics csv
-        #get all rows with location names of the new locations
-        df_to_append = glob_vars.temp_csv.loc[glob_vars.temp_csv['location'].isin(new_locations)]
-        #append new rows to old data
-        temp_data = pd.concat([glob_vars.data, df_to_append])
-        temp_data.reset_index(drop = True, inplace=True)
+        try:
+            #add new locations to characteristics csv
+            #get all rows with location names of the new locations
+            df_to_append = glob_vars.temp_csv.loc[glob_vars.temp_csv['location'].isin(new_locations)]
+            #append new rows to old data
+            temp_data = pd.concat([glob_vars.data, df_to_append])
+            temp_data.reset_index(drop = True, inplace=True)
 
-        #save combined df to csv
-        path = get_path_to_csv(name_of_csv="Characteristics.csv")
-        temp_data.to_csv(path, index=False)
+            #save combined df to csv
+            path = get_path_to_csv(name_of_csv="Characteristics.csv")
+            temp_data.to_csv(path, index=False)
 
-        #add new locations to json
-        #read current json file
-        path_to_urls = get_path_to_csv("Urls.json")
-        with open(path_to_urls) as json_file:
-            json_decoded = json.load(json_file)
+            #add new locations to json
+            #read current json file
+            path_to_urls = get_path_to_csv("Urls.json")
+            with open(path_to_urls) as json_file:
+                json_decoded = json.load(json_file)
 
-        #transfer links of new locations
-        for l in new_locations:
-            json_decoded[l] = glob_vars.temp_json[l]
-        #save json file
-        with open(path_to_urls, 'w') as json_file:
-            json.dump(json_decoded, json_file)
+            #transfer links of new locations
+            for l in new_locations:
+                json_decoded[l] = glob_vars.temp_json[l]
+            #save json file
+            with open(path_to_urls, 'w') as json_file:
+                json.dump(json_decoded, json_file)
 
-        #add new locations to occupancy
-        occupancy_df = get_data(name_of_csv="Occupancy.csv")
+            #add new locations to occupancy
+            occupancy_df = get_data(name_of_csv="Occupancy.csv")
 
-        for l in new_locations:
-            occupancy_df[l] = None
+            for l in new_locations:
+                occupancy_df[l] = None
 
-        #save Occupancy
-        o_path = get_path_to_csv(name_of_csv="Occupancy.csv")
-        occupancy_df.to_csv(o_path, index=False)
+            #save Occupancy
+            o_path = get_path_to_csv(name_of_csv="Occupancy.csv")
+            occupancy_df.to_csv(o_path, index=False)
 
-        #renew global data
-        glob_vars.reset_data()
-        filter_data()
+            #renew global data
+            glob_vars.reset_data()
+            filter_data()
 
-        #TO-DO:
-        #update Occupancy for every location
+            #parse occupancy for each location again
+            update_occupancies()
+        except Exception as e:
+            glob_vars.curr_error = e
+            error_occured = True
+
+        err_val = 1 if error_occured else 0
 
         return not modal_state, None, None, ""
     else:
-
         raise PreventUpdate
 
-
-
+#function to automatically open dashboard in browser
 def open_browser():
     if not os.environ.get("WERKZEUG_RUN_MAIN"):
         webbrowser.open_new('http://127.0.0.1:8050/')
 
 
-
 # Run the app on localhost:8050
 if __name__ == '__main__':
+    #parse up to date occupancies
     update_occupancies()
+    #setup dashboard in webbrowser
     Timer(1, open_browser).start()
+    #run app
     app.run_server(debug=True)

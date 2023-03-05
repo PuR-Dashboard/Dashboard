@@ -1,4 +1,4 @@
-﻿location,lat,lon,address,administration,kind,number_parking_lots,price,public_transport,road_network_connection,surrounding_infrastructure
+location,lat,lon,address,administration,kind,number_parking_lots,price,public_transport,road_network_connection,surrounding_infrastructure
 Heidelberg,8.675259999999998,49.40572,An der Wiese 32,yes,Car Park,200-1200,1.5,70.0,Übergeordnetes Netz innerorts (Bundesstraßen),Nicht eindeutig zuzuordnen
-Bamberg,10.8998399999999993,49.9017499999999998,Bambergstr. 23,yes,car park,50.0,1-25,70.0,Übergeordnetes Netz innerorts (Bundesstraßen),Nicht eindeutig zuzuordnen
-Eberbach,8.98316,49.46584,Eberadresse 1,Yes,Separate Area,25-50,1,1,Superordinate network out of town (interstate),Green Spaces
+Bamberg,10.89984,49.90175,Bambergstr. 23,yes,Car Park,1-25,5.0,70.0,Übergeordnetes Netz innerorts (Bundesstraßen),Nicht eindeutig zuzuordnen
+Eberbach,8.98316,49.46584,Eberadresse 1,Yes,Separate Area,25-50,1.0,1.0,Superordinate network out of town (interstate),Green Spaces
