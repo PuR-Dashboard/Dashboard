@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output, State, MATCH, ALL
 import numpy as np
 import pandas as pd
 from dash.exceptions import PreventUpdate
-from utility.filter_funktion import *
+from utility.filter_function import *
 from utility.data_functions import *
 from components.sidebar import get_sidebar
 import plotly.express as px
@@ -23,7 +23,7 @@ ARR_BUTTON_STYLE = { #Define the style of the arrow button
     "background-color":"transparent", #set the background color to transparent
     "border": "transparent" #set the border color to transparent
 }
-#icon for button to expand list elements and arrow symbol for occupancy tendency in list view 
+#icon for button to expand list elements and arrow symbol for occupancy tendency in list view
 FA_icon_Arrow = html.I(className="fa fa-chevron-down fa-lg")
 FA_icon_Tendency_Arrow =html.I(className="fa fa-arrow-down")
 
@@ -58,7 +58,7 @@ def define_chracteristics()->list:
             continue
         value = row[0].split("_")
         value = " ".join(value)
-        
+
         characteristics2.append(value)
 
     return characteristics2
@@ -351,18 +351,18 @@ def create_plot(content:list[str] = [-1,-1,-1,-1,-1,-1])-> dcc.Graph:
     return graph
 
 def create_history(name:str)-> list:
-    
+
     """
-    This method creates the average occupancy of one location over a week. 
+    This method creates the average occupancy of one location over a week.
 
     Parameters
     -----------
-    name: 
-        Name of the location 
+    name:
+        Name of the location
 
     Returns
     -----------
-    averages: 
+    averages:
         list of the average occupancy of each day in a week
         -> Index 0: monday
         -> Index 1: tuesday
@@ -371,7 +371,7 @@ def create_history(name:str)-> list:
         -> Index 4: friday
         -> Index 5: weekend
 
-        if there are no occupancy values, it returns a list of -1 
+        if there are no occupancy values, it returns a list of -1
 
     """
 
@@ -384,25 +384,25 @@ def create_history(name:str)-> list:
     friday =[]
     weekend = []
 
-    #catch the case, if there are no occupancy values 
+    #catch the case, if there are no occupancy values
     if (len(occupancy)==0):
         return [-1,-1,-1,-1,-1,-1]
 
-    # iterate through the data 
-    #!!!!!!!!!!!!!!!!!!!!!! ab 21, weil da erst die neuen Occupancy daten anfangen 
+    # iterate through the data
+    #!!!!!!!!!!!!!!!!!!!!!! ab 21, weil da erst die neuen Occupancy daten anfangen
     for i in range (21,len(occupancy)):
-        
-        #getting the occupancy values for each row 
+
+        #getting the occupancy values for each row
         one = occupancy.iloc[i]
 
-        #catch the case if the location is no given 
+        #catch the case if the location is no given
         if one[name] == 'None':
             continue
 
-        # split the given data format ("keine vorhanden, abnehmend") into the different single values 
+        # split the given data format ("keine vorhanden, abnehmend") into the different single values
         splitted_one = one[name].split(",")
 
-        #give the different string values a fitting int value to calculate the average 
+        #give the different string values a fitting int value to calculate the average
         value = 0 if (splitted_one[1][:-1] == " 'keine vorhanden'") else (0.5 if (splitted_one[1][:-1] == " 'wenige vorhanden'")else 1)
 
         #get the date
@@ -475,7 +475,7 @@ def create_layout(names:list[str], content:list[str]) -> list:
     #init list of components
     html_list = []
 
-    if (content == [-1,-1,-1,-1,-1,-1]): 
+    if (content == [-1,-1,-1,-1,-1,-1]):
         return None
 
     #iterate through names(names and content must have the same length)
@@ -499,7 +499,7 @@ def create_layout(names:list[str], content:list[str]) -> list:
                     children=[
                         dbc.Row([ #getting the table and picture next to each other
                         dbc.Col(dbc.CardBody(create_table(content[i]), style ={"marginRight":"auto"})),
-                        dbc.Col(dbc.CardImg(src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1", 
+                        dbc.Col(dbc.CardImg(src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1",
                         style ={"height":"auto", "width":"auto","marginRight":"1%", "marginLeft": "auto", "marginTop": "6%","horizontalAlign": "right"})),
                     ],
                     style ={"width": "auto", "marginLeft": "1%"}),
@@ -510,19 +510,19 @@ def create_layout(names:list[str], content:list[str]) -> list:
                 ),
             create_edit_window(i), create_security_window(names[i], i), html.Div(id={"type":"edit_controller", "index":i}, style={"display":"none"}),
             html.Div(id={"type":"security_id_transmitter", "index":i}, style={"display":"none"}),
-                
+
             ],
             id={"type":"content", "index":i},
             is_open=False,
             style={"background-color":"#e6e6e6"},
-           
+
         ))
     #in case no name sare given(normally means filtering was unsuccessful)
     if len(names) == 0:
         html_list.append(html.H3("No results found!"))
         html_list.append(html.Hr())
 
-    
+
     html_list.append(
                 #placeholder div for output of location delete
                 html.Div(id="placeholder_div_delete_list", style={"display":"none"}))
@@ -757,7 +757,7 @@ def delete_location(yes, no):
     location_to_delete = row_to_delete["location"].values[0]
 
     remove_location(location_to_delete)
-    
+
     #renew global data
     glob_vars.reset_data()
     filter_data()

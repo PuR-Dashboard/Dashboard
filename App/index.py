@@ -7,7 +7,7 @@ from app import app
 import dash_bootstrap_components as dbc
 # Connect to your app pages
 from pages import map_page, list_page
-from utility.filter_funktion import *
+from utility.filter_function import *
 # Connect the components to the index
 from components import navbar, sidebar
 #from components import sidebar
@@ -372,7 +372,7 @@ def choose_correct_update(*args):
     sideboard_name_filter, sideboard_address_filter, sideboard_occupancy_filter, sideboard_price_filter :
         The value which was typed in the dash components to the corresponding filters for further functions.
     """
-    
+
     triggered_id = ctx.triggered_id
     error_occurred = False
 
@@ -397,7 +397,7 @@ def choose_correct_update(*args):
 
     elif triggered_id == "sideboard_price_filter" or triggered_id == "sideboard_occupancy_filter" or triggered_id == "sideboard_name_filter":
         #sidebar filter triggered
-        
+
         #first reset data
         glob_vars.reset_data()
         #check for error
