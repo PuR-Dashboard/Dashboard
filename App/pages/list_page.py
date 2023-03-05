@@ -325,9 +325,9 @@ def create_plot(content:list[str] = [-1,-1,-1,-1,-1,-1])-> dcc.Graph:
     })
 
     fig = px.bar(df, x="", y="occupancy rate")
-    fig.add_hline(y=1,line_color="red",  annotation_text="<b>high occupancy</b>")
-    fig.add_hline(y=0.5,line_color="yellow", annotation_text="<b>medium occupancy</b>")
-    fig.add_hline(y=0,line_color="green", annotation_text="<b>low occupancy</b>")
+    fig.add_hline(y=1,line_color="lightblue",  annotation_text="<b>high occupancy</b>")
+    fig.add_hline(y=0.5,line_color="lightblue", annotation_text="<b>medium occupancy</b>")
+    fig.add_hline(y=0,line_color="lightblue", annotation_text="<b>low occupancy</b>")
 
     fig.update_layout(
         title = {
@@ -365,35 +365,47 @@ def create_history(name:str)-> list:
         -> Index 4: friday
         -> Index 5: weekend
 
-        if there are noc occupancy values, it returns a list of -1 
+        if there are no occupancy values, it returns a list of -1 
 
     """
 
     occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
+    #create an array for each day of the week
     monday = []
     tuesday = []
     wednesday = []
     thursday = []
     friday =[]
     weekend = []
+
+    #catch the case, if there are no occupancy values 
     if (len(occupancy)==0):
         return [-1,-1,-1,-1,-1,-1]
 
+    # iterate through the data 
+    #!!!!!!!!!!!!!!!!!!!!!! ab 21, weil da erst die neuen Occupancy daten anfangen 
     for i in range (21,len(occupancy)):
-
+        
+        #getting the occupancy values for each row 
         one = occupancy.iloc[i]
+
+        #catch the case if the location is no given 
         if one[name] == 'None':
             continue
 
+        # split the given data format ("keine vorhanden, abnehmend") into the different single values 
         splitted_one = one[name].split(",")
 
-        value = 0 if (splitted_one[1][:-1] == " 'keine vorhanden'") else (1 if (splitted_one[1][:-1] == " 'wenige vorhanden'")else 2)
+        #give the different string values a fitting int value to calculate the average 
+        value = 0 if (splitted_one[1][:-1] == " 'keine vorhanden'") else (0.5 if (splitted_one[1][:-1] == " 'wenige vorhanden'")else 1)
 
+        #get the date
         timestamp = one["timestamp"].split(" ")
+        #form it to a day of a week
         temp = pd.Timestamp(timestamp[0])
-
         day_of_the_week = temp.day_name()
 
+        #sort the different values according to the weekday
         if day_of_the_week == "Saturday" or  day_of_the_week == "Sunday":
             weekend.append(value)
 
@@ -416,6 +428,7 @@ def create_history(name:str)-> list:
         all = [monday,tuesday,wednesday,thursday,friday,weekend]
         averages = []
 
+        #calculate the averages
         for i in range(6):
 
 
