@@ -1,5 +1,7 @@
 import dash_bootstrap_components as dbc
+#import dash_html_components as html
 from dash import html, dcc
+#from app import app
 from dash.dependencies import Input, Output, State
 import dash
 
@@ -22,7 +24,7 @@ refr_button = (html.Div
 
 
 import_button = (html.Div
-                    (dbc.Button([FA_icon_Import, " Import Data"], color="light", className="ms-2",id = "import_button", value = 0,
+                    (dbc.Button([FA_icon_Import, " Import Location"], color="light", className="ms-2",id = "import_button", value = 0,
                       style={
                             "marginRight": "40px",
                             "width": "125%",
@@ -98,14 +100,7 @@ def get_navbar()-> dbc.Navbar:
                         ),
                         dbc.Col(
                            dbc.NavItem(make_import_modal()),
-                        ),
-                        dbc.Col(
-                           dbc.NavItem(make_error_modal()),
-                        ),
-                        dbc.Col(
-                           dbc.NavItem(html.Div(id="placeholder_error_message" , style={"display":"none"})),
                         )
-                        
                     ],
                     align="right"),
                 ],
@@ -118,43 +113,6 @@ def get_navbar()-> dbc.Navbar:
 
     return navbar
 
-
-def make_error_modal() -> dbc.Modal:
-    """
-    This functions defines a Dash Modal to show when an error occcures.
-
-    Returns
-    -------
-    A Modal which contains the error warning
-    """
-
-    return dbc.Modal(  # Modal to display
-                [
-                    dbc.ModalHeader(dbc.ModalTitle("An Error has occured!")),  # Header of the modal
-                     dbc.ModalBody(  # Body of the modal
-                        [
-                            dbc.Label("An error has occured while using the dashboard. Your current data is secured and you should be able to continue as usual. More information might be shown in the terminal. The origin of error is shown below:", id="error_steady_text" , style={"display":"block", "color":"black"}),
-                            dbc.Label("Unidentified Error", id="modal_dynamic_error" , style={"display":"block", "color":"red"}),
-                        ]
-                    ),
-                     dbc.ModalFooter(  # Footer of the modal
-                        [
-                            dbc.Button(  # Button to close the modal, changes will be discarded
-                                "Okay",
-                                 style = {"background-color":"#b3b3b3",
-                                         "border": "black",
-                                         "color": "black" # Set the color of the button to black
-                                         },   # Text of the button
-                                id="modal_error_ok_button"  # Set the id of the button
-                            ),
-                        ]
-                    ),
-                ],
-                id="modal_error",  # Set the id of the modal
-                size="lg",
-                #scrollable=True,
-                centered=True,  # Set the centered-attribute of the modal to True
-            ),
 
 
 def make_import_modal()-> dbc.Modal:
@@ -190,7 +148,7 @@ def make_import_modal()-> dbc.Modal:
                                 # Allow multiple files to be uploaded
                                 multiple=True
                             ),
-                            dbc.Label("Uploaded CSV File with location data:",style = {"margin-top":"2%"}),
+                            dbc.Label("Uploaded CSV File:",style = {"margin-top":"2%"}),
                             dbc.Input(
                                 placeholder="",
                                 id="modal_uploaded_csv",
@@ -200,7 +158,7 @@ def make_import_modal()-> dbc.Modal:
                                 disabled=True,
                                 style={"background":"white"}
                             ),
-                            dbc.Label("Uploaded JSON File with URLs:",style = {"margin-top":"2%"}),
+                            dbc.Label("Uploaded JSON File:",style = {"margin-top":"2%"}),
                             dbc.Input(
                                 placeholder="",
                                 id="modal_uploaded_json",

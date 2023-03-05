@@ -2,6 +2,10 @@ import pandas as pd
 from utility.data_functions import get_data
 from collections import defaultdict
 
+#IDEAS FOR THIS FILE:
+#- add occupancy csv and urls as global variables for easier accessing?
+#- move more functions over here? e.g. reset_data etc
+
 
 #global variables defined here will be accesible in files that import this file
 global data, current_filter, occupancy
@@ -15,9 +19,6 @@ current_filter = None
 temp_csv = None
 temp_json = None
 
-#error message that gets passed between callbacks
-#lazy solution that prevents adding a couple more invisible components
-curr_error = None
 
 def init()-> None:
     """

@@ -10,6 +10,7 @@ from utility import map_functions
 from utility.map_functions import *
 from pandas import read_csv
 from pages import list_page
+#from utility.util_functions import *
 from components.sidebar import get_sidebar
 from utility.data_functions import *
 from utility.filter_funktion import *
@@ -23,9 +24,15 @@ CONTENT_STYLE = { #style the content of map_page so that it aligns with the side
     "position": "fixed",
     "width": "calc(100vw - 250px)",
     "height": "calc(100vh - 50px)",
+   # "resize":"both",
     "flex-grow": "1",
+    #"border":"none",
     "seamless":"True"
+
 }
+
+
+
 
 
 def define_chracteristics()-> list:
@@ -80,6 +87,9 @@ def create_html_map(data:pd.DataFrame)-> list:
 
                      ))
 
+    #html_list.append(sid)
+
+
     return html_list
 
 layout = html.Div( #creating the layout
@@ -98,6 +108,8 @@ def reverse_Map()->list:
     html_map :
         A list of all components of the map page with the reversed data.
     """
+
+    #lobal data
 
     glob_vars.data = get_data(name_of_csv="Characteristics.csv")
 
@@ -163,6 +175,12 @@ def update(nr_clicks:int)-> list:
 
 #---------------------------------------------------------------------
 #Callbacks:
+
+
+#------
+
+
+
 
 #layout refresh callback and sidebar handling
 @callback(
