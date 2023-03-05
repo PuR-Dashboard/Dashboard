@@ -208,7 +208,7 @@ def add_legend(folium_map:folium.Map)-> folium.Map:
         font-size:14px;
         ">
         <p><a style="color: red;font-size:150%;margin-left:10px;">&diams;</a>&emsp;high occupancy</p>
-        <p><a style="color:yellow;font-size:150%;margin-left:10px;">&diams;</a>&emsp;medium occupancy</p>
+        <p><a style="color:gold;font-size:150%;margin-left:10px;">&diams;</a>&emsp;medium occupancy</p>
         <p><a style="color:green;font-size:150%;margin-left:10px;">&diams;</a>&emsp;low occupancy</p>
     </div>
     <div style="
