@@ -190,7 +190,7 @@ def make_import_modal()-> dbc.Modal:
                                 # Allow multiple files to be uploaded
                                 multiple=True
                             ),
-                            dbc.Label("Uploaded CSV File:",style = {"margin-top":"2%"}),
+                            dbc.Label("Uploaded CSV File with location data:",style = {"margin-top":"2%"}),
                             dbc.Input(
                                 placeholder="",
                                 id="modal_uploaded_csv",
@@ -200,7 +200,7 @@ def make_import_modal()-> dbc.Modal:
                                 disabled=True,
                                 style={"background":"white"}
                             ),
-                            dbc.Label("Uploaded JSON File:",style = {"margin-top":"2%"}),
+                            dbc.Label("Uploaded JSON File with URLs:",style = {"margin-top":"2%"}),
                             dbc.Input(
                                 placeholder="",
                                 id="modal_uploaded_json",

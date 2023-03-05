@@ -23,7 +23,8 @@ ARR_BUTTON_STYLE = { #Define the style of the arrow button
     "background-color":"transparent", #set the background color to transparent
     "border": "transparent" #set the border color to transparent
 }
-FA_icon_Arrow = html.I(className="fa fa-chevron-down fa-lg") #arrow icon for the arrow button
+#icon for button to expand list elements and arrow symbol for occupancy tendency in list view 
+FA_icon_Arrow = html.I(className="fa fa-chevron-down fa-lg")
 FA_icon_Tendency_Arrow =html.I(className="fa fa-arrow-down")
 
 CONTENT_STYLE = { #style the content of list_page so that it aligns with the sidebar
@@ -141,8 +142,8 @@ def create_edit_window(index:int)-> dbc.Modal:
                     ),
 
                     dbc.Label("Type of Facility",style = {"margin-top":"5%", "weight":"bold"}),
-                    dcc.Dropdown(
-                                    options=[
+                    dcc.Dropdown( #Dropdown component with values for kind characteristic
+                                    options=[ #different possible values
                                         {'label': 'Car Park', 'value': 'Car Park'},
                                         {'label': 'Separate Area', 'value': 'Separate Area'},
                                         {'label': 'At the edge of the road / on the road', 'value': 'At the edge of the road / on the road'},
@@ -229,7 +230,6 @@ def create_edit_window(index:int)-> dbc.Modal:
     return edit_popUp
 
 
-#will be switched out by table through vuetify library and is not documented further -> soon to be DEPRECATED
 def create_content(df: pd.DataFrame)-> tuple[list[str], list[str]]:
     """
     This function creates the names and information of the location.
@@ -293,16 +293,16 @@ def create_table(content:list)->dbc.Table :
     #define inputs of the list view table -> data values + occupancy
     charakter = define_chracteristics()
     rows = [html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]) for i in range (len(charakter))]
+    #add icons
     rows.append(html.Tr([html.Td("Occupancy"), html.Td("High")]))
     rows.append(html.Tr([html.Td("Occupancy Tendency"), html.Td(FA_icon_Tendency_Arrow)]))
     table_body = [html.Tbody(rows)]
-
+    #make whole table
     table_1 = dbc.Table(table_header + table_body, borderless=False, hover=False, style = {"width":"100%"})
 
     return table_1
 
 
-#!!!!Fehlen die Daten, um die Verteilung für die Orte individuell zu gestalten
 def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
     """
     This function creates a plot to visualize the prediction over the week.
