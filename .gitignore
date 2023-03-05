@@ -1,5 +1,5 @@
 # Include logs directory in tests
-test/logs/
+tests/logs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

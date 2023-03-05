@@ -7,7 +7,7 @@ from app import app
 import dash_bootstrap_components as dbc
 # Connect to your app pages
 from pages import map_page, list_page
-from utility.filter_funktion import *
+from utility.filter_function import *
 # Connect the components to the index
 from components import navbar, sidebar
 #from components import sidebar

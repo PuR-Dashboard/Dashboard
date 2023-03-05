@@ -6,7 +6,6 @@ from folium import plugins
 from folium.plugins import MarkerCluster
 import json
 import requests
-from folium_jsbutton import JsButton
 import pandas as pd
 from pandas import read_csv
 import csv
