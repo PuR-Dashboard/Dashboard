@@ -88,15 +88,11 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
         one_location_previous = data.iloc[i]
         one_occupancy = one[one_location_previous[0]].split(",")
         one_location = ["not specified" if (one_location_previous[i] == None) else one_location_previous[i] for i in range (len(one_location_previous)) ]
-<<<<<<< Updated upstream
-        arrow = "&#x2B06;" if (one_occupancy[0][1:] == "zunehmend") else ("&#x2B07;" if (one_occupancy[0][1:] == "abnehmend")else "&#x2B05;")
-=======
 
         # choosing the right arrow according to the tendency of the occupancy
         arrow = "&#x2B06;" if (one_occupancy[0][1:] == "'zunehmend'") else ("&#x2B07;" if (one_occupancy[0][1:] == "'abnehmend'")else "&#x2B05;")
 
         # creating the HTML for one certain location
->>>>>>> Stashed changes
         html=f"""
             <!DOCTYPE html>
             <html>

@@ -5,12 +5,7 @@ from dash.dependencies import Input, Output, State, MATCH, ALL
 import numpy as np
 import pandas as pd
 from dash.exceptions import PreventUpdate
-<<<<<<< Updated upstream
-#from utility.util_functions import *
-from utility.filter_funktion import *
-=======
 from utility.filter_function import *
->>>>>>> Stashed changes
 from utility.data_functions import *
 from components.sidebar import get_sidebar
 import plotly.express as px
@@ -27,14 +22,9 @@ ARR_BUTTON_STYLE = { #Define the style of the arrow button
     "background-color":"transparent", #set the background color to transparent
     "border": "transparent" #set the border color to transparent
 }
-<<<<<<< Updated upstream
-FA_icon_Arrow = html.I(className="fa fa-chevron-down fa-lg") #arrow icon for the arrow button
-FA_icon_Tendency_Arrow =html.I(className="fa fa-arrow-down")
-=======
 #icon for button to expand list elements and arrow symbol for occupancy tendency in list view 
 FA_icon_Arrow = html.I(className="fa fa-chevron-down fa-lg")
 
->>>>>>> Stashed changes
 
 CONTENT_STYLE = { #style the content of list_page so that it aligns with the sidebar
     "position": "fixed",
@@ -308,10 +298,6 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
     
     charakter = define_chracteristics()
     rows = [html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]) for i in range (len(charakter))]
-<<<<<<< Updated upstream
-    rows.append(html.Tr([html.Td("Occupancy"), html.Td("High")]))
-    rows.append(html.Tr([html.Td("Occupancy Tendency"), html.Td(FA_icon_Tendency_Arrow)]))
-=======
    
     occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
     one = occupancy.iloc[len(occupancy)-1] # getting the last row of the dataframe which is representing the currenct occupancys
@@ -333,7 +319,6 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
             rows.append(html.Tr([html.Td("Occupancy Tendency"), html.Td(arrow)]))
     #add icons
     
->>>>>>> Stashed changes
     table_body = [html.Tbody(rows)]
 
     table_1 = dbc.Table(table_header + table_body, borderless=False, hover=False, style = {"width":"100%"})
