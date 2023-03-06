@@ -10,12 +10,23 @@ FA_icon_Import = html.I(className="fa fa-upload", style={"display":"inline-block
 #plus icon for adding a location
 FA_icon_Plus = html.I(className="fa fa-plus")
 refr_button = (html.Div
+<<<<<<< Updated upstream
                 (dbc.Button([FA_icon, " Refresh"], color="light", className="ms-2",id = "refresh_page", value = 0,
                     style={
                         "margin-left":"800%",
                         "width": "100%",
+=======
+                (dbc.Button([FA_icon, " Refresh"],
+                    color="light", # color of the button
+                    className="ms-2", #name of the class of the button
+                    id = "refresh_page", #individuell id of the button
+                    value = 0,
+                    style={ # style of the button
+                        "marginLeft":"10px",
+                        "width": "80%",
+>>>>>>> Stashed changes
                         "height": "40%",
-                        "fontSize": "1em",
+                        "fontSize": "1.1em",
                         "color": "white",
                         "background-color":"transparent", #set the background color to transparent
                         "border": "transparent", #set the border color to transparent
@@ -27,9 +38,9 @@ import_button = (html.Div
                     (dbc.Button([FA_icon_Import, " Import Location"], color="light", className="ms-2",id = "import_button", value = 0,
                       style={
                             "marginRight": "40px",
-                            "width": "125%",
+                            "width": "115%",
                             "height": "40%",
-                            "fontSize": "1em",
+                            "fontSize": "1.1em",
                             "color": "white",
                             "background-color":"transparent", #set the background color to transparent
                             "border": "transparent", #set the border color to transparent
@@ -42,7 +53,7 @@ add_location_button =  (html.Div
                                     "marginRight": "40px",
                                     "width": "105%",
                                     "height": "40%",
-                                    "fontSize": "1em",
+                                    "fontSize": "1.1em",
                                     "color": "white",
                                     "background-color":"transparent", #set the background color to transparent
                                     "border": "transparent", #set the border color to transparent
@@ -67,7 +78,11 @@ def get_navbar()-> dbc.Navbar:
                     dbc.Row([
                         dbc.Col([
 
+<<<<<<< Updated upstream
                             dbc.NavbarBrand("Park&Ride Dashboard", className="font-weight-bold")
+=======
+                            dbc.NavbarBrand("Park&Ride Dashboard", style={"font-weight":"bold", "fontSize":"1.3em"}) # defining some text which is visualized in the navbar
+>>>>>>> Stashed changes
                         ],
                         width={"size":"auto"})
                     ],
@@ -77,8 +92,13 @@ def get_navbar()-> dbc.Navbar:
                     dbc.Row([
                         dbc.Col([
                             dbc.Nav([
+<<<<<<< Updated upstream
                                 dbc.NavItem(dbc.NavLink("Map View", href="/map_page",style={"color":"white"})),
                                 dbc.NavItem(dbc.NavLink("List View", href="/list_page",style={"color":"white"})),
+=======
+                                dbc.NavItem(dbc.NavLink("Map View", href="/map_page",style={"color":"white","fontSize": "1.2em"})), # button for the map_page
+                                dbc.NavItem(dbc.NavLink("List View", href="/list_page",style={"color":"white","fontSize": "1.2em"})), # button for the list_page
+>>>>>>> Stashed changes
                             ],
                             navbar=True
                             )
@@ -87,6 +107,15 @@ def get_navbar()-> dbc.Navbar:
                     ],
                     align="center"),
                     dbc.Col(dbc.NavbarToggler(id="navbar-toggler", n_clicks=0)),
+                     dbc.Col(
+                           dbc.NavItem(make_import_modal(), style={"width":"10"}), # the add location through an import button
+                        ),
+                        dbc.Col(
+                           dbc.NavItem(make_error_modal(), style={"width":"10"}),
+                        ),
+                        dbc.Col(
+                           dbc.NavItem(html.Div(id="placeholder_error_message" , style={"display":"none","width":"10"})),
+                        ),
 
                     dbc.Row([
                         dbc.Col(
@@ -98,9 +127,14 @@ def get_navbar()-> dbc.Navbar:
                          dbc.Col(
                            dbc.NavItem(refr_button),
                         ),
+<<<<<<< Updated upstream
                         dbc.Col(
                            dbc.NavItem(make_import_modal()),
                         )
+=======
+                       
+                        
+>>>>>>> Stashed changes
                     ],
                     align="right"),
                 ],

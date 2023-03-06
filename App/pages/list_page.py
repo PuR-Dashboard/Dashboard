@@ -5,8 +5,12 @@ from dash.dependencies import Input, Output, State, MATCH, ALL
 import numpy as np
 import pandas as pd
 from dash.exceptions import PreventUpdate
+<<<<<<< Updated upstream
 #from utility.util_functions import *
 from utility.filter_funktion import *
+=======
+from utility.filter_function import *
+>>>>>>> Stashed changes
 from utility.data_functions import *
 from components.sidebar import get_sidebar
 import plotly.express as px
@@ -23,8 +27,14 @@ ARR_BUTTON_STYLE = { #Define the style of the arrow button
     "background-color":"transparent", #set the background color to transparent
     "border": "transparent" #set the border color to transparent
 }
+<<<<<<< Updated upstream
 FA_icon_Arrow = html.I(className="fa fa-chevron-down fa-lg") #arrow icon for the arrow button
 FA_icon_Tendency_Arrow =html.I(className="fa fa-arrow-down")
+=======
+#icon for button to expand list elements and arrow symbol for occupancy tendency in list view 
+FA_icon_Arrow = html.I(className="fa fa-chevron-down fa-lg")
+
+>>>>>>> Stashed changes
 
 CONTENT_STYLE = { #style the content of list_page so that it aligns with the sidebar
     "position": "fixed",
@@ -277,7 +287,7 @@ def create_content(df: pd.DataFrame)-> tuple[list[str], list[str]]:
     return names, content
 
 
-def create_table(content:list)->dbc.Table :
+def create_table(data:pd.DataFrame,content:list)->dbc.Table :
     """
     This function creates the tables for the given data.
 
@@ -298,8 +308,32 @@ def create_table(content:list)->dbc.Table :
     
     charakter = define_chracteristics()
     rows = [html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]) for i in range (len(charakter))]
+<<<<<<< Updated upstream
     rows.append(html.Tr([html.Td("Occupancy"), html.Td("High")]))
     rows.append(html.Tr([html.Td("Occupancy Tendency"), html.Td(FA_icon_Tendency_Arrow)]))
+=======
+   
+    occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
+    one = occupancy.iloc[len(occupancy)-1] # getting the last row of the dataframe which is representing the currenct occupancys
+    
+    arrow_down = html.I(className="fa fa-arrow-down")
+    arrow_up = html.I(className="fa fa-arrow-up")
+    arrow_left = html.I(className="fa fa-arrow-left")
+
+
+    for i in range (len(data)):
+
+        one_location_previous = data.iloc[i] # data of one location
+        one_occupancy = one[one_location_previous[0]].split(",") # the occupancy information of the locations
+        this_occupancy = one_occupancy[1][:-1].replace("'", "")          
+    
+        arrow = arrow_up if (one_occupancy[0][1:] == "'zunehmend'") else (arrow_down if (one_occupancy[0][1:] == "'abnehmend'")else arrow_left)
+        if content[0] == one_location_previous[0]:
+            rows.append(html.Tr([html.Td("Occupancy"), html.Td(this_occupancy)]))
+            rows.append(html.Tr([html.Td("Occupancy Tendency"), html.Td(arrow)]))
+    #add icons
+    
+>>>>>>> Stashed changes
     table_body = [html.Tbody(rows)]
 
     table_1 = dbc.Table(table_header + table_body, borderless=False, hover=False, style = {"width":"100%"})
@@ -347,7 +381,7 @@ def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
 
 
 #----!!! Names and content is at the moment created through the create_content() def, will need new creation function after create_content() is DEPRECATED
-def create_layout(names:list[str], content:list[str]) -> list:
+def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list:
     """
     This function dynamically creates the layout for the list_page.
 
@@ -392,7 +426,7 @@ def create_layout(names:list[str], content:list[str]) -> list:
                 html.Div(
                     children=[
                         dbc.Row([ #getting the table and picture next to each other
-                        dbc.Col(dbc.CardBody(create_table(content[i]), style ={"marginRight":"auto"})),
+                        dbc.Col(dbc.CardBody(create_table(data, content[i]), style ={"marginRight":"auto"})),
                         dbc.Col(dbc.CardImg(src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1", 
                         style ={"height":"auto", "width":"auto","marginRight":"1%", "marginLeft": "auto", "marginTop": "6%","horizontalAlign": "right"})),
                     ],
@@ -427,7 +461,7 @@ def create_layout(names:list[str], content:list[str]) -> list:
 #create headers and content
 names, content = create_content(glob_vars.data)
 #create new layout
-html_list_for_layout = create_layout(names, content)
+html_list_for_layout = create_layout(glob_vars.data, names, content)
 
 layout = html.Div(children=html_list_for_layout, id="list_layout", style = CONTENT_STYLE)
 
@@ -550,7 +584,7 @@ def refresh_layout() -> list:
     #create names and content of collapsibles
     names, content = create_content(glob_vars.data)
     #make new layout
-    layout = create_layout(names, content)
+    layout = create_layout(glob_vars.data,names, content)
 
     return layout
 

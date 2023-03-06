@@ -88,7 +88,15 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
         one_location_previous = data.iloc[i]
         one_occupancy = one[one_location_previous[0]].split(",")
         one_location = ["not specified" if (one_location_previous[i] == None) else one_location_previous[i] for i in range (len(one_location_previous)) ]
+<<<<<<< Updated upstream
         arrow = "&#x2B06;" if (one_occupancy[0][1:] == "zunehmend") else ("&#x2B07;" if (one_occupancy[0][1:] == "abnehmend")else "&#x2B05;")
+=======
+
+        # choosing the right arrow according to the tendency of the occupancy
+        arrow = "&#x2B06;" if (one_occupancy[0][1:] == "'zunehmend'") else ("&#x2B07;" if (one_occupancy[0][1:] == "'abnehmend'")else "&#x2B05;")
+
+        # creating the HTML for one certain location
+>>>>>>> Stashed changes
         html=f"""
             <!DOCTYPE html>
             <html>
@@ -102,7 +110,7 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
                        <li style= "font-size: 15px"> <B><font face="Arial">Number of Parking Lots: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["number_parking_lots"]}</font></li>&thinsp;
                        <li style= "font-size: 15px"> <B><font face="Arial">Type of Facility:</font></B></font><font face="Arial">&emsp;{data.iloc[i]["kind"]}</font></li>&thinsp;
                        <li style= "font-size: 15px"> <B><font face="Arial">Public Transport Connections: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["public_transport"]}</font></li>&thinsp;
-                       <li style= "font-size: 15px"> <B><font face="Arial">Current Occupancy:</font></B> <font color = {colors[i]}>&emsp; {one_occupancy[1][:-1]}  </font>&emsp;{arrow}</li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">Current Occupancy:</font></B> <font color = {colors[i]}>&emsp; {one_occupancy[1][:-1].replace("'", "")}  </font>&emsp;{arrow}</li>&thinsp;
                    </ul>
 
                        <table style= "border:1px solid black; background-color:#E3EFFA; text-align:center; font-size: 14px; width:100%; height:100%">
@@ -119,13 +127,13 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
                        </tr>
                        &thinsp;
                        <tr>
-                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
-                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
-                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
-                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
-                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
-                       <td style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
-                       <td><font face="Arial"> <font color = {colors[i]}>&emsp; {one_occupancy[1]}  </font>&emsp;{arrow}</li></font></td>
+                       <td width = 80 style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td width = 80 style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td width = 80 style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td width = 80 style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td width = 80 style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td width = 80 style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
+                       <td><font face="Arial"> <font color = {colors[i]}>&emsp; {one_occupancy[1][:-1].replace("'", "")}  </font>&emsp;{arrow}</li></font></td>
                        </tr>
                        </table>
 
