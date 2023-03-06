@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output, State, MATCH, ALL
 import numpy as np
 import pandas as pd
 from dash.exceptions import PreventUpdate
-from utility.filter_funktion import *
+from utility.filter_function import *
 from utility.data_functions import *
 from components.sidebar import get_sidebar
 import plotly.express as px
