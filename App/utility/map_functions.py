@@ -1,4 +1,3 @@
-import pyautogui
 import os
 import sys
 import folium
@@ -54,7 +53,7 @@ def screensize()-> list:
     -------
     width and height of the screen
     """
-    return pyautogui.size()  # Returns a tuple of (width, height)
+    return (1920, 1080)  # Returns a tuple of (width, height)
 
 
 def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :

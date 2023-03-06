@@ -19,8 +19,6 @@ COPY . /App
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /App
 USER appuser
 
-ENV DISPLAY=:0
-
 EXPOSE 8050
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
