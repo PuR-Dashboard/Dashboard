@@ -59,7 +59,7 @@ def define_chracteristics()->list:
         value = row[0].split("_")
         value = " ".join(value)
 
-        characteristics2.append(value)
+        characteristics2.append(value.replace(" ","_"))
 
     return characteristics2
 
@@ -603,6 +603,7 @@ def define_inputs_edit(special_ones:list)->list:
         inputs.append(one)
 
     characteristics= define_chracteristics()
+    
     #append characteristics according to naming scheme
     for characs in characteristics:
         inputs.append(Input({"type": "edit_"+characs, "index": MATCH}, 'value'))
