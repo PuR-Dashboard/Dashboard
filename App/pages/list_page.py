@@ -22,7 +22,7 @@ ARR_BUTTON_STYLE = { #Define the style of the arrow button
     "background-color":"transparent", #set the background color to transparent
     "border": "transparent" #set the border color to transparent
 }
-#icon for button to expand list elements and arrow symbol for occupancy tendency in list view 
+#icon for button to expand list elements and arrow symbol for occupancy tendency in list view
 FA_icon_Arrow = html.I(className="fa fa-chevron-down fa-lg")
 
 
@@ -291,17 +291,17 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
     table_1:
         A tables which represents all the given data.
     """
-   
+
     table_header = [
         html.Thead(html.Tr([html.Th("Characteristics"), html.Th("Values")]), style = {"marginTop":"5%"})
     ]
-    
+
     charakter = define_chracteristics()
     rows = [html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]) for i in range (len(charakter))]
-   
+
     occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
     one = occupancy.iloc[len(occupancy)-1] # getting the last row of the dataframe which is representing the currenct occupancys
-    
+
     arrow_down = html.I(className="fa fa-arrow-down")
     arrow_up = html.I(className="fa fa-arrow-up")
     arrow_left = html.I(className="fa fa-arrow-left")
@@ -311,14 +311,14 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
 
         one_location_previous = data.iloc[i] # data of one location
         one_occupancy = one[one_location_previous[0]].split(",") # the occupancy information of the locations
-        this_occupancy = one_occupancy[1][:-1].replace("'", "")          
-    
+        this_occupancy = one_occupancy[1][:-1].replace("'", "")
+
         arrow = arrow_up if (one_occupancy[0][1:] == "'zunehmend'") else (arrow_down if (one_occupancy[0][1:] == "'abnehmend'")else arrow_left)
         if content[0] == one_location_previous[0]:
             rows.append(html.Tr([html.Td("Occupancy"), html.Td(this_occupancy)]))
             rows.append(html.Tr([html.Td("Occupancy Tendency"), html.Td(arrow)]))
     #add icons
-    
+
     table_body = [html.Tbody(rows)]
 
     table_1 = dbc.Table(table_header + table_body, borderless=False, hover=False, style = {"width":"100%"})
@@ -365,6 +365,110 @@ def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
     return graph
 
 
+
+def create_history(name:str)-> list:
+
+    """
+    This method creates the average occupancy of one location over a week.
+
+    Parameters
+    -----------
+    name:
+        Name of the location
+
+    Returns
+    -----------
+    averages:
+        list of the average occupancy of each day in a week
+        -> Index 0: monday
+        -> Index 1: tuesday
+        -> Index 2: wednesday
+        -> Index 3: thursday
+        -> Index 4: friday
+        -> Index 5: weekend
+
+        if there are no occupancy values, it returns a list of -1
+
+    """
+
+    occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
+    #create an array for each day of the week
+    monday = []
+    tuesday = []
+    wednesday = []
+    thursday = []
+    friday =[]
+    weekend = []
+
+    #catch the case, if there are no occupancy values
+    if (len(occupancy)==0):
+        return [-1,-1,-1,-1,-1,-1]
+
+    # iterate through the data
+    #!!!!!!!!!!!!!!!!!!!!!! ab 21, weil da erst die neuen Occupancy daten anfangen
+    for i in range (21,len(occupancy)):
+
+        #getting the occupancy values for each row
+        one = occupancy.iloc[i]
+
+        #catch the case if the location is no given
+        if one[name] == 'None':
+            continue
+
+        # split the given data format ("keine vorhanden, abnehmend") into the different single values
+        splitted_one = one[name].split(",")
+
+        #give the different string values a fitting int value to calculate the average
+        value = 0 if (splitted_one[1][:-1] == " 'keine vorhanden'") else (0.5 if (splitted_one[1][:-1] == " 'wenige vorhanden'")else 1)
+
+        #get the date
+        timestamp = one["timestamp"].split(" ")
+        #form it to a day of a week
+        temp = pd.Timestamp(timestamp[0])
+        day_of_the_week = temp.day_name()
+
+        #sort the different values according to the weekday
+        if day_of_the_week == "Saturday" or  day_of_the_week == "Sunday":
+            weekend.append(value)
+
+        elif  day_of_the_week == "Monday":
+            monday.append(value)
+
+        elif  day_of_the_week == "Tuesday":
+            tuesday.append(value)
+
+        elif  day_of_the_week == "Wednesday":
+            wednesday.append(value)
+
+        elif  day_of_the_week == "Thursday":
+            thursday.append(value)
+
+        elif  day_of_the_week == "Friday":
+            friday.append(value)
+
+
+        all = [monday,tuesday,wednesday,thursday,friday,weekend]
+        averages = []
+
+        #calculate the averages
+        for i in range(6):
+
+
+            if len(all[i]) == 0:
+                averages.append(0)
+
+            elif i == 5:
+                averages.append(sum(all[i])/len(all[i]))
+
+            else:
+                averages.append(sum(all[i])/len(all[i]))
+
+
+
+
+    return averages
+
+
 #----!!! Names and content is at the moment created through the create_content() def, will need new creation function after create_content() is DEPRECATED
 def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list:
     """
@@ -391,6 +495,10 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
     html_list = []
 
 
+    if (content == [-1,-1,-1,-1,-1,-1]):
+        return None
+
+
     #iterate through names(names and content must have the same length)
     for i in range(len(names)):
         #append header of location
@@ -412,23 +520,23 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
                     children=[
                         dbc.Row([ #getting the table and picture next to each other
                         dbc.Col(dbc.CardBody(create_table(data, content[i]), style ={"marginRight":"auto"})),
-                        dbc.Col(dbc.CardImg(src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1", 
+                        dbc.Col(dbc.CardImg(src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1",
                         style ={"height":"auto", "width":"auto","marginRight":"1%", "marginLeft": "auto", "marginTop": "6%","horizontalAlign": "right"})),
                     ],
                     style ={"width": "auto", "marginLeft": "1%"}),
                     #plot directly under the table
-                    dbc.CardBody(create_plot(),style ={"width": "auto","height":"auto", "color": "#F0F8FF"}),
+                    dbc.CardBody(create_plot(create_history(names[i])),style ={"width": "auto","height":"auto", "color": "#F0F8FF"}),
                     ],
                 style={"width":"calc(100vw - 260px)","overflow": "scroll", "height": "calc(100vh - 120px)"}
                 ),
             create_edit_window(i), create_security_window(names[i], i), html.Div(id={"type":"edit_controller", "index":i}, style={"display":"none"}),
             html.Div(id={"type":"security_id_transmitter", "index":i}, style={"display":"none"}),
-                
+
             ],
             id={"type":"content", "index":i},
             is_open=False,
             style={"background-color":"#e6e6e6"},
-           
+
         ))
     #in case no name sare given(normally means filtering was unsuccessful)
     if len(names) == 0:
