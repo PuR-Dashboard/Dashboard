@@ -16,6 +16,7 @@ from dash import Input, Output, State, html
 import branca
 from utility.data_functions import *
 import pages.global_vars as glob_vars
+from pages.list_page import create_history
 
 
 
@@ -91,6 +92,8 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
 
         # choosing the right arrow according to the tendency of the occupancy
         arrow = "&#x2B06;" if (one_occupancy[0][1:] == "'zunehmend'") else ("&#x2B07;" if (one_occupancy[0][1:] == "'abnehmend'")else "&#x2B05;")
+
+        history = create_history(data.iloc[i]["location"])
 
         # creating the HTML for one certain location
         html=f"""
