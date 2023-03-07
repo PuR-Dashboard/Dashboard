@@ -603,7 +603,7 @@ def define_inputs_edit(special_ones:list)->list:
         inputs.append(one)
 
     characteristics= define_chracteristics()
-    
+
     #append characteristics according to naming scheme
     for characs in characteristics:
         inputs.append(Input({"type": "edit_"+characs, "index": MATCH}, 'value'))
@@ -877,7 +877,7 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,*params):
     # if the edit button was pressed the edit window opens
     if triggered_id["type"] == "pen_button":
         row = glob_vars.data.iloc[triggered_id.index]
-        print(row, row[0], type(row[0]))
+
         display_list = []
 
         for c in characs:
