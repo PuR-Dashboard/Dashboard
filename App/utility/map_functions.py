@@ -109,29 +109,31 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
                        <li style= "font-size: 15px"> <B><font face="Arial">Current Occupancy:</font></B> <font color = {colors[i]}>&emsp; {one_occupancy[1][:-1].replace("'", "")}  </font>&emsp;{arrow}</li>&thinsp;
                    </ul>
 
+                       <p style = "font-size: 18px", "text-align: center"><B><u><font face="Arial">Occupancy History Of The Week (in %)</font></u></B></p>
+
                        <table style= "border:1px solid black; background-color:#E3EFFA; text-align:center; font-size: 14px; width:100%; height:100%">
-                       <caption style= "text-align:center"> <B style= "font-size: 18px"><font face="Arial">Occupancy History Of The Week</font></B> </caption>
-                        &thinsp;
+
                        <tr>
                            <th height=30 style=" border-bottom: 1px solid black; border-right: 1px solid black;"><font face="Arial">Monday</font></th>
                            <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Tuesday</font></th>
                            <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Wednesday</font></th>
                            <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Thursday</font></th>
                            <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Friday</font></th>
-                           <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Saturday</font></th>
-                           <th  style=" border-bottom: 1px solid black;"><font face="Arial">Sunday</font></th>
+                           <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Weekend</font></th>
+
                        </tr>
                        &thinsp;
                        <tr>
-                       <td width = 80 style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
-                       <td width = 80 style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
-                       <td width = 80 style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
-                       <td width = 80 style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
-                       <td width = 80 style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
-                       <td width = 80 style = "border-right: 1px solid black;"><font face="Arial"> <font color = {colors[i]}>&emsp; {one_location[6]}  </font>&emsp;{arrow}</li></font></td>
-                       <td><font face="Arial"> <font color = {colors[i]}>&emsp; {one_occupancy[1][:-1].replace("'", "")}  </font>&emsp;{arrow}</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> &emsp; {str(round(history[0]*100,1))+"%"}  </font>&emsp;</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial">&emsp; {str(round(history[1]*100,1))+"%"}  </font>&emsp;</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> &emsp; {str(round(history[2]*100,1))+"%"}  </font>&emsp;</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> &emsp; {str(round(history[3]*100,1))+"%"}  </font>&emsp;</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> &emsp; {str(round(history[4]*100,1))+"%"}  </font>&emsp;</li></font></td>
+                       <td style = "border-right: 1px solid black;"><font face="Arial"> &emsp; {str(round(history[5]*100,1))+"%"}  </font>&emsp;</li></font></td>
+
                        </tr>
                        </table>
+
 
 
                    </p>
@@ -281,7 +283,8 @@ def update(data:pd.DataFrame,m:folium.Map)-> folium.Map:
         gebiete.append([data.iloc[i][2], data.iloc[i][1],define_radius()])
     create_Einzugsgebiete(gebiete,einzugsgebiete)
     # Butto für die Angabe des Standortes
-    folium.plugins.LocateControl().add_to(m)
+
+    folium.plugins.LocateControl(position = 'topright',returnToPrevBounds = True).add_to(m)
 
     # Button für die Suche
     #folium.plugins.Search(layer = einzugsgebiete,position = 'topright').add_to(m)
