@@ -1,4 +1,3 @@
-import pyautogui
 import os
 import sys
 import folium
@@ -10,7 +9,6 @@ import pandas as pd
 from pandas import read_csv
 import csv
 import ctypes
-import dash_bootstrap_components as dbc
 from dash import Input, Output, State, html
 import branca
 from utility.data_functions import *
@@ -54,7 +52,7 @@ def Bildschirmgroesse()-> list:
     -------
     width and height of the screen
     """
-    return pyautogui.size()  # Returns a tuple of (width, height)
+    return (1920, 1080)  # Returns a tuple of (width, height)
 
 
 def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
