@@ -912,4 +912,4 @@ if __name__ == '__main__':
     #setup dashboard in webbrowser
     Timer(1, open_browser).start()
     #run app
-    app.run_server(debug=True)
+    app.run_server(host="0.0.0.0", debug=True)
