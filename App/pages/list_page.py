@@ -311,10 +311,6 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
 
         one_location_previous = data.iloc[i] # data of one location
         one_occupancy = one[one_location_previous[0]].split(",") # the occupancy information of the locations
-<<<<<<< Updated upstream
-        this_occupancy = one_occupancy[1][:-1].replace("'", "")          
-    
-=======
         this_occupancy = one_occupancy[1][:-1].replace("'", "")
         if this_occupancy == " wenige vorhanden":
             this_occupancy = "few available"
@@ -323,7 +319,6 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
         if this_occupancy == " ausreichend vorhanden":
             this_occupancy = "sufficient available"
 
->>>>>>> Stashed changes
         arrow = arrow_up if (one_occupancy[0][1:] == "'zunehmend'") else (arrow_down if (one_occupancy[0][1:] == "'abnehmend'")else arrow_left)
         if content[0] == one_location_previous[0]:
             rows.append(html.Tr([html.Td("Occupancy"), html.Td(this_occupancy)]))
