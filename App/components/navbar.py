@@ -111,8 +111,6 @@ def get_navbar()-> dbc.Navbar:
                          dbc.Col(
                            dbc.NavItem(refr_button),
                         ),
-                       
-                        
                     ],
                     align="right"),
                 ],
@@ -225,7 +223,7 @@ def make_import_modal()-> dbc.Modal:
                                 style = {"background-color":"#b3b3b3",
                                          "border": "black",
                                          "color": "black" # Set the color of the button to black
-                                         },  
+                                         },
                                 id="modal_import_file_upload_button"# Set the id of the button
                             ),
                             dbc.Button(  # Button to close the modal, changes will be discarded

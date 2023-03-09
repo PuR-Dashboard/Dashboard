@@ -22,12 +22,12 @@ def filter_all(df: pd.DataFrame, filter_df: dict[str:str], negative=False)-> pd.
     else:
         return df
 
-                                                    
+
 def filter_max_value(df: pd.DataFrame, category:str, max_value:int) -> pd.DataFrame:
     """
     This function creates a dataframe which is based on the given DataFrame and filtered by the category and the maximum value.
 
-    Parameters 
+    Parameters
     ----------
     df:
         The Dataframe to be filtered on.
@@ -43,9 +43,9 @@ def filter_max_value(df: pd.DataFrame, category:str, max_value:int) -> pd.DataFr
     df2:
         A filtered DataFrame based on the paramters.
     """
-   
+
     #if no value given, dont filter
-    
+
     if max_value == None:
         return df
 
@@ -53,7 +53,7 @@ def filter_max_value(df: pd.DataFrame, category:str, max_value:int) -> pd.DataFr
     try:
         df2 = df.drop(df.loc[df[category] > float(max_value)].index)
     except Exception as e:
-        
+
         raise Exception("Something went wrong while filtering for a maximum value!")
     #reset the index and return df
     df2 = df2.reset_index(drop = True)
@@ -228,7 +228,7 @@ def get_occupancy_list_from_vals(occupancy_vals:list[str]) -> list[str]:
     translation_dict = {"high":"keine vorhanden", "medium":"wenige vorhanden", "low":"ausreichend vorhanden"} #korrekte bezeichnung für high occupancy???
     #convert list to german values
     occupancy_vals = [translation_dict[o] for o in occupancy_vals]
-    
+
     #if no list given
     if occupancy_vals == None:
         return None
@@ -246,7 +246,7 @@ def get_occupancy_list_from_vals(occupancy_vals:list[str]) -> list[str]:
         #if last column value(=latest value) is equal to criteria then add location name
         occ_value_string = occupancy_csv[col].tolist()[-1]
         occ_value = ast.literal_eval(occ_value_string)[-1]
-        
+
         if occ_value in occupancy_vals:
             name_list.append(col)
 
@@ -308,5 +308,5 @@ def filter_content(df: pd.DataFrame, filter_dict:defaultdict) -> pd.DataFrame:
         #if number is given, filter for maximum number
         elif type(filter_dict[key]) == int or type(filter_dict[key]) == float:
             df = filter_max_value(df, key, filter_dict[key])
-            
+
     return df

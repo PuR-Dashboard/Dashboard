@@ -86,12 +86,16 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
         one_location_previous = data.iloc[i]
         one_occupancy = one[one_location_previous[0]].split(",")
         one_location = ["not specified" if (one_location_previous[i] == None) else one_location_previous[i] for i in range (len(one_location_previous)) ]
-
+        this_occupancy = one_occupancy[1][:-1].replace("'", "")
+        if this_occupancy == " wenige vorhanden":
+            this_occupancy = "few available"
+        if this_occupancy == " keine vorhanden":
+            this_occupancy = "no available"
+        if this_occupancy == " ausreichend vorhanden":
+            this_occupancy = "sufficient available"
         # choosing the right arrow according to the tendency of the occupancy
         arrow = "&#x2B06;" if (one_occupancy[0][1:] == "'zunehmend'") else ("&#x2B07;" if (one_occupancy[0][1:] == "'abnehmend'")else "&#x2B05;")
-
         history = create_history(data.iloc[i]["location"])
-
         # creating the HTML for one certain location
         html=f"""
             <!DOCTYPE html>
@@ -106,7 +110,7 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
                        <li style= "font-size: 15px"> <B><font face="Arial">Number of Parking Lots: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["number_parking_lots"]}</font></li>&thinsp;
                        <li style= "font-size: 15px"> <B><font face="Arial">Type of Facility:</font></B></font><font face="Arial">&emsp;{data.iloc[i]["kind"]}</font></li>&thinsp;
                        <li style= "font-size: 15px"> <B><font face="Arial">Public Transport Connections: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["public_transport"]}</font></li>&thinsp;
-                       <li style= "font-size: 15px"> <B><font face="Arial">Current Occupancy:</font></B> <font color = {colors[i]}>&emsp; {one_occupancy[1][:-1].replace("'", "")}  </font>&emsp;{arrow}</li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">Current Occupancy:</font></B> <font face="Arial"><font color = {colors[i]}>&emsp;{this_occupancy}</font>&emsp;{arrow}</li>&thinsp;
                    </ul>
 
                        <p style = "font-size: 18px", "text-align: center"><B><u><font face="Arial">Occupancy History Of The Week (in %)</font></u></B></p>
@@ -119,7 +123,7 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
                            <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Wednesday</font></th>
                            <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Thursday</font></th>
                            <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Friday</font></th>
-                           <th  style=" border-bottom: 1px solid black;border-right: 1px solid black;"><font face="Arial">Weekend</font></th>
+                           <th style=" border-bottom: 1px solid black"><font face="Arial">Weekend</font></th>
 
                        </tr>
                        &thinsp;
@@ -129,7 +133,7 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
                        <td style = "border-right: 1px solid black;"><font face="Arial"> &emsp; {str(round(history[2]*100,1))+"%"}  </font>&emsp;</li></font></td>
                        <td style = "border-right: 1px solid black;"><font face="Arial"> &emsp; {str(round(history[3]*100,1))+"%"}  </font>&emsp;</li></font></td>
                        <td style = "border-right: 1px solid black;"><font face="Arial"> &emsp; {str(round(history[4]*100,1))+"%"}  </font>&emsp;</li></font></td>
-                       <td style = "border-right: 1px solid black;"><font face="Arial"> &emsp; {str(round(history[5]*100,1))+"%"}  </font>&emsp;</li></font></td>
+                       <td><font face="Arial"> &emsp; {str(round(history[5]*100,1))+"%"}  </font>&emsp;</li></font></td>
 
                        </tr>
                        </table>
