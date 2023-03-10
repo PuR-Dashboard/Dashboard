@@ -17,7 +17,7 @@ from pages.list_page import create_history
 
 
 
-def Marker(markers:list, folium_map:folium.Map, tooltips)-> None:
+def marker(markers:list, folium_map:folium.Map, tooltips)-> None:
     """
     This function visualises the given markers on the given map.
 
@@ -45,7 +45,7 @@ def Marker(markers:list, folium_map:folium.Map, tooltips)-> None:
 
 
 
-def Bildschirmgroesse()-> list:
+def screensize()-> list:
     """
     Get the size of the primary monitor
     Returns
@@ -171,7 +171,7 @@ def define_radius(radius= 0)-> int:
 
 
 
-def create_Einzugsgebiete(regions: list,cluster: MarkerCluster)-> None:
+def create_drawing_areas(regions: list,cluster: MarkerCluster)-> None:
     """
     This function creates the draw areas for all markers.
 
@@ -264,7 +264,7 @@ def update(data:pd.DataFrame,m:folium.Map)-> folium.Map:
         The updated map.
     """
 
-    screensize = Bildschirmgroesse()
+    screen_size = screensize()
 
     occupancy = glob_vars.occupancy
     one = occupancy.iloc[len(occupancy)-1]
@@ -273,19 +273,19 @@ def update(data:pd.DataFrame,m:folium.Map)-> folium.Map:
     colors= ["orange" if (one[data.iloc[i][0]].split(",")[1][:-1] == " 'wenige vorhanden'") else ("green" if (one[data.iloc[i][0]].split(",")[1][:-1] == " 'ausreichend vorhanden'")else "red") for i in range (len(data))]
 
     tooltips= ["medium occupancy" if (one[data.iloc[i][0]].split(",")[1][:-1]== " 'wenige vorhanden'") else ("low occupancy" if (one[data.iloc[i][0]].split(",")[1][:-1] == " 'ausreichend vorhanden'")else "high occupancy") for i in range (len(data))]
-    html = create_html(data, screensize,colors)
+    html = create_html(data, screen_size,colors)
     markers = []
     for  i in range (len(data)):
         markers.append([data.iloc[i][2], data.iloc[i][1], html[i],colors[i]])
 
-    Marker(markers,m, tooltips)
+    marker(markers,m, tooltips)
 
     # erstellen & visualisieren der Einzugsgebiete
     einzugsgebiete = MarkerCluster(name ='Einzugsgebiete', show = False).add_to(m)
     gebiete = []
     for i in range (len(data)):
         gebiete.append([data.iloc[i][2], data.iloc[i][1],define_radius()])
-    create_Einzugsgebiete(gebiete,einzugsgebiete)
+    create_drawing_areas(gebiete,einzugsgebiete)
     # Butto für die Angabe des Standortes
 
     folium.plugins.LocateControl(position = 'topright',returnToPrevBounds = True).add_to(m)
