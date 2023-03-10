@@ -902,7 +902,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
 #function to automatically open dashboard in browser
 def open_browser():
     if not os.environ.get("WERKZEUG_RUN_MAIN"):
-        webbrowser.open_new('http://127.0.0.1:8050/')
+        webbrowser.open_new('http://localhost:8050/')
 
 
 # Run the app on localhost:8050
