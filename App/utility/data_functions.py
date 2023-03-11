@@ -94,6 +94,33 @@ def get_data(name_of_csv="Location_Data.csv", app_name="App")-> pd.DataFrame:
     df = pd.read_csv(get_path_to_csv(name_of_csv, app_name))  #transforming the data of the csv in a dataframe.
     return df
 
+def get_image(location_name = " ") -> str:
+    """
+    This function returns you the image of a given location
+    Parameters
+    ----------
+    location_name: str
+        Name of the location for which we want to get an image.
+
+    Returns
+    -------
+    path:
+        The path where the picture is stored.
+
+    """
+    images_path = os.path.join(get_root_dir(), "Data\Images")
+
+    #print(images_path)
+    
+    path = os.path.join(images_path, location_name)
+
+    if (path == (images_path + "/ ")): 
+        print("nope")
+        return ""
+    else: 
+        print(path)
+        return path
+
 #----------------------------
 
 
