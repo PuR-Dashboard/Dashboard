@@ -296,9 +296,14 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
         html.Thead(html.Tr([html.Th("Characteristics"), html.Th("Values")]), style = {"marginTop":"5%"})
     ]
 
-    charakter = define_chracteristics()
+    underscored_charakter = define_chracteristics()
 
-    #remove the underscores 
+    #remove the underscores
+    charakter = []
+    for c in underscored_charakter: 
+        splitted_c = c.split("_")
+        new_c = " ".join(splitted_c)
+        charakter.append(new_c)
     
     
     rows = [html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]) for i in range (len(charakter))]
