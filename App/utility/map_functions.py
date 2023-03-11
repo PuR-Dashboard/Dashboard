@@ -217,9 +217,9 @@ def add_legend(folium_map:folium.Map)-> folium.Map:
         z-index:9999;
         font-size:14px;
         ">
-        <p><a style="color: red;font-size:150%;margin-left:10px;">&diams;</a>&emsp;starke Auslastung</p>
-        <p><a style="color:orange;font-size:150%;margin-left:10px;">&diams;</a>&emsp;mittelere Auslastung</p>
-        <p><a style="color:green;font-size:150%;margin-left:10px;">&diams;</a>&emsp;geringe Auslastung</p>
+        <p><a style="color: red;font-size:150%;margin-left:10px;">&diams;</a>&emsp;high occupancy</p>
+        <p><a style="color:orange;font-size:150%;margin-left:10px;">&diams;</a>&emsp;medium occupancy</p>
+        <p><a style="color:green;font-size:150%;margin-left:10px;">&diams;</a>&emsp;low occupancy</p>
     </div>
     <div style="
         position: fixed;

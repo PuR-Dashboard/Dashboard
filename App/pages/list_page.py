@@ -297,6 +297,10 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
     ]
 
     charakter = define_chracteristics()
+
+    #remove the underscores 
+    
+    
     rows = [html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]) for i in range (len(charakter))]
 
     occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
