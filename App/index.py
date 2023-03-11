@@ -315,15 +315,20 @@ def add_new_location(_1, _2, _3, URL_value, *params):
             add_dictionary[charac] = c
 
         # NOW FUNCTION TO ADD LOCATION TO CSV
-        add_location(url=URL_value, dic=add_dictionary)
-        update_occupancies()
+        try:
+            add_location(url=URL_value, dic=add_dictionary)
+            update_occupancies()
+        except:
+            glob_vars.curr_error = Exception("Error when adding a new location or updating the occupancy details in datta_functions.py. Check API Links or Location specifics.")
+            
 
         return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
     else:
         raise PreventUpdate
 
 @app.callback(
-        [Output("placeholder_error_message", "n_clicks"),
+        [Output("active_filters", "children"),
+        Output("placeholder_error_message", "n_clicks"),
         Output("update_list_div", "n_clicks"),
         Output("update_map_div", "n_clicks"),
         Output("sideboard_name_filter", "value"),
@@ -425,19 +430,41 @@ def choose_correct_update(*args):
             #restore data
             filter_data()
             sidebar_values = [None for x in sidebar_values]
+    glob_vars.curr_error = Exception()
     #check if error has happened
-    if error_occurred:
+    if glob_vars.curr_error != None:
+        if str(glob_vars.curr_error) == "":
+            glob_vars.curr_error == "Unknown Error"
         err_var = 1
     else:
         err_var = 0
 
+
+    num_filters = count_active_filters()
+    filter_string = "Filters active: " + str(num_filters)
+
     if page_name == "/list_page":
-        return (err_var, 1, dash.no_update) + tuple(sidebar_values)
+        return (filter_string, err_var, 1, dash.no_update) + tuple(sidebar_values)
     elif page_name == "/map_page":
-        return (err_var, dash.no_update, 1) + tuple(sidebar_values)
+        return (filter_string, err_var, dash.no_update, 1) + tuple(sidebar_values)
     else: #error or page not accounted for
         raise PreventUpdate
         #raise ValueError("A Page is not accounted for in the update method")
+
+
+def count_active_filters():
+    """
+    determine the number of currently applied filters
+
+    returns int
+    """
+    filters = 0
+    for c in glob_vars.current_filter:
+        if glob_vars.current_filter[c] != None and glob_vars.current_filter[c] != "":
+            filters += 1
+
+    return filters
+
 
 def define_inputs_advanced_filter(special_ones:list)-> list:
     """
@@ -514,10 +541,12 @@ def check_csv_validity(temp_df: pd.DataFrame) -> bool:
     """
 
     #columns do not match
-    for tv, v in zip(list(temp_df.columns.values), list(glob_vars.data.columns.values)):
-        if tv != v:
-            return False
-
+    try:
+        for tv, v in zip(list(temp_df.columns.values), list(glob_vars.data.columns.values)):
+            if tv != v:
+                return False
+    except Exception as e:
+        return False
     #check that location name exists for every row
     location_names = list(temp_df["location"])
     #check for duplicates
@@ -702,7 +731,10 @@ def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
             glob_vars.current_filter[chara] = c
 
         #filter data with filter dictionary
-        filter_data()
+        try:
+            filter_data()
+        except:
+            glob_vars.curr_error = Exception("Error when filtering with advanced filter!")
         #return confirmation to filter placeholder, modal state and input values
         return (1, not modal_state, occupancy_vals) + tuple(characs)
     #if button to open modal was pressed
@@ -806,7 +838,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
                 #read content from given file
                 df = parse_contents(c, f)
             except Exception as e: #exception at parse contents means wrong file type? maybe somewhere else?
-                glob_vars.curr_error = e
+                glob_vars.curr_error = Exception("Error when parsing the files you uploaded!")
 
                 raise PreventUpdate
                 #return 1, False, None, None, ""
@@ -891,9 +923,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
             update_occupancies()
         except Exception as e:
             glob_vars.curr_error = e
-            error_occured = True
-
-        err_val = 1 if error_occured else 0
+            
 
         return not modal_state, None, None, ""
     else:

@@ -812,17 +812,21 @@ def delete_location(yes, no):
 #takes all dash objects with id type content and header, and then outputs the result to the content type with matching id index
 @callback(
     Output({"type": "content", "index": MATCH}, "is_open"),
-    [Input({"type": "arrow_button","index": MATCH}, "n_clicks")],
+    [Input({"type": "arrow_button","index": MATCH}, "n_clicks"),
+     Input({"type": "header","index": MATCH}, "n_clicks")],
     [State({"type": "content", "index": MATCH}, "is_open")],
 )
-def toggle_collapses(_butts, stats):
+def toggle_collapses(_arros, _butts, stats):
     """
     This function collapses and expands the list items/collapsibles.
 
     Inputs
     ----------
-    _butts:
+    _arros: 
         The number of clicks on the arrow button.
+
+    _butts:
+        The number of clicks on the location button.
 
     State
     ----------
@@ -933,8 +937,6 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,*params):
         return (not params[-1],1) + tuple(none_list)
     else:
         raise PreventUpdate
-
-
 
 
 
