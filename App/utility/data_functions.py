@@ -6,7 +6,7 @@ from datetime import datetime
 
 from requests import Response
 
-
+import pages.global_vars as glob_vars
 import pandas as pd
 import os
 import pathlib
@@ -454,16 +454,19 @@ def update_occupancies():
         f.close()
 
     import time# importing the libary time
+    try:
+        for url in urls:  #iterating through the all arrays
+            start_time = time.time()  #saving the starting time(current time)
+            occupancies.append(get_occupancy_from_url(url))  #getting the occupancy of the location by using the url of the location
+            print("--- %s seconds ---" % (time.time() - start_time))  #printing the time needed to get the occupancy informations
 
-    for url in urls:  #iterating through the all arrays
-        start_time = time.time()  #saving the starting time(current time)
-        occupancies.append(get_occupancy_from_url(url))  #getting the occupancy of the location by using the url of the location
-        print("--- %s seconds ---" % (time.time() - start_time))  #printing the time needed to get the occupancy informations
-
-    with open(path_to_occupancy, 'a', newline='\n') as f:  # Open the csv file
-        writer = csv.writer(f)  # Create a csv writer
-        writer.writerow([datetime.now()] + occupancies)  # Write the new row to the csv file
-        f.close()
+        with open(path_to_occupancy, 'a', newline='\n') as f:  # Open the csv file
+            writer = csv.writer(f)  # Create a csv writer
+            writer.writerow([datetime.now()] + occupancies)  # Write the new row to the csv file
+            f.close()
+    except:
+        glob_vars.curr_error = Exception("The API could not be accessed. The fault probably lies within the API, please check the links. You can continue using the application as usual but will not receive updated occupancy values.")
+        
 
 
 def update_location_occupancy(location: str) -> None:
@@ -663,5 +666,7 @@ def get_response_from_url(url: str) -> Response:
     Exception
         If the request is not successful.
     """
-
-    return requests.get(url, auth=(username, password))  # Return the response
+    try:
+        return requests.get(url, auth=(username, password))  # Return the response
+    except:
+        glob_vars.curr_error = Exception("Error while parsing API link!")
