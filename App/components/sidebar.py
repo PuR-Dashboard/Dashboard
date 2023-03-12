@@ -181,7 +181,7 @@ def get_sidebar() -> html.Div:
                                  placeholder="Price in \u20ac", #the text which is vialized as long as nothing is choosen
                                  value=None  # Set the value of the input field to an empty string
                              ),
-                             dbc.Label("Public Transport Accessibility",style = {"margin-top":"2%"}), # name of the characteristic of the filter
+                             dbc.Label("Number of Public Transport Connections",style = {"margin-top":"2%"}), # name of the characteristic of the filter
                              dbc.Input(
                                  id="modal_advanced_filter_public_transport" , # individuell id of this component
                                  type="number",  # Set the type of the input field to text
@@ -314,7 +314,7 @@ def get_sidebar() -> html.Div:
                                 value=None  # Set the value of the input field
                             ),
 
-                            dbc.Label("Public Transport Accessibility:",style = {"margin-top":"2%"}), # name of the characteristic as a label
+                            dbc.Label("Number of Public Transport Connections:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dbc.Input(
                                 placeholder="Specify the public transport accessibility", #the text which is visualized as long as long as nothing is choosen
                                 id="modal_add_location_public_transport" , # individuell id of this component
