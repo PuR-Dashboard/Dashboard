@@ -175,7 +175,8 @@ def display_page(pathname):
                Output("modal_dynamic_error", "children")],
               [Input("placeholder_error_message", "n_clicks"),
                Input("modal_error_ok_button", "n_clicks")],
-              State("modal_error", "is_open"))
+              State("modal_error", "is_open"),
+              prevent_initial_call=True,)
 def error_modal_handling(message, clicks, state):
     """
     This function handles the general error window which informs the user that an error has occured.
@@ -430,7 +431,7 @@ def choose_correct_update(*args):
             #restore data
             filter_data()
             sidebar_values = [None for x in sidebar_values]
-    glob_vars.curr_error = Exception()
+    
     #check if error has happened
     if glob_vars.curr_error != None:
         if str(glob_vars.curr_error) == "":
@@ -938,7 +939,9 @@ def open_browser():
 # Run the app on localhost:8050
 if __name__ == '__main__':
     #parse up to date occupancies
+
     update_occupancies()
+    
     #setup dashboard in webbrowser
     Timer(1, open_browser).start()
     #run app

@@ -445,6 +445,10 @@ def update_occupancies():
     """
     This function updates the occupancies of all locations given in the Urls.json file.
     """
+
+    """in this branch no occupancies are read"""
+    return
+
     urls = []
     occupancies = []
     with open(path_to_urls, 'r') as f:  # Open the json file with the information about the locations
