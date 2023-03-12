@@ -529,7 +529,7 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
                     children=[
                         dbc.Row([ #getting the table and picture next to each other
                         dbc.Col(dbc.CardBody(create_table(data, content[i]), style ={"marginRight":"auto"})),
-                        dbc.Col(dbc.CardImg(src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1",
+                        dbc.Col(dbc.CardImg(src= "/pages/OIP.jpg",
                         style ={"height":"auto", "width":"auto","marginRight":"1%", "marginLeft": "auto", "marginTop": "6%","horizontalAlign": "right"})),
                     ],
                     style ={"width": "auto", "marginLeft": "1%"}),

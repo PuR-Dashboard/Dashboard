@@ -97,6 +97,35 @@ def get_data(name_of_csv="Location_Data.csv", app_name="App")-> pd.DataFrame:
         raise Exception("Fehler beim Daten auslesen!")
     return df
 
+def get_image(location_name = " ") -> str:
+    """
+    This function returns you the image of a given location
+    Parameters
+    ----------
+    location_name: str
+        Name of the location for which we want to get an image.
+    Returns
+    -------
+    path:
+        The path where the picture is stored.
+    """
+    images_path = os.path.join(get_root_dir(), "Data\Images")
+
+    #print(images_path)
+    
+    path = os.path.join(images_path, location_name)
+
+    data_uri = open(path, 'rb').read().encode('base64').replace('\n', '')
+    img_tag = '<img src="data:image/png;base64,{0}">'.format(data_uri)
+
+    
+    if (path == (images_path + "/ ")): 
+        print("nope")
+        return ""
+    else: 
+        print(img_tag)
+        return img_tag
+
 #----------------------------
 
 
