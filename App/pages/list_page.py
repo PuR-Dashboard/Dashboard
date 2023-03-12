@@ -535,11 +535,13 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
                     style ={"width": "auto", "marginLeft": "1%"}),
                     #plot directly under the table
                     dbc.CardBody(create_plot(create_history(names[i])),style ={"width": "auto","height":"auto", "color": "#F0F8FF"}),
+                    
                     ],
                 style={"width":"calc(100vw - 260px)","overflow": "scroll", "height": "calc(100vh - 120px)"}
                 ),
             create_edit_window(i), create_security_window(names[i], i), html.Div(id={"type":"edit_controller", "index":i}, style={"display":"none"}),
             html.Div(id={"type":"security_id_transmitter", "index":i}, style={"display":"none"}),
+            
 
             ],
             id={"type":"content", "index":i},

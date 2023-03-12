@@ -288,7 +288,12 @@ def update(data:pd.DataFrame,m:folium.Map)-> folium.Map:
     create_Einzugsgebiete(gebiete,einzugsgebiete)
     # Butto für die Angabe des Standortes
 
-    folium.plugins.LocateControl(position = 'topright',returnToPrevBounds = True).add_to(m)
+    folium.plugins.LocateControl(
+        position = 'topright',returnToPrevBounds = True,
+        width = "1000%",
+        strings={"title":"Show me where I am"},
+        icon = "fa-solid fa-location-dot fa-2x text-success",
+        setView = False).add_to(m)
 
     # Button für die Suche
     #folium.plugins.Search(layer = einzugsgebiete,position = 'topright').add_to(m)
