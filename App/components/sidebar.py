@@ -90,6 +90,7 @@ def get_sidebar() -> html.Div:
                         size= "md",
                         style=BUTTON_STYLE  # Set the style of the button to BUTTON_STYLE
                     ),
+                    dbc.Label("Filters active: 0",style = {"margin-top":"2%", "color":"white"}, id="active_filters"), # Number of current filters
                     html.Hr(),
                     dbc.Button(  # Button to clear all filters
                         [FA_icon_Trash, " Clear Filter"],  # Icon + Text of the button
@@ -247,15 +248,15 @@ def get_sidebar() -> html.Div:
                      dbc.ModalBody(  # Body of the modal
                         [
                             html.H4("Mandatory Fields:"), # url and location name are mandatory attributes
-                            dbc.Label("URL:",style = {"margin-top":"2%"}), # name of the characteristic as a label
+                            dbc.Label("*API-Link:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dbc.Input(
-                                placeholder="Specify the URL", #the text which is visualized as long as long as nothing is choosen
+                                placeholder="Specify the API", #the text which is visualized as long as long as nothing is choosen
                                 id="modal_add_location_url" , # individuell id of this component
                                 type="text",  # Set the type of the input field
                                 debounce=True,  # Set the debounce-attribute of the input field
                                 value=None  # Set the value of the input field
                             ),
-                            dbc.Label("Location Name:",style = {"margin-top":"2%"}), # name of the characteristic as a label
+                            dbc.Label("*Location Name:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dbc.Input(
                                 placeholder="Specify the location name", #the text which is visualized as long as long as nothing is choosen
                                 id="modal_add_location_name" , # individuell id of this component
@@ -263,7 +264,7 @@ def get_sidebar() -> html.Div:
                                 debounce=True,  # Set the debounce-attribute of the input field to True
                                 value=None  # Set the value of the input field
                             ),
-                            html.H4("Optional Fields",style = {"margin-top":"5%"}), # nice to have but none of these attributes are necessary to add location
+                            html.H4("Optional Fields:",style = {"margin-top":"5%"}), # nice to have but none of these attributes are necessary to add location
                             dbc.Label("Address:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dbc.Input(
                                 placeholder="Specify the address", #the text which is visualized as long as long as nothing is choosen

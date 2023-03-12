@@ -78,16 +78,18 @@ def create_html_map(data:pd.DataFrame)-> list:
 
     html_list = []
 
+    try:
+        map_functions.create_map(data) # create the map
+        html_list.append(  # Append the map tp the map_page
+                        html.Iframe( #Create an Iframe element to get an interactive map
+                        id="page-layout", # Set the id of the Iframe element
+                        srcDoc=open(os.path.join(os.path.dirname(__file__), '../P&R_Karte.html'), "r").read(),# Set the source of the Iframe element to be the previously created map
+                        #width="87%", height="800", # set the width and the height of the IFrame Element
+                        style = CONTENT_STYLE
 
-    map_functions.create_map(data) # create the map
-    html_list.append(  # Append the map tp the map_page
-                    html.Iframe( #Create an Iframe element to get an interactive map
-                    id="page-layout", # Set the id of the Iframe element
-                    srcDoc=open(os.path.join(os.path.dirname(__file__), '../P&R_Karte.html'), "r").read(),# Set the source of the Iframe element to be the previously created map
-                     #width="87%", height="800", # set the width and the height of the IFrame Element
-                     style = CONTENT_STYLE
-
-                     ))
+                        ))
+    except:
+        glob_vars.curr_error = Exception("Error while creating the map! Look in map_functions.py or check P&R_Karte.html")
 
 
     return html_list
@@ -112,8 +114,11 @@ def reverse_Map()->list:
         A list of all components of the map page with the reversed data.
     """
 
-
-    glob_vars.data = get_data(name_of_csv="Characteristics.csv") # reversing the global variable data based on the data in the characteristics csv
+    try:
+        glob_vars.data = get_data(name_of_csv="Characteristics.csv") # reversing the global variable data based on the data in the characteristics csv
+    except Exception as e:
+        glob_vars.curr_error = e
+        return []
 
     #redefining and creating the map page based on the reversed data
     return create_html_map(glob_vars.data)
@@ -130,7 +135,10 @@ def keep_layout_Map()-> list:
         A list of all components/layout of the map page.
     """
     glob_vars.reset_data() # resting the data
-    filter_data() #filters the data based on the current filter
+    try:
+        filter_data() #filters the data based on the current filter
+    except:
+        glob_vars.curr_error = Exception("Error while filtering. Check filter_functiions.py.")
 
     #redefining and creating the map page based on the reseted data
     return create_html_map(glob_vars.data)
@@ -153,8 +161,10 @@ def filter_buttons_Map(filter_dict:pd.DataFrame)-> list:
 
     global data, temp_data
     temp_data = data.copy(deep=True)
-
-    temp_data = filter_content(temp_data, filter_dict) # filtering the data based on the given filter aspects
+    try:
+        temp_data = filter_content(temp_data, filter_dict) # filtering the data based on the given filter aspects
+    except Exception as e:
+        glob_vars.curr_error = e 
 
     #creating the map page based on the filtered data
     return create_html_map(temp_data)
