@@ -1,0 +1,31 @@
+Prerequisite for the following installation is that you have python 3 and pip(prefferably version 20+) 
+installed. If not follow these linked instructions and then procede:
+
+Install Python: 
+Windows 10: https://www.digitalocean.com/community/tutorials/install-python-windows-10
+Mac: https://www.dataquest.io/blog/installing-python-on-mac/
+Linux: https://docs.python-guide.org/starting/install3/linux/
+
+Pip may be already installed depending on how you installed python.
+See if you have pip installed by opening your command line/terminal and entering "pip" and view the pip 
+version by entering "pip --version".
+
+Install Pip:
+Windows 10: https://www.dataquest.io/blog/install-pip-windows/
+Mac: https://phoenixnap.com/kb/install-pip-mac
+Linux: https://www.odoo.com/de_DE/forum/hilfe-1/how-to-install-pip-in-python-3-on-ubuntu-18-04-167715
+
+If you are reading this file you probably have access to the github reository where the dashboard 
+application is located. Clone this repository.
+If you dont know how: https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
+
+Next navigate your terminal to the folder where you cloned the repository. Make sure that our file 
+"requirements.txt" is in the same folder as you currently are. To do that you can either enter "dir"(Windows)
+or "ls"(Mac/Linux) and see if the file is listed there. Enter "pip install -r requirements.txt" to install 
+the necessary dependencies for the project. If the "requirements.txt" file is not there, download it 
+from our repository and run "pip install -r path_to_file" where path_to_file is the path to the place you
+put the requirements.txt file including the filename and -ending.
+
+After successfully installing all dependencies, you can now navigate to the App directory and run the file 
+"index.py" (run with "python index.py"). That should automatically open the application in your browser.
+For more information from this point forward you can read our manual for navigating you through our dashboard.

@@ -91,7 +91,10 @@ def get_data(name_of_csv="Location_Data.csv", app_name="App")-> pd.DataFrame:
         The DataFrame with all the data of the csv File.
 
     """
-    df = pd.read_csv(get_path_to_csv(name_of_csv, app_name))  #transforming the data of the csv in a dataframe.
+    try:
+        df = pd.read_csv(get_path_to_csv(name_of_csv, app_name))  #transforming the data of the csv in a dataframe.
+    except:
+        raise Exception("Fehler beim Daten auslesen!")
     return df
 
 #----------------------------
