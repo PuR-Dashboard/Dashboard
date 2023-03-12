@@ -1,0 +1,15 @@
+branca==0.6.0
+dash==2.7.0
+dash_bootstrap_components==1.2.1
+folium==0.13.0
+fontstyle==1.0.1.2
+ipyvuetify==1.8.4
+ipywidgets==7.7.0
+numpy==1.22.3
+pandas==1.4.2
+plotly==5.11.0
+requests==2.28.1
+scikit_learn==1.2.2
+setuptools==49.2.1
+traitlets==5.1.1
+validators==0.20.0
