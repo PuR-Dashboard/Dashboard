@@ -430,7 +430,7 @@ def choose_correct_update(*args):
             #restore data
             filter_data()
             sidebar_values = [None for x in sidebar_values]
-    glob_vars.curr_error = Exception()
+    #glob_vars.curr_error = Exception()
     #check if error has happened
     if glob_vars.curr_error != None:
         if str(glob_vars.curr_error) == "":
