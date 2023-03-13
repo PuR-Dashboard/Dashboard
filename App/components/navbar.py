@@ -4,6 +4,9 @@ from dash import html, dcc
 #from app import app
 from dash.dependencies import Input, Output, State
 import dash
+from utility.map_functions import update
+import callback
+import folium
 
 FA_icon = html.I(className="fa fa-refresh")
 FA_icon_Import = html.I(className="fa fa-upload", style={"display":"inline-block"})
@@ -14,6 +17,22 @@ refr_button = (html.Div
                     color="light", # color of the button
                     className="ms-2", #name of the class of the button
                     id = "refresh_page", #individuell id of the button
+                    value = 0,
+                    style={ # style of the button
+                        "marginLeft":"10px",
+                        "width": "80%",
+                        "height": "40%",
+                        "fontSize": "1.1em",
+                        "color": "white",
+                        "background-color":"transparent", #set the background color to transparent
+                        "border": "transparent", #set the border color to transparent
+                    },
+                    )))
+my_location_button = (html.Div
+                (dbc.Button([FA_icon, " My Location"],
+                    color="light", # color of the button
+                    className="ms-2", #name of the class of the button
+                    id = "my_location", #individuell id of the button
                     value = 0,
                     style={ # style of the button
                         "marginLeft":"10px",
@@ -111,6 +130,9 @@ def get_navbar()-> dbc.Navbar:
                          dbc.Col(
                            dbc.NavItem(refr_button),
                         ),
+                       #  dbc.Col(
+                        #   dbc.NavItem(my_location_button),
+                        #),
                     ],
                     align="right"),
                 ],
@@ -122,6 +144,8 @@ def get_navbar()-> dbc.Navbar:
     )
 
     return navbar
+
+
 
 def make_error_modal() -> dbc.Modal:
     """

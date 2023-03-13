@@ -15,6 +15,7 @@ from utility.data_functions import *
 from utility.filter_function import *
 import pages.global_vars as glob_vars
 from collections import defaultdict
+import folium
 from csv import reader
 
 
@@ -200,7 +201,20 @@ def update(nr_clicks:int)-> list:
 
 #---------------------------------------------------------------------
 #Callback functions
+@callback(
+    Output("show_my_location", "children"),
+    Input("my_location", "n_clicks"),
+    prevent_initial_call=True
+)
 
+def my_location(m):
+    html.Div(
+    folium.plugins.LocateControl(
+        position = 'topright',returnToPrevBounds = True,
+        width = "1000%",
+        strings={"title":"Show me where I am"},
+        icon = "fa-solid fa-location-dot fa-2x text-success",
+        setView = False).add_to(m), id="show_my_location")
 
 
 
