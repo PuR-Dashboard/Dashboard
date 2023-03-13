@@ -18,8 +18,8 @@ from collections import defaultdict
 from csv import reader
 
 
- #style the content of map_page so that it aligns with the sidebar
-CONTENT_STYLE = {
+#----------generation of stylings---------------
+CONTENT_STYLE = {  #style the content of map_page so that it aligns with the sidebar
     "position": "fixed",
     "width": "calc(100vw - 250px)",
     "height": "calc(100vh - 50px)",
@@ -28,8 +28,10 @@ CONTENT_STYLE = {
 
 }
 
+#--------------------------------------------
 
 
+#-----functions without a callback---
 
 
 def define_chracteristics()-> list:
@@ -54,7 +56,7 @@ def define_chracteristics()-> list:
         if counter < 3: # the first three characteristics(name, location(lat,lon)) are unimportant
             counter +=1
             continue
-        characteristics2.append(row[0]) #
+        characteristics2.append(row[0])
 
     return characteristics2
 
@@ -73,6 +75,11 @@ def create_html_map(data:pd.DataFrame)-> list:
     -------
     html_list:
         Represents the componentents which should be visualized in the map_page.
+
+    Raises
+    ------
+    Exception:
+        If something went wrong while creating the map.
     """
     global sid
 
@@ -95,12 +102,7 @@ def create_html_map(data:pd.DataFrame)-> list:
     return html_list
 
 
- #creating the layout of the map_page
-layout = html.Div(
-                    children = create_html_map(glob_vars.data), # the elements of the layout
-                    id = "layout_map", # the ID of the layout
-                    style = CONTENT_STYLE #style the content of the page
-                 )
+
 
 
 
@@ -112,6 +114,11 @@ def reverse_Map()->list:
     -------
     html_map :
         A list of all components of the map page with the reversed data.
+
+    Raises
+    ------
+    Exception:
+        If something went wrong while getting the current data.
     """
 
     try:
@@ -133,6 +140,11 @@ def keep_layout_Map()-> list:
     -------
     html_map :
         A list of all components/layout of the map page.
+
+    Raises
+    ------
+    Exception:
+        If something went wrong while filtering the data.
     """
     glob_vars.reset_data() # resting the data
     try:
@@ -157,14 +169,20 @@ def filter_buttons_Map(filter_dict:pd.DataFrame)-> list:
     -------
     layout:
         The layout with the filtered data.
+
+    Raises
+    ------
+    Exception:
+        If something went wrong while filtering the content based on the filter_dict.
     """
 
     global data, temp_data
     temp_data = data.copy(deep=True)
+
     try:
         temp_data = filter_content(temp_data, filter_dict) # filtering the data based on the given filter aspects
     except Exception as e:
-        glob_vars.curr_error = e 
+        glob_vars.curr_error = e
 
     #creating the map page based on the filtered data
     return create_html_map(temp_data)
@@ -199,9 +217,11 @@ def update(nr_clicks:int)-> list:
 
 
 #---------------------------------------------------------------------
-#Callback functions
 
 
+
+
+#-------functions with Callback-------------------
 
 
 #layout refresh callback and sidebar handling
@@ -236,3 +256,14 @@ def update_layout(*args):
 
     # the page should be recreated any way
     return create_html_map(glob_vars.data)
+
+
+#------------------------------------------------------
+
+#----------creating the layout of the map_page---------
+
+layout = html.Div(
+                   children = create_html_map(glob_vars.data), # the elements of the layout
+                   id = "layout_map", # the ID of the layout
+                   style = CONTENT_STYLE #style the content of the page
+                )

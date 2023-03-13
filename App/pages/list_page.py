@@ -64,14 +64,15 @@ def define_chracteristics()->list:
         A list of all chracters in the data.
     """
 
-    temp_data = get_data("Characteristics.csv")
-    csv_reader = reader(temp_data)
+    temp_data = get_data("Characteristics.csv") # the current data of the locations
+    csv_reader = reader(temp_data) # a reader to work with the csv filter
     characteristics2 = []
 
     counter = 0
 
+    #iterating through all the data and save the names of the current characteristics
     for row in csv_reader:
-        if counter < 3:
+        if counter < 3: # the first three characteristics(name, location(lat,lon)) are unimportant
             counter +=1
             continue
         characteristics2.append(row[0])
@@ -337,11 +338,11 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
         one_occupancy = one[one_location_previous[0]].split(",") # the occupancy information of the locations
         this_occupancy = one_occupancy[1][:-1].replace("'", "")
         if this_occupancy == " wenige vorhanden":
-            this_occupancy = "few available"
+            this_occupancy = "medium occupancy"
         if this_occupancy == " keine vorhanden":
-            this_occupancy = "no available"
+            this_occupancy = "high occupancy"
         if this_occupancy == " ausreichend vorhanden":
-            this_occupancy = "sufficient available"
+            this_occupancy = "low occupancy"
 
         arrow = arrow_up if (one_occupancy[0][1:] == "'zunehmend'") else (arrow_down if (one_occupancy[0][1:] == "'abnehmend'")else arrow_left)
         if content[0] == one_location_previous[0]:
@@ -817,18 +818,7 @@ def delete_location(yes, no):
     location_to_delete = row_to_delete["location"].values[0]
 
     remove_location(location_to_delete)
-    """
-    #get path of csv
-    path = get_path_to_csv(name_of_csv="Characteristics.csv")
 
-    #make temporary data and delete row
-    temp_data = get_data(name_of_csv="Characteristics.csv")
-    temp_data = temp_data[temp_data["location"] != location_to_delete]
-
-    #save to csv again
-    temp_data.to_csv(path, index=False)
-    #remove_location_from_json(location=location_to_delete)
-    """
     #renew global data
     glob_vars.reset_data()
     filter_data()
