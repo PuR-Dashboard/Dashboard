@@ -12,7 +12,7 @@ import os
 import pathlib
 from collections import defaultdict
 
-
+import base64
 
 
 #-------------------
@@ -107,24 +107,22 @@ def get_image(location_name = " ") -> str:
     Returns
     -------
     path:
-        The path where the picture is stored.
+        An created link to present the image as a CardImage.
     """
     images_path = os.path.join(get_root_dir(), "Data\Images")
 
-    #print(images_path)
     
     path = os.path.join(images_path, location_name)
 
-    data_uri = open(path, 'rb').read().encode('base64').replace('\n', '')
-    img_tag = '<img src="data:image/png;base64,{0}">'.format(data_uri)
+    with open(path, 'rb') as f:
+        encoded_image = base64.b64encode(f.read()).decode()
 
     
-    if (path == (images_path + "/ ")): 
-        print("nope")
+    if (path == (images_path + "/ '")): 
         return ""
     else: 
-        print(img_tag)
-        return img_tag
+        
+        return 'data:image/png;base64,{}'.format(encoded_image)
 
 #----------------------------
 
