@@ -1,14 +1,20 @@
+import dash
 import dash_bootstrap_components as dbc
 #import dash_html_components as html
 from dash import html, dcc
 #from app import app
 from dash.dependencies import Input, Output, State
-import dash
 
-FA_icon = html.I(className="fa fa-refresh")
-FA_icon_Import = html.I(className="fa fa-upload", style={"display":"inline-block"})
-#plus icon for adding a location
-FA_icon_Plus = html.I(className="fa fa-plus")
+
+#-------------generating icons for different buttons---------------------------
+FA_icon = html.I(className="fa fa-refresh") #icon for the refresh button
+FA_icon_Import = html.I(className="fa fa-upload", style={"display":"inline-block"})#icon for the upload button
+FA_icon_Plus = html.I(className="fa fa-plus") #plus icon for adding a location
+
+#-----------------------------------------------------------------------------
+
+
+#-------------generating different buttons---------------------------
 refr_button = (html.Div
                 (dbc.Button([FA_icon, " Refresh"],
                     color="light", # color of the button
@@ -26,10 +32,13 @@ refr_button = (html.Div
                     },
                     )))
 
-
 import_button = (html.Div
-                    (dbc.Button([FA_icon_Import, " Import Location"], color="light", className="ms-2",id = "import_button", value = 0,
-                      style={
+                    (dbc.Button([FA_icon_Import, " Import Location"],
+                    color="light",
+                    className="ms-2", #name of the class of the button
+                    id = "import_button", #individuell id of the button
+                    value = 0,
+                      style={ # style of the button
                             "marginRight": "40px",
                             "width": "115%",
                             "height": "40%",
@@ -41,7 +50,11 @@ import_button = (html.Div
                     )))
 
 add_location_button =  (html.Div
-                         (dbc.Button([FA_icon_Plus, " Add Location"], color="light", className="ms-2",id = "open_modal_add_location_button", value = 0,
+                         (dbc.Button([FA_icon_Plus, " Add Location"],
+                         color="light",
+                         className="ms-2",#name of the class of the button
+                         id = "open_modal_add_location_button", #individuell id of the button
+                         value = 0,
                             style={
                                     "marginRight": "40px",
                                     "width": "105%",
@@ -53,9 +66,11 @@ add_location_button =  (html.Div
                     },
                     )))
 
+#--------------------------------------------------------------------------
 
 
 
+# ---------------functions of the Navbar-----------------------------------
 def get_navbar()-> dbc.Navbar:
     """
     This functions define a Dash layout for the navbar.
@@ -65,20 +80,20 @@ def get_navbar()-> dbc.Navbar:
     navbar:
         An object of the type dbc.Navbar which contains all components of the navbar.
     """
-    navbar = dbc.Navbar(
+    navbar = dbc.Navbar( #defining the component is from the type Navbar
             dbc.Container(
-                [
-                    dbc.Row([
+                [ # the components are added as a container in Rows and columns
+                    dbc.Row([ # concerned with the label of our Dashboard
                         dbc.Col([
 
-                            dbc.NavbarBrand("Park&Ride Dashboard", style={"font-weight":"bold", "fontSize":"1.3em"}) # defining some text which is visualized in the navbar
+                            dbc.NavbarBrand("Park&Ride Dashboard", style={"font-weight":"bold", "fontSize":"1.3em"}) # definine text which is visualized in the navbar
                         ],
                         width={"size":"auto"})
                     ],
                     align="center",
                     className="g-0"),
 
-                    dbc.Row([
+                    dbc.Row([ # concerned with visalizing the map page and list page button to allow a switch between those views
                         dbc.Col([
                             dbc.Nav([
                                 dbc.NavItem(dbc.NavLink("Map View", href="/map_page",style={"color":"white","fontSize": "1.2em"})), # button for the map_page
@@ -91,7 +106,7 @@ def get_navbar()-> dbc.Navbar:
                     ],
                     align="center"),
                     dbc.Col(dbc.NavbarToggler(id="navbar-toggler", n_clicks=0)),
-                     dbc.Col(
+                     dbc.Col( # concerned with the visualization of error handeling
                            dbc.NavItem(make_import_modal(), style={"width":"10"}), # the add location through an import button
                         ),
                         dbc.Col(
@@ -101,15 +116,15 @@ def get_navbar()-> dbc.Navbar:
                            dbc.NavItem(html.Div(id="placeholder_error_message" , style={"display":"none","width":"10"})),
                         ),
 
-                    dbc.Row([
+                    dbc.Row([ # concerned with the visualization of different functionality buttons
                         dbc.Col(
-                           dbc.NavItem(import_button),
+                           dbc.NavItem(import_button), # import button
                         ),
                         dbc.Col(
-                           dbc.NavItem(add_location_button),
+                           dbc.NavItem(add_location_button), # add location button
                         ),
                          dbc.Col(
-                           dbc.NavItem(refr_button),
+                           dbc.NavItem(refr_button), # the add location through an import button
                         ),
                     ],
                     align="right"),
@@ -126,9 +141,11 @@ def get_navbar()-> dbc.Navbar:
 def make_error_modal() -> dbc.Modal:
     """
     This functions defines a Dash Modal to show when an error occcures.
+
     Returns
     -------
-    A Modal which contains the error warning
+    modal:
+        A modal which contains the error warning
     """
 
     return dbc.Modal(  # Modal to display
@@ -155,7 +172,6 @@ def make_error_modal() -> dbc.Modal:
                 ],
                 id="modal_error",  # Set the id of the modal
                 size="lg",
-                #scrollable=True,
                 centered=True,  # Set the centered-attribute of the modal to True
             ),
 
@@ -173,7 +189,7 @@ def make_import_modal()-> dbc.Modal:
                     dbc.ModalHeader(dbc.ModalTitle("Import Files")),  # Header of the modal
                      dbc.ModalBody(  # Body of the modal
                         [
-                            dcc.Upload(
+                            dcc.Upload( # style of the upload button
                                 id='upload_import_files',
                                 children=html.Div([
                                     'Drag and Drop or ',
@@ -189,11 +205,10 @@ def make_import_modal()-> dbc.Modal:
                                     'textAlign': 'center',
                                     'margin': '10px'
                                 },
-                                # Allow multiple files to be uploaded
-                                multiple=True
+                                multiple=True # Allow multiple files to be uploaded
                             ),
-                            dbc.Label("Uploaded CSV File:",style = {"margin-top":"2%"}),
-                            dbc.Input(
+                            dbc.Label("Uploaded CSV File:",style = {"margin-top":"2%"}), # tool to upload a csv file
+                            dbc.Input( # an input field where one can drop in the csv files
                                 placeholder="",
                                 id="modal_uploaded_csv",
                                 type="text",  # Set the type of the input field to text
@@ -202,8 +217,8 @@ def make_import_modal()-> dbc.Modal:
                                 disabled=True,
                                 style={"background":"white"}
                             ),
-                            dbc.Label("Uploaded JSON File:",style = {"margin-top":"2%"}),
-                            dbc.Input(
+                            dbc.Label("Uploaded JSON File:",style = {"margin-top":"2%"}), # tool to upload a json file
+                            dbc.Input( # an input field where one can drop in the csv files
                                 placeholder="",
                                 id="modal_uploaded_json",
                                 type="text",  # Set the type of the input field to text
@@ -231,7 +246,7 @@ def make_import_modal()-> dbc.Modal:
                                  style = {"background-color":"#b3b3b3",
                                          "border": "black",
                                          "color": "black" # Set the color of the button to black
-                                         },   # Text of the button
+                                         },
                                 id="modal_import_file_cancel_button"  # Set the id of the button
                             ),
                         ]
@@ -239,6 +254,5 @@ def make_import_modal()-> dbc.Modal:
                 ],
                 id="modal_import_file",  # Set the id of the modal
                 size="lg",
-                #scrollable=True,
                 centered=True,  # Set the centered-attribute of the modal to True
             ),
