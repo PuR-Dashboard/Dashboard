@@ -15,8 +15,7 @@ from collections import defaultdict
 
 
 
-#-------------------
-#util functions
+#--------util functions----------------
 
 #TO-DO: Error if while loop breaks and nothing matching was found
 def get_root_dir(name_of_top_folder="App")-> str:
@@ -90,26 +89,38 @@ def get_data(name_of_csv="Location_Data.csv", app_name="App")-> pd.DataFrame:
     df:
         The DataFrame with all the data of the csv File.
 
+    Raises
+    ------
+    Exception
+        If an error occurs while transforming the data in a csv file
     """
     try:
         df = pd.read_csv(get_path_to_csv(name_of_csv, app_name))  #transforming the data of the csv in a dataframe.
     except:
-        raise Exception("Fehler beim Daten auslesen!")
+        raise Exception("Error while reading data!")
+
     return df
 
 def get_image(location_name = " ") -> str:
     """
-    This function returns you the image of a given location
+    This function returns the image of a given location.
+
     Parameters
     ----------
     location_name: str
         Name of the location for which we want to get an image.
+
     Returns
     -------
     output:
-        if there is a picture stored in the "Images" folder fpr this location:
+        if there is a picture stored in the "Images" folder for this location:
         An created link to present the image as a CardImage.
-        else: it returns "", so that no image is shown 
+        Otherwise it returns "", so that no image is shown.
+
+    Raises
+    ------
+    Exception
+        If an error occurs while creating the link for the picture for the location.
     """
 
     #getting the path to the Images Folder
@@ -118,33 +129,31 @@ def get_image(location_name = " ") -> str:
     #adding the location name to the path
     path = os.path.join(images_path, location_name)
 
-    
+
 
     #if there is an image, create a link as output to find the picture
-    if (os.path.isfile(path)):
-        with open(path, 'rb') as f:
-            encoded_image = base64.b64encode(f.read()).decode()
-            output = 'data:image/png;base64,{}'.format(encoded_image)
-    # if not: output is an empty string 
-    else: 
+    try:
+        if (os.path.isfile(path)):
+            with open(path, 'rb') as f:
+                encoded_image = base64.b64encode(f.read()).decode()
+                output = 'data:image/png;base64,{}'.format(encoded_image)
+
+    except:
+        glob_vars.curr_error = Exception("Error while creating the link for the picture!")
+
+    # if not: output is an empty string
+    else:
         output = ""
-    
+
     return output
 
-#----------------------------
-
-
-username = 'optipark'  # Username for the API
-password = 'Dyb1yoTU4TG8'  # Password for the API
-
-path_to_urls = get_path_to_csv("Urls.json")  # Path to the json file with the API access links
-path_to_csv = get_path_to_csv("Location_Data.csv")  # Path to the csv file containing the location data
-path_to_characteristics = get_path_to_csv("Characteristics.csv")  # Path to the csv file containing the characteristics of the locations
-path_to_occupancy = get_path_to_csv("Occupancy.csv") # Path to the csv file containing the occupancies of the locations
+#---------------------------------
 
 
 
-# --- General functions --- #
+
+
+#--------- General functions---------#
 
 def add_location(dic: pd.DataFrame, url:str) -> None:
     """
@@ -287,7 +296,9 @@ def check_location_exists(location: str) -> bool:
     return location in content  # Check and return if the location exists in the json file
 
 
-# --- Functions for the Urls.json file --- #
+#---------------------------------------------------
+
+#------Functions for the Urls.json file------------
 
 def remove_location_from_json(location: str) -> None:
     """
@@ -418,7 +429,9 @@ def get_url_from_json(location: str) -> str:
     return content[location]  # Return the url for the given location
 
 
-# --- Functions for the Characteristics.csv file --- #
+#-------------------------------------------------------
+
+#------Functions for the Characteristics.csv file------
 
 def remove_location_from_csv(location: str) -> None:
     """
@@ -472,12 +485,21 @@ def update_characteristics_in_csv(dic:pd.DataFrame) -> None:
                 writer.writerow(line)  # Write the line to the csv file
 
 
-# --- Functions for the Occupancy.csv file --- #
+#-----------------------------------------------------
+
+
+
+#-----Functions for the Occupancy.csv file-----
 
 # TODO: Add a function that updates the occupancies of all locations
 def update_occupancies():
     """
     This function updates the occupancies of all locations given in the Urls.json file.
+
+    Raises
+    ------
+    Exception
+        Error when reading the occupancies through the links.
     """
     urls = []
     occupancies = []
@@ -500,7 +522,7 @@ def update_occupancies():
             f.close()
     except:
         glob_vars.curr_error = Exception("The API could not be accessed. The fault probably lies within the API, please check the links. You can continue using the application as usual but will not receive updated occupancy values.")
-        
+
 
 
 def update_location_occupancy(location: str) -> None:
@@ -605,8 +627,10 @@ def remove_location_from_occ_csv(location: str) -> None:
         writer.writerows(lines) #writing all lines which are left in the file
         f.close()
 
+#----------------------------------------------
 
-# --- Functions for the API access --- #
+
+#----Functions for the API access-----
 
 def get_lat_lon_from_url(url: str) -> tuple[float, float]:
     """
@@ -704,3 +728,20 @@ def get_response_from_url(url: str) -> Response:
         return requests.get(url, auth=(username, password))  # Return the response
     except:
         glob_vars.curr_error = Exception("Error while parsing API link!")
+        
+
+#---------------------------------------------------------------
+
+#-------initializing of important utility variables-------------
+
+
+username = 'optipark'  # Username for the API
+password = 'Dyb1yoTU4TG8'  # Password for the API
+
+path_to_urls = get_path_to_csv("Urls.json")  # Path to the json file with the API access links
+path_to_csv = get_path_to_csv("Location_Data.csv")  # Path to the csv file containing the location data
+path_to_characteristics = get_path_to_csv("Characteristics.csv")  # Path to the csv file containing the characteristics of the locations
+path_to_occupancy = get_path_to_csv("Occupancy.csv") # Path to the csv file containing the occupancies of the locations
+
+
+#--------------------------------------------------------------
