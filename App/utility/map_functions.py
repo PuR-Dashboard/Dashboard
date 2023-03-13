@@ -292,7 +292,7 @@ def update(data:pd.DataFrame,m:folium.Map)-> folium.Map:
         position = 'topright',returnToPrevBounds = True,
         width = "1000%",
         strings={"title":"Show me where I am"},
-        icon = "fa-solid fa-location-dot fa-2x text-success",
+        icon = "fa-solid fa-location-dot fa-2x text-info",
         setView = False).add_to(m)
 
     # Button für die Suche
