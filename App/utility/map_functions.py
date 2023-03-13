@@ -120,11 +120,11 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
                    <body>
                     <p style = "font-size: 18px"><B><u><font face="Arial">Characteristics:</font></u></B></p>
                    <ul>
-                       <li style= "font-size: 15px"><B><font face="Arial">Address:</B></font></B></font><font face="Arial">&emsp; {data.iloc[i]["address"]}</font></li>&thinsp;
-                       <li style= "font-size: 15px"> <B><font face="Arial">Number of Parking Lots: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["number_parking_lots"]}</font></li>&thinsp;
-                       <li style= "font-size: 15px"> <B><font face="Arial">Type of Facility:</font></B></font><font face="Arial">&emsp;{data.iloc[i]["kind"]}</font></li>&thinsp;
-                       <li style= "font-size: 15px"> <B><font face="Arial">Public Transport Connections: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["public_transport"]}</font></li>&thinsp;
-                       <li style= "font-size: 15px"> <B><font face="Arial">Current Occupancy:</font></B> <font face="Arial"><font color = {colors[i]}>&emsp;{this_occupancy}</font>&emsp;{arrow}</li>&thinsp;
+                       <li style= "font-size: 15px"><B><font face="Arial">address:</B></font></B></font><font face="Arial">&emsp; {data.iloc[i]["address"]}</font></li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">number of parking lots: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["number_parking_lots"]}</font></li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">type of facility:</font></B></font><font face="Arial">&emsp;{data.iloc[i]["kind"]}</font></li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">public transport connections: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["public_transport"]}</font></li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">current occupancy:</font></B> <font face="Arial"><font color = {colors[i]}>&emsp;{this_occupancy}</font>&emsp;{arrow}</li>&thinsp;
                    </ul>
 
                        <p style = "font-size: 18px", "text-align: center"><B><u><font face="Arial">Occupancy History Of The Week (in %)</font></u></B></p>
@@ -355,3 +355,6 @@ def create_map(data:pd.DataFrame)->folium.Map :
     m.save(os.path.join(get_root_dir(), os.path.join("App", "P&R_Karte.html")))
 
     return m
+
+
+#-----------------------------------------------------

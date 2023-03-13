@@ -30,9 +30,13 @@ This is the main index file to control the app layout.
 Further, it includes callback functions for the different pages of the application.
 """
 
-
+#------generation of the components of the dashboard-----------
 nav = navbar.get_navbar()  # Create the navbar
 sid = sidebar.get_sidebar() # create the sidebar
+
+#---------------------------------------------------------------
+
+#----------generating the layout--------------------------------
 
 app.layout = html.Div([  # Create a Div containing the navbar and the content
     dcc.Location(id='url', refresh=True),  # Track current URL of the page
@@ -50,6 +54,12 @@ app.layout = html.Div([  # Create a Div containing the navbar and the content
     html.Div(id='page-content', children=[]),
     sid,  # Add the sidebar
 ])
+
+#---------------------------------------------------------------
+
+
+
+#---------functions without callbacks---------------------------
 
 
 def define_chracteristics()->list:
@@ -138,6 +148,192 @@ def define_outputs_add_loction(special_ones:list)-> list:
 
     return outputs
 
+def count_active_filters():
+    """
+    determine the number of currently applied filters
+
+    Returns
+    -------
+    filters:
+        The amount of currently applied filters
+    """
+    filters = 0
+    for c in glob_vars.current_filter:
+        if glob_vars.current_filter[c] != None and glob_vars.current_filter[c] != "":
+            filters += 1
+
+    return filters
+
+
+def define_inputs_advanced_filter(special_ones:list)-> list:
+    """
+    This function creates a list of all inpus for the callback to conduct the advanced filter.
+
+    Parameters
+    ----------
+    special_ones:
+        A list of inputs which are final.
+
+    Returns
+    -------
+    inputs :
+        A list of all inputs to conduct the advanced filter.
+    """
+
+    inputs = []
+    #append non standard inputs
+    for one in special_ones:
+        inputs.append(one)
+
+    characteristics= define_chracteristics()
+    #apppend characteristics according to naming scheme
+    for characs in characteristics:
+        inputs.append(Input("modal_advanced_filter_"+ characs, "value"))
+
+    return inputs
+
+
+def define_outputs_advanced_filter(special_ones:list)->list:
+    """
+    This function creates a list of all outputs for the callback to to conduct the advanced filter.
+
+    Parameters
+    ----------
+    special_ones:
+        A list of outputs which are final.
+
+    Returns
+    -------
+    outputs :
+        A list of all outputs to to conduct the advanced filter.
+    """
+
+    outputs = []
+    #append non standard outputs
+    for one in special_ones:
+        outputs.append(one)
+
+    characteristics= define_chracteristics()
+    #append characteristics ouputs acording to naming scheme
+    for characs in characteristics:
+        outputs.append(Output("modal_advanced_filter_"+ characs, "value"))
+
+    return outputs
+
+
+def check_csv_validity(temp_df: pd.DataFrame) -> bool:
+    """
+    This function checks the given DataFrame according to conditions:
+    - check if columns align with our columns
+    - check if data is rectangular - is dataframe always rectangular?
+    - check if every row has a location name and no duplicate locations exist
+
+    Parameters
+    ----------
+    temp_df:
+        The dataframe which should be checked.
+
+    Returns
+    -------
+    valid:
+        Whether the DataFrame based all the conditions.
+    """
+
+    #columns do not match
+    try:
+        for tv, v in zip(list(temp_df.columns.values), list(glob_vars.data.columns.values)):
+            if tv != v:
+                return False
+    except Exception as e:
+        return False
+    #check that location name exists for every row
+    location_names = list(temp_df["location"])
+    #check for duplicates
+    temp_set = set(location_names)
+    if len(temp_set) != len(location_names):
+        return False
+
+    assert len(location_names) == len(temp_df)
+
+    #check for None values
+    for l in location_names:
+        if l == None:
+            return False
+
+    return True
+
+
+def check_json_validity(json_object:dict[str:str], csv_locations: list[str]) -> bool:
+    """
+    This function checks the given DataFrame according to the acceptance criteria:
+    - every location from the csv file is represenmted in the json file -> meaning every location has a link
+
+    Parameters
+    ----------
+    json_object:
+        A dictionary with key:value pairs as location:api-link.
+
+    csv_locations:
+        The location names from the simultaniouisly uploaded csv file.
+
+    Returns
+    -------
+    valid:
+        Whether the DataFrame based all acceptance criteria.
+    """
+
+
+    for l in csv_locations:
+        if l not in json_object:
+            return False
+
+    return True
+
+
+def parse_contents(contents, filename:str):
+    """
+    This function pareses the information which are in file with the filename into a dictionary/DataFrame if the user uploads a csv or json file.
+
+    Parameters
+    ----------
+    contents:
+        String that holds information on the content of the file to be read.
+    filename:
+        The name of the file which will be parsed.
+
+    Returns
+    -------
+    df:
+        A dirctionary based on the information of the file with the given filename.
+
+    Raises
+    ------
+    Exception
+        If an error occurs while reading the file.
+    """
+    #parse file
+    content_type, content_string = contents.split(',')
+    decoded = base64.b64decode(content_string)
+    try:
+        if '.csv' in filename:
+            # Assume that the user uploaded a CSV file
+            df = pd.read_csv(
+                io.StringIO(decoded.decode('utf-8')))
+        elif '.json' in filename:
+            # Assume that the user uploaded an excel file
+            df = json.loads(decoded)
+        else:
+            df = None
+
+        return df
+
+    except Exception as e:
+        raise Exception("Error when parsing imported files")
+
+#--------------------------------------------------------------------------
+
+
+#---------functions with callback----------------------------------------
 
 @app.callback(  # Create a callback for the index page
     [Output('page-content', 'children'),
@@ -148,7 +344,7 @@ def display_page(pathname):
     """
     This function updates the content of the page based on the URL.
 
-    Parameters
+    Inputs
     ----------
     pathname:
         The URL of the new page.
@@ -156,7 +352,7 @@ def display_page(pathname):
     index:
         The index of the deleted location.
 
-    Returns
+    Outputs
     -------
     page-content:
         The new page content in a layout format and the name of the page.
@@ -181,9 +377,26 @@ def error_modal_handling(message, clicks, state):
     """
     This function handles the general error window which informs the user that an error has occured.
 
-    message: clicks of the placeholder div indicating that the modal shoud be be opened
-    clicks: the button of the modal
-    state: whether the modal is open or closed
+    Inputs:
+    ----------
+    placeholder_error_message(n_clicks):
+        clicks of the placeholder div indicating that the modal shoud be be opened
+
+    modal_error_ok_button(n_clicks)
+        clicks on the button that the error message window should be closed
+
+    State
+    ----------
+    state:
+        whether the modal is open or closed
+
+    Outputs
+    -------
+    modal_error(is_open):
+        whether the modal should be opened or closed
+
+    modal_dynamic_error(children):
+        The kind of the error.
     """
 
     triggered_id = ctx.triggered_id
@@ -266,15 +479,6 @@ def add_new_location(_1, _2, _3, URL_value, *params):
     modal_add_location_name
 
     """
-    """
-    structure of parameters:
-    - variables with underscore(_1,...) are n_clicks of buttons and not relevant
-    - URL_value is the given url
-    - params is every dash component that is also a characteristic and the pop up open state at the end
-    -> !!! order or parameters is important. Order is matched 1 to 1 to list of characteristics for adding new locations.
-            if new characteristics are added, then the order of the parameters must be changed accordingly!!!
-    Also order of putputs is depending on order of input
-    """
 
     #get characteristics from data
     characteristics = list(glob_vars.data.columns.values)
@@ -323,7 +527,7 @@ def add_new_location(_1, _2, _3, URL_value, *params):
             update_occupancies()
         except:
             glob_vars.curr_error = Exception("Error when adding a new location or updating the occupancy details in datta_functions.py. Check API Links or Location specifics.")
-            
+
 
         return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
     else:
@@ -455,182 +659,7 @@ def choose_correct_update(*args):
         #raise ValueError("A Page is not accounted for in the update method")
 
 
-def count_active_filters():
-    """
-    determine the number of currently applied filters
 
-    returns int
-    """
-    filters = 0
-    for c in glob_vars.current_filter:
-        if glob_vars.current_filter[c] != None and glob_vars.current_filter[c] != "":
-            filters += 1
-
-    return filters
-
-
-def define_inputs_advanced_filter(special_ones:list)-> list:
-    """
-    This function creates a list of all inpus for the callback to conduct the advanced filter.
-
-    Parameters
-    ----------
-    special_ones:
-        A list of inputs which are final.
-
-    Returns
-    -------
-    inputs :
-        A list of all inputs to conduct the advanced filter.
-    """
-
-    inputs = []
-    #append non standard inputs
-    for one in special_ones:
-        inputs.append(one)
-
-    characteristics= define_chracteristics()
-    #apppend characteristics according to naming scheme
-    for characs in characteristics:
-        inputs.append(Input("modal_advanced_filter_"+ characs, "value"))
-
-    return inputs
-
-
-def define_outputs_advanced_filter(special_ones:list)->list:
-    """
-    This function creates a list of all outputs for the callback to to conduct the advanced filter.
-
-    Parameters
-    ----------
-    special_ones:
-        A list of outputs which are final.
-
-    Returns
-    -------
-    outputs :
-        A list of all outputs to to conduct the advanced filter.
-    """
-
-    outputs = []
-    #append non standard outputs
-    for one in special_ones:
-        outputs.append(one)
-
-    characteristics= define_chracteristics()
-    #append characteristics ouputs acording to naming scheme
-    for characs in characteristics:
-        outputs.append(Output("modal_advanced_filter_"+ characs, "value"))
-
-    return outputs
-
-
-def check_csv_validity(temp_df: pd.DataFrame) -> bool:
-    """
-    This function checks the given DataFrame according to conditions:
-    - check if columns align with our columns
-    - check if data is rectangular - is dataframe always rectangular?
-    - check if every row has a location name and no duplicate locations exist
-
-    Parameters
-    ----------
-    temp_df:
-        The dataframe which should be checked.
-
-    Returns
-    -------
-    valid:
-        Whether the DataFrame based all the conditions.
-    """
-
-    #columns do not match
-    try:
-        for tv, v in zip(list(temp_df.columns.values), list(glob_vars.data.columns.values)):
-            if tv != v:
-                return False
-    except Exception as e:
-        return False
-    #check that location name exists for every row
-    location_names = list(temp_df["location"])
-    #check for duplicates
-    temp_set = set(location_names)
-    if len(temp_set) != len(location_names):
-        return False
-
-    assert len(location_names) == len(temp_df)
-
-    #check for None values
-    for l in location_names:
-        if l == None:
-            return False
-
-    return True
-
-
-def check_json_validity(json_object:dict[str:str], csv_locations: list[str]) -> bool:
-    """
-    This function checks the given DataFrame according to the acceptance criteria:
-    - every location from the csv file is represenmted in the json file -> meaning every location has a link
-
-    Parameters
-    ----------
-    json_object:
-        A dictionary with key:value pairs as location:api-link.
-
-    csv_locations:
-        The location names from the simultaniouisly uploaded csv file.
-
-    Returns
-    -------
-    valid:
-        Whether the DataFrame based all acceptance criteria.
-    """
-
-    #validity of json file is guaranteed by:
-    #- every location from the csv file is represenmted in the json file -> meaning every location has a link
-    #- maybe also check that links are working? -> time expensive but okay when importing
-
-    for l in csv_locations:
-        if l not in json_object:
-            return False
-
-    return True
-
-
-def parse_contents(contents, filename:str):
-    """
-    This function pareses the information which are in file with the filename into a dictionary/DataFrame if the user uploads a csv or json file.
-
-    Parameters
-    ----------
-    contents:
-        String that holds information on the content of the file to be read.
-    filename:
-        The name of the file which will be parsed.
-
-    Returns
-    -------
-    df:
-        A dirctionary based on the information of the file with the given filename.
-    """
-    #parse file
-    content_type, content_string = contents.split(',')
-    decoded = base64.b64decode(content_string)
-    try:
-        if '.csv' in filename:
-            # Assume that the user uploaded a CSV file
-            df = pd.read_csv(
-                io.StringIO(decoded.decode('utf-8')))
-        elif '.json' in filename:
-            # Assume that the user uploaded an excel file
-            df = json.loads(decoded)
-        else:
-            df = None
-
-        return df
-
-    except Exception as e:
-        raise Exception("Error when parsing imported files")
 
 
 
@@ -926,7 +955,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
             update_occupancies()
         except Exception as e:
             glob_vars.curr_error = e
-            
+
 
         return not modal_state, None, None, ""
     else:
