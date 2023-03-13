@@ -175,7 +175,8 @@ def display_page(pathname):
                Output("modal_dynamic_error", "children")],
               [Input("placeholder_error_message", "n_clicks"),
                Input("modal_error_ok_button", "n_clicks")],
-              State("modal_error", "is_open"))
+              State("modal_error", "is_open"),
+              prevent_initial_call=True,)
 def error_modal_handling(message, clicks, state):
     """
     This function handles the general error window which informs the user that an error has occured.
@@ -187,7 +188,7 @@ def error_modal_handling(message, clicks, state):
 
     triggered_id = ctx.triggered_id
     #close modal and reset error label
-    if triggered_id == "modal_ok_button":
+    if triggered_id == "modal_error_ok_button":
         return not state, "Unidentified Error"
     elif triggered_id == "placeholder_error_message":
         #no error triggered
@@ -202,6 +203,8 @@ def error_modal_handling(message, clicks, state):
             glob_vars.curr_error = None
 
             return not state, str(temp)
+    else:
+        raise PreventUpdate
 
 
 

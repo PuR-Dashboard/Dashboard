@@ -5,7 +5,7 @@ import validators
 from datetime import datetime
 
 from requests import Response
-
+import base64
 import pages.global_vars as glob_vars
 import pandas as pd
 import os
