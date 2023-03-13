@@ -196,7 +196,7 @@ def filter_names(df:pd.DataFrame, filteraspect:str, key:str) -> pd.DataFrame:
             #if all characters up to this point do not match
             elif (filterchar[i] != locationchar[i]):
                 Deleted = True
-                df.drop(df.loc[df[key]== location].index, inplace = True ) )# dropping the location which does not match to the given string
+                df.drop(df.loc[df[key]== location].index, inplace = True ) # dropping the location which does not match to the given string
                 df.reset_index(drop = True, inplace = True) # reseting the index
                 break
 
