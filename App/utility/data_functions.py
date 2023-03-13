@@ -121,12 +121,12 @@ def get_image(location_name = " ") -> str:
     
 
     #if there is an image, create a link as output to find the picture
-    try:
+    if (os.path.isfile(path)):
         with open(path, 'rb') as f:
             encoded_image = base64.b64encode(f.read()).decode()
             output = 'data:image/png;base64,{}'.format(encoded_image)
     # if not: output is an empty string 
-    except (FileNotFoundError and PermissionError): 
+    else: 
         output = ""
     
     return output
