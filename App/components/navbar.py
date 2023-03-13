@@ -256,3 +256,5 @@ def make_import_modal()-> dbc.Modal:
                 size="lg",
                 centered=True,  # Set the centered-attribute of the modal to True
             ),
+
+#----------------------------------------------------------------------------------------
