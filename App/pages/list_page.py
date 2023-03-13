@@ -14,16 +14,28 @@ from collections import defaultdict
 import fontstyle
 from csv import reader
 
-FA_icon_trash= html.I(className="fa fa-trash fa-lg")
-FA_icon_pen= html.I(className="fa fa-pencil fa-lg")
+
+#----------generation of icons---------------
+
+FA_icon_trash= html.I(className="fa fa-trash fa-lg") #icon of the deleting button
+FA_icon_pen= html.I(className="fa fa-pencil fa-lg") # icon of the edditing button
+
+#icon for button to expand list elements and arrow symbol for occupancy tendency in list view
+FA_icon_Arrow = html.I(className="fa fa-chevron-down fa-lg")
+
+
+#------------------------------------------
+
+
+
+#----------generation of stylings---------------
 
 ARR_BUTTON_STYLE = { #Define the style of the arrow button
     "color": "black", #set the arrow itself is black
     "background-color":"transparent", #set the background color to transparent
     "border": "transparent" #set the border color to transparent
 }
-#icon for button to expand list elements and arrow symbol for occupancy tendency in list view
-FA_icon_Arrow = html.I(className="fa fa-chevron-down fa-lg")
+
 
 
 CONTENT_STYLE = { #style the content of list_page so that it aligns with the sidebar
@@ -33,21 +45,22 @@ CONTENT_STYLE = { #style the content of list_page so that it aligns with the sid
     "flex-grow": "1",
     "seamless":"True"
 }
-#global sid
-#seitentag = "_list"
 
-#generate sidebar for this page
-#sid = get_sidebar(seitentag)
+#---------------------------------------
 
 
-# TODO: Move to other file
+
+#-----functions without a callback-----
+
+
+
 def define_chracteristics()->list:
     """
     This functions creates a list with all current characteristics.
 
     Returns
     -------
-    characteristics2:list
+    characteristics2: list
         A list of all chracters in the data.
     """
 
@@ -64,6 +77,7 @@ def define_chracteristics()->list:
         characteristics2.append(row[0])
 
     return characteristics2
+
 
 def create_security_window(location:str, index:int)-> dbc.Modal:
     """
@@ -105,6 +119,7 @@ def create_security_window(location:str, index:int)-> dbc.Modal:
                       id={"type":"security_window", "index":index},  # Set the id of the modal to modal_window
                         centered=True,  # Set the centered-attribute of the modal to True
                         )
+
 
 def create_edit_window(index:int)-> dbc.Modal:
     """
@@ -235,7 +250,7 @@ def create_edit_window(index:int)-> dbc.Modal:
     return edit_popUp
 
 
-#will be switched out by table through vuetify library and is not documented further -> soon to be DEPRECATED
+
 def create_content(df: pd.DataFrame)-> tuple[list[str], list[str]]:
     """
     This function creates the names and information of the location.
@@ -300,12 +315,12 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
 
     #remove the underscores
     charakter = []
-    for c in underscored_charakter: 
+    for c in underscored_charakter:
         splitted_c = c.split("_")
         new_c = " ".join(splitted_c)
         charakter.append(new_c)
-    
-    
+
+
     rows = [html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]) for i in range (len(charakter))]
 
     occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
@@ -378,7 +393,6 @@ def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
             'displayModeBar': False
         }
         )
-
 
     return graph
 
@@ -487,7 +501,7 @@ def create_history(name:str)-> list:
     return averages
 
 
-#----!!! Names and content is at the moment created through the create_content() def, will need new creation function after create_content() is DEPRECATED
+
 def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list:
     """
     This function dynamically creates the layout for the list_page.
@@ -544,13 +558,13 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
                     style ={"width": "auto", "marginLeft": "1%"}),
                     #plot directly under the table
                     dbc.CardBody(create_plot(create_history(names[i])),style ={"width": "auto","height":"auto", "color": "#F0F8FF"}),
-                    
+
                     ],
                 style={"width":"calc(100vw - 260px)","overflow": "scroll", "height": "calc(100vh - 120px)"}
                 ),
             create_edit_window(i), create_security_window(names[i], i), html.Div(id={"type":"edit_controller", "index":i}, style={"display":"none"}),
             html.Div(id={"type":"security_id_transmitter", "index":i}, style={"display":"none"}),
-            
+
 
             ],
             id={"type":"content", "index":i},
@@ -577,6 +591,7 @@ names, content = create_content(glob_vars.data)
 html_list_for_layout = create_layout(glob_vars.data, names, content)
 
 layout = html.Div(children=html_list_for_layout, id="list_layout", style = CONTENT_STYLE)
+
 
 
 def edit_data(changed_data:list[str],index:int)-> None:
@@ -651,6 +666,7 @@ def define_inputs_edit(special_ones:list)->list:
 
     return inputs
 
+
 def define_outputs_edit(special_ones:list)->list:
     """
     This function creates a list of all inputs for the callback to edit the data for a location.
@@ -701,7 +717,9 @@ def refresh_layout() -> list:
 
     return layout
 
-#Callbacks:-----------------------------------------------
+#-------------------------------------------------------
+
+#-----------functions with Callbacks:-------------------
 
 #callback to observe if the delete button has been pressed
 #open security question window as response
@@ -833,7 +851,7 @@ def toggle_collapses(_arros, _butts, stats):
 
     Inputs
     ----------
-    _arros: 
+    _arros:
         The number of clicks on the arrow button.
 
     _butts:
@@ -859,8 +877,8 @@ def toggle_collapses(_arros, _butts, stats):
         #return opposite state of triggered button for either collapse or expand
         return not stats
 
-#method which edits the data according to the changes in the edit_window
 
+#method which edits the data according to the changes in the edit_window
 @callback(
     Output("placeholder_div_edit" , "n_clicks"),
     [Input({"type": "edit_controller", "index": ALL}, "is_open")]
@@ -951,7 +969,7 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,*params):
 
 
 
-#--------
+
 #gets confirmation of deletion, update filter etc through placeholder, also inputs from sidebar
 @callback(
     Output("list_layout", "children"),
@@ -983,3 +1001,5 @@ def update_layout(*args):
     triggered_id = ctx.triggered_id
 
     return refresh_layout()
+
+#---------------------------------------------
