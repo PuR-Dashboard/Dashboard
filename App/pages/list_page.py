@@ -296,7 +296,16 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
         html.Thead(html.Tr([html.Th("Characteristics"), html.Th("Values")]), style = {"marginTop":"5%"})
     ]
 
-    charakter = define_chracteristics()
+    underscored_charakter = define_chracteristics()
+
+    #remove the underscores
+    charakter = []
+    for c in underscored_charakter: 
+        splitted_c = c.split("_")
+        new_c = " ".join(splitted_c)
+        charakter.append(new_c)
+    
+    
     rows = [html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]) for i in range (len(charakter))]
 
     occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
@@ -529,7 +538,7 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
                     children=[
                         dbc.Row([ #getting the table and picture next to each other
                         dbc.Col(dbc.CardBody(create_table(data, content[i]), style ={"marginRight":"auto"})),
-                        dbc.Col(dbc.CardImg(src= "https://th.bing.com/th/id/OIP.mbBEbzuRMttCVk4AyTzIxwHaD8?pid=ImgDet&rs=1",
+                        dbc.Col(dbc.CardImg(get_image(names[i]), #if you want to present a picture on the listpage, just add a path to the picture by extracting it out of the excel-file
                         style ={"height":"auto", "width":"auto","marginRight":"1%", "marginLeft": "auto", "marginTop": "6%","horizontalAlign": "right"})),
                     ],
                     style ={"width": "auto", "marginLeft": "1%"}),
