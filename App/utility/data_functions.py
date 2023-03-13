@@ -106,23 +106,32 @@ def get_image(location_name = " ") -> str:
         Name of the location for which we want to get an image.
     Returns
     -------
-    path:
+    output:
+        if there is a picture stored in the "Images" folder fpr this location:
         An created link to present the image as a CardImage.
+        else: it returns "", so that no image is shown 
     """
+
+    #getting the path to the Images Folder
     images_path = os.path.join(get_root_dir(), "Data\Images")
 
-    
+    #adding the location name to the path
     path = os.path.join(images_path, location_name)
 
-    with open(path, 'rb') as f:
-        encoded_image = base64.b64encode(f.read()).decode()
-
     
-    if (path == (images_path + "/ '")): 
-        return ""
-    else: 
+
+    #if there is an image, create a link as output to find the picture
+    try:
+        with open(path, 'rb') as f:
+            encoded_image = base64.b64encode(f.read()).decode()
+            output = 'data:image/png;base64,{}'.format(encoded_image)
+    # if not: output is an empty string 
+    except (FileNotFoundError and PermissionError): 
+        output = ""
+    
+    return output
         
-        return 'data:image/png;base64,{}'.format(encoded_image)
+     
 
 #----------------------------
 
