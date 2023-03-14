@@ -12,6 +12,8 @@ import os
 import pathlib
 from collections import defaultdict
 
+import base64
+
 
 
 
