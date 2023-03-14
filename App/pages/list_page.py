@@ -533,8 +533,6 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
         
     #iterate through names(names and content must have the same length)
     for i in range(len(names)):
-        
-       
         #append header of location
         html_list.append(dbc.CardHeader([dbc.Button(
                     [html.B(names[i]), occupancy_function(data, names[i])],
