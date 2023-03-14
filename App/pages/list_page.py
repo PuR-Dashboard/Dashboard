@@ -302,11 +302,6 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
     occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
     one = occupancy.iloc[len(occupancy)-1] # getting the last row of the dataframe which is representing the currenct occupancys
 
-    arrow_down = html.I(className="fa fa-arrow-down")
-    arrow_up = html.I(className="fa fa-arrow-up")
-    arrow_left = html.I(className="fa fa-arrow-left")
-
-
     for i in range (len(data)):
 
         one_location_previous = data.iloc[i] # data of one location
@@ -319,10 +314,10 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
         if this_occupancy == " ausreichend vorhanden":
             this_occupancy = "sufficient available"
 
-        arrow = arrow_up if (one_occupancy[0][1:] == "'zunehmend'") else (arrow_down if (one_occupancy[0][1:] == "'abnehmend'")else arrow_left)
+        occupancy_tendency = " increasing" if (one_occupancy[0][1:] == " zunehmend") else ("decreasing" if (one_occupancy[0][1:] == " abnehmend")else "stagnating")
         if content[0] == one_location_previous[0]:
             rows.append(html.Tr([html.Td("Occupancy"), html.Td(this_occupancy)]))
-            rows.append(html.Tr([html.Td("Occupancy Tendency"), html.Td(arrow)]))
+            rows.append(html.Tr([html.Td("Occupancy Tendency"), html.Td(occupancy_tendency)]))
     #add icons
 
     table_body = [html.Tbody(rows)]
@@ -477,6 +472,22 @@ def create_history(name:str)-> list:
 
     return averages
 
+def occupancy_function (data:pd.DataFrame, city_name):
+    result = "test"
+    for i in range (len(data)):
+        occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
+        one = occupancy.iloc[len(occupancy)-1] # getting the last row of the dataframe which is representing the currenct occupancys
+        one_location_previous = data.iloc[i] # data of one location
+        if city_name == one_location_previous[0]:            
+            one_occupancy = one[one_location_previous[0]].split(",") # the occupancy information of the locations
+            result = one_occupancy[1][:-1].replace("'", "")
+            if result == " wenige vorhanden":
+                result = html.Div("medium occupancy", style = {"color":"orange"})
+            if result == " keine vorhanden":
+                result = html.Div("high occupancy", style = {"color":"red"})
+            if result == " ausreichend vorhanden":
+                result = html.Div("low occupancy", style = {"color":"green"})
+    return result
 
 #----!!! Names and content is at the moment created through the create_content() def, will need new creation function after create_content() is DEPRECATED
 def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list:
@@ -506,20 +517,23 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
 
     if (content == [-1,-1,-1,-1,-1,-1]):
         return None
-
-
+        
     #iterate through names(names and content must have the same length)
     for i in range(len(names)):
+        
+       
         #append header of location
         html_list.append(dbc.CardHeader([dbc.Button(
-                    names[i],
+                    [html.B(names[i]), occupancy_function(data, names[i])],
                     color="outline",
                     id={"type":"header", "index":i},
                     value=i,
-
-                ), dbc.Button([FA_icon_trash, ""], id={"type":"button_control", "index":i}, className = "pull-right",style = ARR_BUTTON_STYLE),
-                   dbc.Button([FA_icon_pen, ""], id={"type":"pen_button", "index" :i}, className = "pull-right" ,style = ARR_BUTTON_STYLE),
-                   dbc.Button([FA_icon_Arrow, ""], id={"type":"arrow_button", "index" :i}, className = "pull-right" ,style = ARR_BUTTON_STYLE)
+                    size = "100%",
+                    ),
+                    
+                    dbc.Button([FA_icon_trash, ""], id={"type":"button_control", "index":i}, className = "pull-right",style = ARR_BUTTON_STYLE),
+                    dbc.Button([FA_icon_pen, ""], id={"type":"pen_button", "index" :i}, className = "pull-right" ,style = ARR_BUTTON_STYLE),
+                    dbc.Button([FA_icon_Arrow, ""], id={"type":"arrow_button", "index" :i}, className = "pull-right" ,style = ARR_BUTTON_STYLE)
                    ], style = {"width":"87%"}))
 
                 #append collapsible content
