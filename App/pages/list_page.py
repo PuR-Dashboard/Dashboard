@@ -308,30 +308,18 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
         A tables which represents all the given data.
     """
 
+    #defining the header
     table_header = [
         html.Thead(html.Tr([html.Th("Characteristics"), html.Th("Values")]), style = {"marginTop":"5%"})
     ]
 
-    underscored_charakter = define_chracteristics()
+    rows = [] #storing all the rows which should be visualized
 
-    #remove the underscores
-    charakter = []
-    for c in underscored_charakter:
-        splitted_c = c.split("_")
-        new_c = " ".join(splitted_c)
-        charakter.append(new_c)
-
-
-    rows = [html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]) for i in range (len(charakter))]
 
     occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
     one = occupancy.iloc[len(occupancy)-1] # getting the last row of the dataframe which is representing the currenct occupancys
 
-    arrow_down = html.I(className="fa fa-arrow-down")
-    arrow_up = html.I(className="fa fa-arrow-up")
-    arrow_left = html.I(className="fa fa-arrow-left")
-
-
+    #adding the occupancy and the tendencyto the table
     for i in range (len(data)):
 
         one_location_previous = data.iloc[i] # data of one location
@@ -344,10 +332,31 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
         if this_occupancy == " ausreichend vorhanden":
             this_occupancy = "low occupancy"
 
-        arrow = arrow_up if (one_occupancy[0][1:] == "'zunehmend'") else (arrow_down if (one_occupancy[0][1:] == "'abnehmend'")else arrow_left)
+        tendency = "increasing" if (one_occupancy[0][1:] == "'zunehmend'") else ("decreasing" if (one_occupancy[0][1:] == "'abnehmend'")else "constant")
         if content[0] == one_location_previous[0]:
-            rows.append(html.Tr([html.Td("Occupancy"), html.Td(this_occupancy)]))
-            rows.append(html.Tr([html.Td("Occupancy Tendency"), html.Td(arrow)]))
+            rows.append(html.Tr([html.Td("occupancy"), html.Td(this_occupancy)]))
+            rows.append(html.Tr([html.Td("occupancy tendency"), html.Td(tendency)]))
+
+
+    #adding the characteristics to the table
+    underscored_charakter = define_chracteristics()
+
+    #remove the underscores
+    charakter = []
+    for c in underscored_charakter:
+        splitted_c = c.split("_")
+        new_c = " ".join(splitted_c)
+
+        if(new_c == "price"):
+            new_c = "price per day (€)"
+        charakter.append(new_c)
+
+
+    for i in range (len(charakter)):
+        rows.append(html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]))
+
+
+
     #add icons
 
     table_body = [html.Tbody(rows)]

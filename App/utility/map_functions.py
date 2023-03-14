@@ -105,7 +105,7 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
             this_occupancy = "low occupany"
 
         # choosing the right arrow according to the tendency of the occupancy
-        arrow = "&#x2B06;" if (one_occupancy[0][1:] == "'zunehmend'") else ("&#x2B07;" if (one_occupancy[0][1:] == "'abnehmend'")else "&#x2B05;")
+        tendency = "increasing" if (one_occupancy[0][1:] == "'zunehmend'") else ("decreasing" if (one_occupancy[0][1:] == "'abnehmend'")else "constant")
 
         #creating the history
         history = create_history(data.iloc[i]["location"])
@@ -120,11 +120,13 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
                    <body>
                     <p style = "font-size: 18px"><B><u><font face="Arial">Characteristics:</font></u></B></p>
                    <ul>
+                       <li style= "font-size: 15px"> <B><font face="Arial">current occupancy:</font></B> <font face="Arial"><font color = {colors[i]}>&emsp;{this_occupancy}</font></li>&thinsp;
+                       <li style= "font-size: 15px"><B><font face="Arial">occupancy tendency:</B></font></B></font><font face="Arial">&emsp; {tendency}</font></li>&thinsp;
                        <li style= "font-size: 15px"><B><font face="Arial">address:</B></font></B></font><font face="Arial">&emsp; {data.iloc[i]["address"]}</font></li>&thinsp;
                        <li style= "font-size: 15px"> <B><font face="Arial">number of parking lots: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["number_parking_lots"]}</font></li>&thinsp;
                        <li style= "font-size: 15px"> <B><font face="Arial">type of facility:</font></B></font><font face="Arial">&emsp;{data.iloc[i]["kind"]}</font></li>&thinsp;
                        <li style= "font-size: 15px"> <B><font face="Arial">public transport connections: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["public_transport"]}</font></li>&thinsp;
-                       <li style= "font-size: 15px"> <B><font face="Arial">current occupancy:</font></B> <font face="Arial"><font color = {colors[i]}>&emsp;{this_occupancy}</font>&emsp;{arrow}</li>&thinsp;
+
                    </ul>
 
                        <p style = "font-size: 18px", "text-align: center"><B><u><font face="Arial">Occupancy History Of The Week (in %)</font></u></B></p>
@@ -292,7 +294,10 @@ def update(data:pd.DataFrame,m:folium.Map)-> folium.Map:
     colors= ["orange" if (one[data.iloc[i][0]].split(",")[1][:-1] == " 'wenige vorhanden'") else ("green" if (one[data.iloc[i][0]].split(",")[1][:-1] == " 'ausreichend vorhanden'")else "red") for i in range (len(data))]
 
     # defining the tooltips of the markers according to the current occupancy
-    tooltips= ["medium occupancy" if (one[data.iloc[i][0]].split(",")[1][:-1]== " 'wenige vorhanden'") else ("low occupancy" if (one[data.iloc[i][0]].split(",")[1][:-1] == " 'ausreichend vorhanden'")else "high occupancy") for i in range (len(data))]
+    tooltips= [data.iloc[i][0]+": increasing tendency" if (one[data.iloc[i][0]].split(",")[0][1:]== "'zunehmend'") else (data.iloc[i][0]+": decreasing tendency" if (one[data.iloc[i][0]].split(",")[0][:1] == "'abnehmend'")else data.iloc[i][0]+": constant tendency") for i in range (len(data))]
+
+
+
 
     #creating the pop ups for all the markers
     html = create_html(data, screen_size,colors)
