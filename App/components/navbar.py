@@ -5,6 +5,13 @@ from dash import html, dcc
 #from app import app
 from dash.dependencies import Input, Output, State
 
+#------------------setting the link of the logo to urban software institute homepage---------------------
+logo_url = "https://www.ui.city/"
+image = html.Img(src="assets/ui_logo_cropped.jpg", height="50px")
+linked_image = html.A(image, href=logo_url, target="_blank")
+
+#--------------------------------------------------------------------------------------------------------
+
 
 #-------------generating icons for different buttons---------------------------
 FA_icon = html.I(className="fa fa-refresh") #icon for the refresh button
@@ -85,13 +92,16 @@ def get_navbar()-> dbc.Navbar:
                 [ # the components are added as a container in Rows and columns
                     dbc.Row([ # concerned with the label of our Dashboard
                         dbc.Col([
+                            linked_image # adding the logo of our dashboard with the link to the homepage
+                        ],
+                        width={"size":"auto"}),
+                        dbc.Col([
 
                             dbc.NavbarBrand("Park&Ride Dashboard", style={"font-weight":"bold", "fontSize":"1.3em"}) # definine text which is visualized in the navbar
                         ],
                         width={"size":"auto"})
                     ],
-                    align="center",
-                    className="g-0"),
+                    align="center"),
 
                     dbc.Row([ # concerned with visalizing the map page and list page button to allow a switch between those views
                         dbc.Col([
