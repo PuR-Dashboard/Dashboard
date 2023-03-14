@@ -12,6 +12,7 @@ import os
 import pathlib
 from collections import defaultdict
 
+import base64
 
 
 
@@ -116,7 +117,7 @@ def get_image(location_name = " ") -> str:
     path = os.path.join(images_path, location_name)
 
     
-
+    print(path)
     #if there is an image, create a link as output to find the picture
     if (os.path.isfile(path)):
         with open(path, 'rb') as f:
