@@ -1,0 +1,12 @@
+Bezüglich Docker:
+
+Das Projekt findet sich auf Docker Hub und lässt sich mittels
+
+docker pull timm4ster/pur_dashboard
+
+kopieren. Beim Ausführen der Software muss darauf geachtet werden, dass der Port des Containers auf den Port des Hosts (also unserer Dash-Anwendung) gelegt wird.
+Dies kann mittels des p-Flags oder bei Container Erstellung in Docker Desktop gemacht werden. In der Command Line wird hierbei das p-Flag verwendet:
+
+docker run -p 8050:8050 timm4ster/pur_dashboard
+
+Dann lässt sich unsere Anwendung auch im Browser unter "https://localhost:8050/" erreichen.

@@ -472,13 +472,26 @@ def create_history(name:str)-> list:
 
     return averages
 
-def occupancy_function (data:pd.DataFrame, city_name):
+def occupancy_function (data:pd.DataFrame, location_name) -> html.Div:
+    """
+    This Function returns the occupancy for one location.
+
+    Parameters
+    ----------
+    data: The Dataframe storring the data of the location.
+
+    location_name: The name of the location for which the occupancy is returned
+
+    Returns
+    -----------
+    The occupancy of the location as a html.Div
+    """
     result = "test"
     for i in range (len(data)):
         occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
         one = occupancy.iloc[len(occupancy)-1] # getting the last row of the dataframe which is representing the currenct occupancys
         one_location_previous = data.iloc[i] # data of one location
-        if city_name == one_location_previous[0]:            
+        if location_name == one_location_previous[0]:            
             one_occupancy = one[one_location_previous[0]].split(",") # the occupancy information of the locations
             result = one_occupancy[1][:-1].replace("'", "")
             if result == " wenige vorhanden":
