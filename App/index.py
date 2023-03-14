@@ -159,7 +159,7 @@ def count_active_filters():
     """
     filters = 0
     for c in glob_vars.current_filter:
-        if glob_vars.current_filter[c] != None and glob_vars.current_filter[c] != "":
+        if glob_vars.current_filter[c] != None and glob_vars.current_filter[c] != "" and glob_vars.current_filter[c] != []:
             filters += 1
 
     return filters
@@ -614,7 +614,13 @@ def choose_correct_update(*args):
         glob_vars.reset_global_filter()
         #return refreshed layout with new data and empty value list for inputs
         sidebar_values = [None for x in sidebar_values]
-
+    elif triggered_id == "refresh_page" or triggered_id == "auto_refresh_interval":
+        try:
+            glob_vars.reset_data()
+            filter_data()
+            update_occupancies()
+        except:
+            glob_vars.curr_error = Exception("Error while updating page! Check filter_data() or update_occupancies().")
     elif triggered_id == "sideboard_price_filter" or triggered_id == "sideboard_occupancy_filter" or triggered_id == "sideboard_name_filter":
         #sidebar filter triggered
 
@@ -654,22 +660,23 @@ def choose_correct_update(*args):
     else:
         err_var = 0
 
+    s_val = []
+    for s in sidebar_characs:
+        if type(glob_vars.current_filter[s]) != list:
+            s_val.append(glob_vars.current_filter[s])
+        else:
+            s_val.append(None)
 
     num_filters = count_active_filters()
     filter_string = "Filters active: " + str(num_filters)
 
     if page_name == "/list_page":
-        return (filter_string, err_var, 1, dash.no_update) + tuple(sidebar_values)
+        return (filter_string, err_var, 1, dash.no_update) + tuple(s_val)
     elif page_name == "/map_page":
-        return (filter_string, err_var, dash.no_update, 1) + tuple(sidebar_values)
+        return (filter_string, err_var, dash.no_update, 1) + tuple(s_val)
     else: #error or page not accounted for
         raise PreventUpdate
         #raise ValueError("A Page is not accounted for in the update method")
-
-
-
-
-
 
 
 
