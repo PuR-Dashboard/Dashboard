@@ -804,6 +804,11 @@ def delete_location(yes, no):
     n_clicks on the button_control:
         always 0 to trigger the function security_observer.
 
+    Raises
+    ------
+    Exception
+        If an error occurs while deleting or filtering the data.
+
     """
     #id of row to be deleted => only in currently displayed data, not necessarily global row id!!!
     triggered_id = ctx.triggered_id["index"]
@@ -816,12 +821,15 @@ def delete_location(yes, no):
     #get location of row to delete -> to figure out position of row in global data
     row_to_delete = glob_vars.data.iloc[[triggered_id]]
     location_to_delete = row_to_delete["location"].values[0]
-
-    remove_location(location_to_delete)
-
-    #renew global data
-    glob_vars.reset_data()
-    filter_data()
+    try:
+        remove_location(location_to_delete)
+    
+        #renew global data
+        glob_vars.reset_data()
+        filter_data()
+    except:
+        glob_vars.curr_error = Exception("Error while deleting a location!")
+        glob_vars.reset_data()
 
     #return confirmation of deletion and second return 0 to close security window
     return 1, 0
@@ -931,6 +939,11 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,*params):
     edit_controller_is_open:
         Whether the edit window should be open/visibe.
 
+    Raises
+    ------
+    Exception
+        If an error occurs while editing the data.
+
     """
 
     triggered_id = ctx.triggered_id
@@ -952,7 +965,10 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,*params):
     # if the apply button was pressed the edit window closes and the data updates
     elif triggered_id["type"] == "edit_submit_button" :
         none_list = [None for x in characs]
-        edit_data(params[:-1],triggered_id.index)
+        try:
+            edit_data(params[:-1],triggered_id.index)
+        except:
+            glob_vars.curr_error = Exception("Error while editing the data.")
         return (not params[-1],1) + tuple(none_list)
     else:
         raise PreventUpdate
