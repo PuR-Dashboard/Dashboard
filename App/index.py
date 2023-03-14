@@ -150,7 +150,7 @@ def define_outputs_add_loction(special_ones:list)-> list:
 
 def count_active_filters():
     """
-    determine the number of currently applied filters
+    This function determines the number of currently applied filters.
 
     Returns
     -------
@@ -167,7 +167,7 @@ def count_active_filters():
 
 def define_inputs_advanced_filter(special_ones:list)-> list:
     """
-    This function creates a list of all inpus for the callback to conduct the advanced filter.
+    This function creates a list of all inputs for the callback to conduct the advanced filter.
 
     Parameters
     ----------
@@ -237,6 +237,7 @@ def check_csv_validity(temp_df: pd.DataFrame) -> bool:
     -------
     valid:
         Whether the DataFrame based all the conditions.
+
     """
 
     #columns do not match
@@ -472,12 +473,13 @@ def add_new_location(_1, _2, _3, URL_value, *params):
         The state of the add_location_popup(visble or invisible).
 
     modal_field_warning:
+        Error message if a mandatory input is missing.
 
-
-    modal_add_location_url
+    modal_add_location_url:
+        The URl of the location should be added.(Mandatory Field)
 
     modal_add_location_name
-
+        The name of the location should be added.(Mandatory Field)
     """
 
     #get characteristics from data
@@ -583,6 +585,12 @@ def choose_correct_update(*args):
 
     sideboard_name_filter, sideboard_address_filter, sideboard_occupancy_filter, sideboard_price_filter :
         The value which was typed in the dash components to the corresponding filters for further functions.
+
+
+    Raises
+    ------
+    Exception
+        If an error occurs while filtering the data.
     """
 
     triggered_id = ctx.triggered_id
@@ -716,6 +724,11 @@ def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
 
     rest:
         All the values of the charachteritsics to use them for further functions.
+
+    Raises
+    ------
+    Exception
+        If an error occurs while filtering the data.
     """
 
     #get origin of callback
@@ -837,6 +850,12 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
 
     "modal_import_warning:
         A lettering describing that a error occured. It is only visible if onne of the conditions are not valified.
+
+    Raises
+    ------
+    Exception
+        If an error occurs while parsing the imported content.
+        If an error occurs in the main process (checking for validity, integrating them in the current data)
     """
 
     triggered_id = ctx.triggered_id
@@ -966,8 +985,9 @@ def open_browser():
     if not os.environ.get("WERKZEUG_RUN_MAIN"):
         webbrowser.open_new('http://localhost:8050/')
 
+#-------------------------------------------------------
 
-# Run the app on localhost:8050
+#----Run the app on localhost:8050-----------------------
 if __name__ == '__main__':
     #parse up to date occupancies
     update_occupancies()
@@ -975,3 +995,5 @@ if __name__ == '__main__':
     Timer(1, open_browser).start()
     #run app
     app.run_server(host="0.0.0.0", debug=True)
+
+#----------------------------------------------------
