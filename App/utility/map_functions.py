@@ -14,6 +14,7 @@ import branca
 from utility.data_functions import *
 import pages.global_vars as glob_vars
 from pages.list_page import create_history
+import pyautogui
 
 
 
@@ -55,8 +56,8 @@ def screensize()-> list:
     width and height of the screen
     """
 
-    # return pyautogui.size()
-    return (1920, 1080)  # Returns a tuple of (width, height)
+    return pyautogui.size()
+    # return (1920, 1080)  # Returns a tuple of (width, height)
 
 
 def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
@@ -310,11 +311,11 @@ def update(data:pd.DataFrame,m:folium.Map)-> folium.Map:
     marker(markers,m, tooltips)
 
     # creating and adding the draw areas of the locations
-    einzugsgebiete = MarkerCluster(name ='Einzugsgebiete', show = False).add_to(m) # cluster to safe all the draw areas
-    gebiete = []
+    areas_of_usage = MarkerCluster(name ='Area of usage', show = False).add_to(m) # cluster to safe all the draw areas
+    areas = []
     for i in range (len(data)):
-        gebiete.append([data.iloc[i][2], data.iloc[i][1],define_radius()])
-    create_drawing_areas(gebiete,einzugsgebiete)
+        areas.append([data.iloc[i][2], data.iloc[i][1],define_radius()])
+    create_drawing_areas(areas,areas_of_usage)
 
     #adding the layer Controler for the draw areas to the map
     folium.LayerControl().add_to(m)
