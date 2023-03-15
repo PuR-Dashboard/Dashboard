@@ -243,7 +243,7 @@ def update_layout(*args):
     triggered_id = ctx.triggered_id # the id of the triggered input
 
     if triggered_id == "refresh_page": # if the function was triggered by the component "refresh_page" the data should be reseted
-        glob_vars.reset_data()
+        #glob_vars.reset_data()
         create_html_map(glob_vars.data)
 
     # the page should be recreated any way

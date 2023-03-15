@@ -295,6 +295,9 @@ def filter_content(df: pd.DataFrame, filter_dict:defaultdict) -> pd.DataFrame:
 
             if type(oc) != list:
                 oc = [oc]
+            else:
+                if len(oc) == 0:
+                    continue
 
             df = filter_for_list(df, "location", get_occupancy_list_from_vals(oc), filter_occupancy=True)
 
