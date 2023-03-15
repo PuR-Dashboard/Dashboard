@@ -1,15 +1,7 @@
 import os
-import sys
 import folium
-from folium import plugins
 from folium.plugins import MarkerCluster
-import json
-import requests
 import pandas as pd
-from pandas import read_csv
-import csv
-import ctypes
-from dash import Input, Output, State, html
 import branca
 from utility.data_functions import *
 import pages.global_vars as glob_vars
