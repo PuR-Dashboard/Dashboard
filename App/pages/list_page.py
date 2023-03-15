@@ -162,69 +162,69 @@ def create_edit_window(index:int)-> dbc.Modal:
 
                     dbc.Label("Type of Facility:",style = {"margin-top":"5%", "weight":"bold"}),
                     dcc.Dropdown(
-                                    options=[
+                                    options=[#options visalized as a dropdown
                                         {'label': 'car park', 'value': 'car park'},
                                         {'label': 'separate area', 'value': 'separate area'},
                                         {'label': 'at the edge of the road / on the road', 'value': 'at the edge of the road / on the road'},
                                     ],
-                                    placeholder="edit type of facility",
-                                    id={"type":"edit_kind", "index":index},
+                                    placeholder="edit type of facility",  #the text which is vialized as long as nothing is choosen
+                                    id={"type":"edit_kind", "index":index}, # individuell id of this component
                                 ),
 
                     dbc.Label("Number of Parking Lots (class):",style = {"margin-top":"5%", "weight":"bold"}),
                     dcc.Dropdown(
-                        options=[
+                        options=[#options visalized as a dropdown
                             {'label': '1-25', 'value': '1-25'},
                             {'label': '25-50', 'value': '25-50'},
                             {'label': '50-100', 'value': '50-100'},
                             {'label': '100-200', 'value': '100-200'},
                             {'label': '200-1200', 'value': '200-1200'},
                         ],
-                        placeholder="edit number of parking lots",
-                        id={"type":"edit_number_parking_lots", "index":index}
+                        placeholder="edit number of parking lots",  #the text which is vialized as long as nothing is choosen
+                        id={"type":"edit_number_parking_lots", "index":index} # individuell id of this component
                     ),
 
                     dbc.Label("Max. Price per Day (\u20ac):",style = {"margin-top":"5%"}),
                     dbc.Input(
-                        id={"type":"edit_price", "index":index},
+                        id={"type":"edit_price", "index":index}, # individuell id of this component
                         type="number",  # Set the type of the input field to text
                         debounce=False,  # Set the debounce-attribute of the input field to True
-                        placeholder="edit price in \u20ac",
+                        placeholder="edit price in \u20ac",  #the text which is vialized as long as nothing is choosen
                         value=None  # Set the value of the input field to an empty string
                     ),
 
                     dbc.Label("Public Transport Accessibility:",style = {"margin-top":"5%"}),
                     dbc.Input(
-                                    id={"type":"edit_public_transport", "index":index},
+                                    id={"type":"edit_public_transport", "index":index}, # individuell id of this component
                                     type="text",  # Set the type of the input field to text
                                     debounce=False,  # Set the debounce-attribute of the input field to True
-                                    placeholder="edit public transport accessibility",
+                                    placeholder="edit public transport accessibility",  #the text which is vialized as long as nothing is choosen
                                     value=None  # Set the value of the input field to an empty string
                     ),
 
                     dbc.Label("Road Network Connection:",style = {"margin-top":"5%"}),
                     dcc.Dropdown(
-                        options=[
+                        options=[ #options visalized as a dropdown
                             {'label': 'superordinate network within the city (interstate)', 'value': 'superordinate network within the city (interstate)'},
                             {'label': 'superordinate network out of town (interstate)', 'value': 'superordinate network out of town (interstate)'},
                             {'label': 'subordinate network in the city', 'value': 'subordinate network in the city'},
                             {'label': 'subordinate network out of town', 'value': 'subordinate network out of town'},
                         ],
-                        placeholder="edit connection",
-                        id={"type":"edit_road_network_connection", "index":index},
+                        placeholder="edit connection",  #the text which is vialized as long as nothing is choosen
+                        id={"type":"edit_road_network_connection", "index":index}, # individuell id of this component
                     ),
 
                     dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"5%"}),
                     dcc.Dropdown(
-                        options=[
+                        options=[ #options visalized as a dropdown
                             {'label': 'green spaces', 'value': 'green spaces'},
                             {'label': 'living spaces', 'value': 'living spaces'},
                             {'label': 'industrial areas', 'value': 'industrial areas'},
                             {'label': 'industrial parks', 'value': 'industrial parks'},
                             {'label': 'mixed areas', 'value': 'mixed areas'},
                         ],
-                        placeholder="edit surrounding infrastructure",
-                        id={"type":"edit_surrounding_infrastructure", "index":index},
+                        placeholder="edit surrounding infrastructure",  #the text which is vialized as long as nothing is choosen
+                        id={"type":"edit_surrounding_infrastructure", "index":index}, # individuell id of this component
                     ),
 
 
@@ -273,12 +273,12 @@ def create_content(df: pd.DataFrame)-> tuple[list[str], list[str]]:
 
     content = []
     names = []
+
     #iterate through data
-    #save location names and characteristic values
     for i in range(len(df)):
         row = df.iloc[[i]]
 
-        names.append(row["location"].values[0])
+        names.append(row["location"].values[0]) #save location names
 
         inhalt = []
         for c in cols:
@@ -287,7 +287,7 @@ def create_content(df: pd.DataFrame)-> tuple[list[str], list[str]]:
             inhalt.append(mini)
             inhalt.append(html.Br())
 
-        content.append(inhalt)
+        content.append(inhalt) # save the characteristic values
 
     return names, content
 
@@ -318,12 +318,13 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
     occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
     one = occupancy.iloc[len(occupancy)-1] # getting the last row of the dataframe which is representing the currenct occupancys
 
-    #adding the occupancy and the tendencyto the table
-    for i in range (len(data)):
 
+    for i in range (len(data)):
         one_location_previous = data.iloc[i] # data of one location
         one_occupancy = one[one_location_previous[0]].split(",") # the occupancy information of the locations
         this_occupancy = one_occupancy[1][:-1].replace("'", "")
+
+        #trasnforming the occupany values in english
         if this_occupancy == " wenige vorhanden":
             this_occupancy = "medium occupancy"
         if this_occupancy == " keine vorhanden":
@@ -331,16 +332,19 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
         if this_occupancy == " ausreichend vorhanden":
             this_occupancy = "low occupancy"
 
+        #trasnforming the occupancy tendencys in english
         tendency = "increasing" if (one_occupancy[0][1:] == "'zunehmend'") else ("decreasing" if (one_occupancy[0][1:] == "'abnehmend'")else "constant")
+
+        #adding the occupancy and the tendencyto the table
         if content[0] == one_location_previous[0]:
             rows.append(html.Tr([html.Td("occupancy"), html.Td(this_occupancy)]))
             rows.append(html.Tr([html.Td("occupancy tendency"), html.Td(tendency)]))
 
 
-    #adding the characteristics to the table
+    #generating the labels of the charachteritsics
     underscored_charakter = define_chracteristics()
 
-    #remove the underscores
+    #remove the underscores and transforming some labels of the characteristics
     charakter = []
     for c in underscored_charakter:
         splitted_c = c.split("_")
@@ -352,18 +356,14 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
         if(new_c == "number parking lots"):
             new_c = "number of parking lots (class)"
 
-
-
         charakter.append(new_c)
 
-
+    #adding the characteristics to the table
     for i in range (len(charakter)):
         rows.append(html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]))
 
 
-
-    #add icons
-
+    #generating the table based on the rows
     table_body = [html.Tbody(rows)]
 
     table_1 = dbc.Table(table_header + table_body, borderless=False, hover=False, style = {"width":"100%"})
@@ -391,6 +391,7 @@ def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
     "": ["Monday","Tuesday", "Wednesday", "Thursday","Friday", "WE"],
     "occupancy rate": [content[0],content[1],content[2],content[3],content[4],content[5]]
     })
+
     #graph components
     fig = px.bar(df, x="", y="occupancy rate")
     fig.add_hline(y=1,line_color="lightblue",  annotation_text="<b>high occupancy</b>")
@@ -440,6 +441,7 @@ def create_history(name:str)-> list:
     """
 
     occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
+
     #create an array for each day of the week
     monday = []
     tuesday = []
@@ -453,7 +455,7 @@ def create_history(name:str)-> list:
         return [-1,-1,-1,-1,-1,-1]
 
     # iterate through the data
-    #!!!!!!!!!!!!!!!!!!!!!! ab 21, weil da erst die neuen Occupancy daten anfangen
+    #!!!!!!!!!!!!!!!!!!!!!! starting at 21 because the occupancy data format changed
     for i in range (21,len(occupancy)):
 
         #getting the occupancy values for each row
@@ -510,35 +512,51 @@ def create_history(name:str)-> list:
 
             else:
                 averages.append(sum(all[i])/len(all[i]))
-    
+
     return averages
 
 
 def occupancy_function (data:pd.DataFrame, location_name) -> html.Div:
     """
     This Function returns the occupancy for one location.
+
     Parameters
     ----------
-    data: The Dataframe storring the data of the location.
-    location_name: The name of the location for which the occupancy is returned
+    data:
+        The Dataframe storring the data of the location.
+
+    location_name:
+        The name of the location for which the occupancy is returned
+
     Returns
     -----------
     The occupancy of the location as a html.Div
     """
     result = "test"
+
     for i in range (len(data)):
+
         occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
+
         one = occupancy.iloc[len(occupancy)-1] # getting the last row of the dataframe which is representing the currenct occupancys
+
         one_location_previous = data.iloc[i] # data of one location
-        if location_name == one_location_previous[0]:            
-            one_occupancy = one[one_location_previous[0]].split(",") # the occupancy information of the locations
+
+        if location_name == one_location_previous[0]:
+            # transforming the occupancy information of the locations in a useable format
+            one_occupancy = one[one_location_previous[0]].split(",")
             result = one_occupancy[1][:-1].replace("'", "")
+
+            #generating the occupancy information in english behind the headers of the collapse
             if result == " wenige vorhanden":
                 result = html.Div("medium occupancy", style = {"color":"orange"})
+
             if result == " keine vorhanden":
                 result = html.Div("high occupancy", style = {"color":"red"})
+
             if result == " ausreichend vorhanden":
                 result = html.Div("low occupancy", style = {"color":"green"})
+
     return result
 
 
@@ -564,14 +582,15 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
     #init list of components
     html_list = []
 
-
+    #catch the case, if there are no content values
     if (content == [-1,-1,-1,-1,-1,-1]):
         return None
 
 
     #iterate through names(names and content must have the same length)
     for i in range(len(names)):
-        #append header of location
+
+        #append header of location ad the buttons for some functionalities
         html_list.append(dbc.CardHeader([dbc.Button(
                    [html.Div([ html.B(names[i]), occupancy_function(data, names[i])], style={ "text-align" : "left"})],
                     color="outline",
@@ -583,7 +602,7 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
                    dbc.Button([FA_icon_Arrow, ""], id={"type":"arrow_button", "index" :i}, className = "pull-right" ,style = ARR_BUTTON_STYLE)
                    ], style = {"width":"87%"}))
 
-                #append collapsible content
+        #append collapsible content
         html_list.append(dbc.Collapse(
             [
                 html.Div(
@@ -594,13 +613,16 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
                         style ={"height":"auto", "width":"auto","marginRight":"1%", "marginLeft": "auto", "marginTop": "6%","horizontalAlign": "right"})),
                     ],
                     style ={"width": "auto", "marginLeft": "1%"}),
+
                     #plot directly under the table
                     dbc.CardBody(create_plot(create_history(names[i])),style ={"width": "auto","height":"auto", "color": "#F0F8FF"}),
 
                     ],
-                style={"width":"calc(100vw - 260px)","overflow": "scroll", "height": "calc(100vh - 120px)"}
+                style={"width":"calc(100vw - 260px)","overflow": "scroll", "height": "calc(100vh - 120px)"} # styling of the collapse
                 ),
-            create_edit_window(i), create_security_window(names[i], i), html.Div(id={"type":"edit_controller", "index":i}, style={"display":"none"}),
+
+            create_edit_window(i), create_security_window(names[i], i), # creating functionality windows
+            html.Div(id={"type":"edit_controller", "index":i}, style={"display":"none"}),
             html.Div(id={"type":"security_id_transmitter", "index":i}, style={"display":"none"}),
 
 
@@ -610,12 +632,12 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
             style={"background-color":"#e6e6e6"},
 
         ))
-    #in case no name sare given(normally means filtering was unsuccessful)
+    #in case no names are given(normally means filtering was unsuccessful)
     if len(names) == 0:
         html_list.append(html.H3("No results found!"))
         html_list.append(html.Hr())
 
-    #html_list.append(sid)
+    #appending placeholders
     html_list.append(
                 #placeholder div for output of location delete
                 html.Div(id="placeholder_div_delete_list", style={"display":"none"}))
@@ -623,12 +645,7 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
                     html.Div(id="placeholder_div_edit", style={"display":"none"}))
     return html_list
 
-#create headers and content
-names, content = create_content(glob_vars.data)
-#create new layout
-html_list_for_layout = create_layout(glob_vars.data, names, content)
 
-layout = html.Div(children=html_list_for_layout, id="list_layout", style = CONTENT_STYLE)
 
 
 
@@ -645,12 +662,15 @@ def edit_data(changed_data:list[str],index:int)-> None:
         The index of the location.
 
     """
-    #get data
+    #get the data
     temp_data = get_data("Characteristics.csv")
+
     characteristics = define_chracteristics()
-    #location to edit
+
+    #location to be edited
     location = glob_vars.data.iloc[index]["location"]
-    #search for global index of location to edit 
+
+    #search for global index of location to edit
     for i in range (len(temp_data)):
         if temp_data.iloc[i]["location"] == location:
             position = i
@@ -663,10 +683,13 @@ def edit_data(changed_data:list[str],index:int)-> None:
 
     #write new data into correct row
     for i  in range(len(characteristics)):
+
+        # if nothing was changed
         if changed_data[i] == None:
             array.append(np.squeeze(temp_data.iloc[position][characteristics[i]]))
             dic[characteristics[i]] = np.squeeze(temp_data.iloc[position][characteristics[i]])
 
+        #if something should be changed about the data
         else:
             dic[characteristics[i]] = changed_data[i]
             array.append(changed_data[i])
@@ -698,6 +721,7 @@ def define_inputs_edit(special_ones:list)->list:
         inputs.append(one)
 
     characteristics= define_chracteristics()
+
     #make characs according to naming scheme
     for characs in characteristics:
         inputs.append(Input({"type": "edit_"+characs, "index": MATCH}, 'value'))
@@ -727,6 +751,7 @@ def define_outputs_edit(special_ones:list)->list:
         outputs.append(one)
 
     characteristics= define_chracteristics()
+
     #make characs according to naming scheme
     for characs in characteristics:
         outputs.append(Output({"type": "edit_"+characs, "index": MATCH}, 'value'))
@@ -748,8 +773,10 @@ def refresh_layout() -> list:
     #filter on renewed data
     glob_vars.reset_data()
     filter_data()
+
     #create names and content of collapsibles
     names, content = create_content(glob_vars.data)
+
     #make new layout
     layout = create_layout(glob_vars.data,names, content)
 
@@ -858,9 +885,11 @@ def delete_location(yes, no):
     #get location of row to delete -> to figure out position of row in global data
     row_to_delete = glob_vars.data.iloc[[triggered_id]]
     location_to_delete = row_to_delete["location"].values[0]
+
+    #tries to remove the location
     try:
         remove_location(location_to_delete)
-    
+
         #renew global data
         glob_vars.reset_data()
         filter_data()
@@ -1001,12 +1030,17 @@ def open_edit_window(n_clicks_edit,n_clicks_submit,*params):
 
     # if the apply button was pressed the edit window closes and the data updates
     elif triggered_id["type"] == "edit_submit_button" :
+
         none_list = [None for x in characs]
+
         try:
             edit_data(params[:-1],triggered_id.index)
         except:
             glob_vars.curr_error = Exception("Error while editing the data.")
+
         return (not params[-1],1) + tuple(none_list)
+
+
     else:
         raise PreventUpdate
 
@@ -1044,5 +1078,16 @@ def update_layout(*args):
     triggered_id = ctx.triggered_id
 
     return refresh_layout()
+
+#---------------------------------------------
+
+#----------creating the layout of the list_page---------
+
+#create headers and content
+names, content = create_content(glob_vars.data)
+
+#create new layout
+html_list_for_layout = create_layout(glob_vars.data, names, content)
+layout = html.Div(children=html_list_for_layout, id="list_layout", style = CONTENT_STYLE)
 
 #---------------------------------------------

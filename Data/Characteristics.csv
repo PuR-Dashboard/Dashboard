@@ -1,4 +1,4 @@
 ﻿location,lat,lon,address,administration,kind,number_parking_lots,price,public_transport,road_network_connection,surrounding_infrastructure
 Heidelberg,8.675259999999998,49.40572,An der Wiese 32,no,separate area,200-1200,1.5,"S1, S2, S5",superordinate network within the city (interstate),living spaces
-Bamberg,10.8998399999999993,49.9017499999999998,Bambergstr. 23,yes,car park,25-50,5,70,superordinate network out of town (interstate),living spaces
-Eberbach,8.98316,49.46584,Eberadresse 1,yes,separate area,25-50,1,Bus 10,superordinate network out of town (interstate),green spaces
+Bamberg,10.8998399999999993,49.9017499999999998,Bambergstr. 23,yes,car park,25-50,5,Bus 70,superordinate network out of town (interstate),living spaces
+Eberbach,8.98316,49.46584,Eberadresse 1,yes,separate area,25-50,1,Bus 10,subordinate network in the city,green spaces

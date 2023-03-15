@@ -127,6 +127,7 @@ def define_outputs_add_loction(special_ones:list)-> list:
 
 
     outputs = []
+
     #append non standard outputs to list
     for one in special_ones:
         outputs.append(one)
@@ -152,7 +153,9 @@ def count_active_filters():
 
     #count number of filters
     filters = 0
+
     for c in glob_vars.current_filter:
+
         #if filters are empty, empty string or list there are no filter values
         if glob_vars.current_filter[c] != None and glob_vars.current_filter[c] != "" and glob_vars.current_filter[c] != []:
             filters += 1
@@ -181,6 +184,7 @@ def define_inputs_advanced_filter(special_ones:list)-> list:
         inputs.append(one)
 
     characteristics= define_chracteristics()
+
     #apppend characteristics according to naming scheme
     for characs in characteristics:
         if(characs == "public_transport"):
@@ -212,6 +216,7 @@ def define_outputs_advanced_filter(special_ones:list)->list:
         outputs.append(one)
 
     characteristics= define_chracteristics()
+
     #append characteristics ouputs acording to naming scheme
     for characs in characteristics:
 
@@ -242,15 +247,18 @@ def check_csv_validity(temp_df: pd.DataFrame) -> bool:
 
     """
 
-    #if columns do not match
+    #check that location name exists for every row
     try:
         for tv, v in zip(list(temp_df.columns.values), list(glob_vars.data.columns.values)):
             if tv != v:
                 return False
+
     except Exception as e:
         return False
-    #check that location name exists for every row
+
+
     location_names = list(temp_df["location"])
+
     #check for duplicates
     temp_set = set(location_names)
     if len(temp_set) != len(location_names):
@@ -285,7 +293,7 @@ def check_json_validity(json_object:dict[str:str], csv_locations: list[str]) -> 
         Whether the DataFrame based all acceptance criteria.
     """
 
-    #check that every location has link
+    #check that every location has a link
     for l in csv_locations:
         if l not in json_object:
             return False
@@ -314,17 +322,20 @@ def parse_contents(contents, filename:str):
     Exception
         If an error occurs while reading the file.
     """
-    #parse file
+    #transforming the content in a useable format
     content_type, content_string = contents.split(',')
     decoded = base64.b64decode(content_string)
+
+    #trying to parse the file
     try:
         if '.csv' in filename:
             # Assume that the user uploaded a CSV file
-            df = pd.read_csv(
-                io.StringIO(decoded.decode('utf-8')))
+            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+
         elif '.json' in filename:
             # Assume that the user uploaded an excel file
             df = json.loads(decoded)
+
         else:
             df = None
 
@@ -363,8 +374,10 @@ def display_page(pathname):
 
     if pathname == '/map_page':  # If the URL is map_page
         return map_page.layout, pathname  # Return the layout of the map page
+
     if pathname == '/list_page':  # If the URL is list_page
         return list_page.layout, pathname  # Return the layout of the list page
+
     else:  # If the URL is not map_page or list_page
         return map_page.layout, "/map_page"  # Return the layout of the map page
 
@@ -403,17 +416,22 @@ def error_modal_handling(message, clicks, state):
     """
 
     triggered_id = ctx.triggered_id
+
     #close modal and reset error label
     if triggered_id == "modal_error_ok_button":
         return not state, "Unidentified Error"
+
     elif triggered_id == "placeholder_error_message":
         #no error triggered
         if message == 0:
             glob_vars.curr_error = None
             return False, dash.no_update
+
         else: #positive number means that the error message is in global error and can be printed
+
             if glob_vars.curr_error == None:
                 return not state, "Unidentified Error"
+
             #reset global error
             temp = glob_vars.curr_error
             glob_vars.curr_error = None
@@ -510,8 +528,8 @@ def add_new_location(_1, _2, _3, URL_value, *params):
     elif triggered_id == "open_modal_add_location_button" :
         return (dash.no_update, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
     elif triggered_id == "modal_add_location_submit_button" :
+
         #check if URL and name are given
-        #url must be given
         if URL_value == None or URL_value == "":
             return (dash.no_update, modal_state, {"display":"block", "color":"red"}, URL_value) + tuple(characs)
 
@@ -521,7 +539,6 @@ def add_new_location(_1, _2, _3, URL_value, *params):
 
         #make dictionary for function
         add_dictionary = {}
-
         for c, charac in zip(characs, characteristics):
             add_dictionary[charac] = c
 
@@ -532,8 +549,8 @@ def add_new_location(_1, _2, _3, URL_value, *params):
         except:
             glob_vars.curr_error = Exception("Error when adding a new location or updating the occupancy details in datta_functions.py. Check API Links or Location specifics.")
 
-
         return (1, not modal_state, {"display":"none", "color":"red"}, None, None) + tuple([None for x in characs[1:]])
+
     else:
         raise PreventUpdate
 
@@ -607,33 +624,35 @@ def choose_correct_update(*args):
     #num is amount of sidebar elements that are quickfilter, i.e. the last num inputs of this callback
     num = 3
     sidebar_values = args[-num:]
+
     # index of callback input for
-
-
     if triggered_id == "clear_filter_button":
         #reset data and filter dictionary
         glob_vars.reset_data()
         glob_vars.reset_global_filter()
         #return refreshed layout with new data and empty value list for inputs
         sidebar_values = [None for x in sidebar_values]
+
+
     elif triggered_id == "refresh_page" or triggered_id == "auto_refresh_interval":
+        #reseting the data, updatingthe occupancy and keeping the filter
         try:
             glob_vars.reset_data()
             filter_data()
             update_occupancies()
         except:
             glob_vars.curr_error = Exception("Error while updating page! Check filter_data() or update_occupancies().")
-    elif triggered_id == "sideboard_price_filter" or triggered_id == "sideboard_occupancy_filter" or triggered_id == "sideboard_name_filter":
-        #sidebar filter triggered
 
+    #sidebar filter triggered
+    elif triggered_id == "sideboard_price_filter" or triggered_id == "sideboard_occupancy_filter" or triggered_id == "sideboard_name_filter":
         #first reset data
         glob_vars.reset_data()
+
         #check for error
         assert len(sidebar_characs) == len(sidebar_values), "Number of filter inputs in sidebar and hardcoded characteristics must be equal"
 
         #add filter values to dictionary
         for s, val in zip(sidebar_characs, sidebar_values):
-
             if val == "":
                 val = None
 
@@ -644,16 +663,20 @@ def choose_correct_update(*args):
         try:
             filter_data()
         except Exception as e:
+
             #set error messaage
             glob_vars.curr_error = e
             error_occurred = True
+
             #reset filters
             for s, val in zip(sidebar_characs, sidebar_values):
                 glob_vars.current_filter[s] = None
+
             #restore data
             filter_data()
             sidebar_values = [None for x in sidebar_values]
-    #glob_vars.curr_error = Exception()
+
+
     #check if error has happened
     if glob_vars.curr_error != None:
         if str(glob_vars.curr_error) == "":
@@ -662,7 +685,7 @@ def choose_correct_update(*args):
     else:
         err_var = 0
 
-    #make return values for sideboard filters and count number of filters
+    #make return values for sideboard filters and
     s_val = []
     for s in sidebar_characs:
         if type(glob_vars.current_filter[s]) != list:
@@ -670,16 +693,18 @@ def choose_correct_update(*args):
         else:
             s_val.append(None)
 
+    #count number of active filters
     num_filters = count_active_filters()
     filter_string = "Filters active: " + str(num_filters)
 
+    #choosing which page we are currently on
     if page_name == "/list_page":
         return (filter_string, err_var, 1, dash.no_update) + tuple(s_val)
     elif page_name == "/map_page":
         return (filter_string, err_var, dash.no_update, 1) + tuple(s_val)
     else: #error or page not accounted for
         raise PreventUpdate
-        #raise ValueError("A Page is not accounted for in the update method")
+
 
 
 
@@ -746,9 +771,10 @@ def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
 
     #list of characteristics according to data
     characteristics = list(glob_vars.data.columns.values)
-    #latitude and longitude not given by pop up
+
+    #latitude and longitude and the public transport are not possible to change
     non_changeable = ["lat", "lon","public_transport"]
-    #remove lat and lon from characteristics
+    #remove the non_changeable from characteristics
     for n in non_changeable:
         if n in characteristics:
             characteristics.remove(n)
@@ -762,19 +788,21 @@ def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
 
     #create list in case of filter reset
     empty_ret_list = [None]
-
     for c in characteristics:
         empty_ret_list.append(None)
 
     #if cancel filter of modal, renew all inputs in advanced filter
     if triggered_id == "modal_filter_cancel_button" :
         return (0, not modal_state,) + tuple(empty_ret_list)
+
+
     #if apply button of modal, apply filters and keep values in input fields
     elif triggered_id == "modal_filter_submit_button" :
+
         #rest data to filter on all data available
         glob_vars.reset_data()
+
         #insert occupancy values to filter dict
-        #occupancy not in characteristics csv therefore seperate assignment
         glob_vars.current_filter["occupancy"] = occupancy_vals
 
         #if characteristic is None, remove from filter dict(so no residual values from previous filters are used)
@@ -790,8 +818,11 @@ def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
             filter_data()
         except:
             glob_vars.curr_error = Exception("Error when filtering with advanced filter!")
+
         #return confirmation to filter placeholder, modal state and input values
         return (1, not modal_state, occupancy_vals) + tuple(characs)
+
+
     #if button to open modal was pressed
     elif triggered_id == "advanced_filter_button" :
         characs = list(characs)
@@ -799,13 +830,12 @@ def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
         #assign existing characteristics from filter dictionary to the input fields to "keep" existing filters
         for i in range(len(characs)):
             key = characteristics[i]
-
-
-
             characs[i] = glob_vars.current_filter[key]
 
         #return no confirmation, open modal and existing input values
         return (dash.no_update, not modal_state, glob_vars.current_filter["occupancy"]) + tuple(characs)
+
+
     else:
         raise PreventUpdate
 
@@ -878,12 +908,16 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
         glob_vars.temp_csv = None
         glob_vars.temp_json = None
         return not modal_state, None, None, ""
+
+
     elif triggered_id == "upload_import_files":
+
         #if too many files were passed, either simultaneously or both places for the files are already occupied
         if len(contents) > 2:# or (glob_vars.temp_csv != None and glob_vars.temp_json != None):
             glob_vars.temp_csv = None
             glob_vars.temp_json = None
             return modal_state, csv_val, json_val, "Too many files uploaded!"
+
 
         #check if correct file types were uploaded
         admissible_types = [".json", ".csv"]
@@ -897,24 +931,28 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
 
         #iterate through uploaded files
         for c, f in zip(contents, filenames):
+
             try:
                 #read content from given file
                 df = parse_contents(c, f)
+
             except Exception as e: #exception at parse contents means wrong file type? maybe somewhere else?
                 glob_vars.curr_error = Exception("Error when parsing the files you uploaded!")
 
                 raise PreventUpdate
-                #return 1, False, None, None, ""
+
             #if json file then save json file and update check input
             if ".json" in f:
                 glob_vars.temp_json = df
                 json_val = f
-            #other option is csv
+
+            #if csv file then save csv file and update check input
             elif ".csv" in f:
                 glob_vars.temp_csv = df
                 csv_val = f
 
         return modal_state, csv_val, json_val, ""
+
 
     elif triggered_id == "modal_import_file_upload_button":
         #if one of the necessary files hasnt beent uploaded dont upload
@@ -947,6 +985,7 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
             #add new locations to characteristics csv
             #get all rows with location names of the new locations
             df_to_append = glob_vars.temp_csv.loc[glob_vars.temp_csv['location'].isin(new_locations)]
+
             #append new rows to old data
             temp_data = pd.concat([glob_vars.data, df_to_append])
             temp_data.reset_index(drop = True, inplace=True)
@@ -964,13 +1003,13 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
             #transfer links of new locations
             for l in new_locations:
                 json_decoded[l] = glob_vars.temp_json[l]
+
             #save json file
             with open(path_to_urls, 'w') as json_file:
                 json.dump(json_decoded, json_file)
 
             #add new locations to occupancy
             occupancy_df = get_data(name_of_csv="Occupancy.csv")
-
             for l in new_locations:
                 occupancy_df[l] = None
 
@@ -984,22 +1023,30 @@ def import_data_files(contents, csv_val, json_val, _n, _n2, _n3, filenames, moda
 
             #parse occupancy for each location again
             update_occupancies()
+
         except Exception as e:
             glob_vars.curr_error = e
 
-
         return not modal_state, None, None, ""
+
+
     else:
         raise PreventUpdate
 
-#function to automatically open dashboard in browser
+
 def open_browser():
+    """
+    This function automatically opens the dashboard in the browser,
+
+    """
     if not os.environ.get("WERKZEUG_RUN_MAIN"):
         webbrowser.open_new('http://localhost:8050/')
 
 #-------------------------------------------------------
 
 #----Run the app on localhost:8050-----------------------
+
+
 if __name__ == '__main__':
     #parse up to date occupancies
     update_occupancies()
