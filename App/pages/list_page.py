@@ -327,28 +327,22 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
     occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
     one = occupancy.iloc[len(occupancy)-1] # getting the last row of the dataframe which is representing the currenct occupancys
 
-    arrow_down = html.I(className="fa fa-arrow-down")
-    arrow_up = html.I(className="fa fa-arrow-up")
-    arrow_left = html.I(className="fa fa-arrow-left")
-
-
     for i in range (len(data)):
 
         one_location_previous = data.iloc[i] # data of one location
         one_occupancy = one[one_location_previous[0]].split(",") # the occupancy information of the locations
         this_occupancy = one_occupancy[1][:-1].replace("'", "")
         if this_occupancy == " wenige vorhanden":
-            this_occupancy = "medium occupancy"
+            this_occupancy = "few available"
         if this_occupancy == " keine vorhanden":
-            this_occupancy = "high occupancy"
+            this_occupancy = "no available"
         if this_occupancy == " ausreichend vorhanden":
-            this_occupancy = "low occupancy"
+            this_occupancy = "sufficient available"
 
-        arrow = arrow_up if (one_occupancy[0][1:] == "'zunehmend'") else (arrow_down if (one_occupancy[0][1:] == "'abnehmend'")else arrow_left)
+        occupancy_tendency = " increasing" if (one_occupancy[0][1:] == " zunehmend") else ("decreasing" if (one_occupancy[0][1:] == " abnehmend")else "stagnating")
         if content[0] == one_location_previous[0]:
             rows.append(html.Tr([html.Td("Occupancy"), html.Td(this_occupancy)]))
-            rows.append(html.Tr([html.Td("Occupancy Tendency"), html.Td(arrow)]))
-    #add icons
+            rows.append(html.Tr([html.Td("Occupancy Tendency"), html.Td(occupancy_tendency)]))
 
     table_body = [html.Tbody(rows)]
 
@@ -501,7 +495,32 @@ def create_history(name:str)-> list:
 
     return averages
 
-
+def occupancy_function (data:pd.DataFrame, location_name) -> html.Div:
+    """
+    This Function returns the occupancy for one location.
+    Parameters
+    ----------
+    data: The Dataframe storring the data of the location.
+    location_name: The name of the location for which the occupancy is returned
+    Returns
+    -----------
+    The occupancy of the location as a html.Div
+    """
+    result = "test"
+    for i in range (len(data)):
+        occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
+        one = occupancy.iloc[len(occupancy)-1] # getting the last row of the dataframe which is representing the currenct occupancys
+        one_location_previous = data.iloc[i] # data of one location
+        if location_name == one_location_previous[0]:            
+            one_occupancy = one[one_location_previous[0]].split(",") # the occupancy information of the locations
+            result = one_occupancy[1][:-1].replace("'", "")
+            if result == " wenige vorhanden":
+                result = html.Div("medium occupancy", style = {"color":"orange"})
+            if result == " keine vorhanden":
+                result = html.Div("high occupancy", style = {"color":"red"})
+            if result == " ausreichend vorhanden":
+                result = html.Div("low occupancy", style = {"color":"green"})
+    return result
 
 def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list:
     """
@@ -536,7 +555,7 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
     for i in range(len(names)):
         #append header of location
         html_list.append(dbc.CardHeader([dbc.Button(
-                    names[i],
+                   [html.B(names[i]), occupancy_function(data, names[i])],
                     color="outline",
                     id={"type":"header", "index":i},
                     value=i,

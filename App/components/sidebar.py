@@ -19,7 +19,7 @@ BUTTON_STYLE = { #style of the buttons in the sidebar
     "width": "10rem",
     "height": "3.5rem",
     "text-align":"center",
-    "background-color":"#b3b3b3",
+    "background-color":"white",
     "border": "black",
     "color": "black"
 }
