@@ -326,11 +326,11 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
         one_occupancy = one[one_location_previous[0]].split(",") # the occupancy information of the locations
         this_occupancy = one_occupancy[1][:-1].replace("'", "")
         if this_occupancy == " wenige vorhanden":
-            this_occupancy = "few available"
+            this_occupancy = "medium occupancy"
         if this_occupancy == " keine vorhanden":
-            this_occupancy = "no available"
+            this_occupancy = "high occupancy"
         if this_occupancy == " ausreichend vorhanden":
-            this_occupancy = "sufficient available"
+            this_occupancy = "low occupancy"
 
         tendency = "increasing" if (one_occupancy[0][1:] == "'zunehmend'") else ("decreasing" if (one_occupancy[0][1:] == "'abnehmend'")else "constant")
         if content[0] == one_location_previous[0]:
