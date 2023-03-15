@@ -36,11 +36,12 @@ ARR_BUTTON_STYLE = { #Define the style of the arrow button
 
 
 CONTENT_STYLE = { #style the content of list_page so that it aligns with the sidebar
-    "position": "fixed",
+
     "width": "calc(113vw - 250px)",
     "height": "calc(100vh - 50px)",
     "flex-grow": "1",
-    "seamless":"True"
+    "seamless":"True",
+    "overflow": "scroll"
 }
 
 #---------------------------------------
