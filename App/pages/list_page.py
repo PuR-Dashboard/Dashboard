@@ -150,9 +150,9 @@ def create_edit_window(index:int)-> dbc.Modal:
                     dbc.Label("Administration:",style = {"margin-top":"5%"}),
                     dbc.RadioItems(  # Radio buttons to select the occupancy
                         options=[  # Define the options of the radio buttons
-                                    {'label': 'Yes', 'value': 'yes'},  # Option for high occupancy
-                                    {'label': 'No', 'value': 'no'},  # Option for medium occupancy
-                                    {'label': 'No specification', 'value': None}  # Option for no occupancy
+                                    {'label': 'yes', 'value': 'yes'},  # Option for high occupancy
+                                    {'label': 'no', 'value': 'no'},  # Option for medium occupancy
+                                    {'label': 'no specification', 'value': None}  # Option for no occupancy
                                 ],
                         value=None,  # Set the value of the radio buttons to None
                         inline=True,  # Set the inline-attribute of the radio buttons to False
@@ -162,15 +162,15 @@ def create_edit_window(index:int)-> dbc.Modal:
                     dbc.Label("Type of Facility:",style = {"margin-top":"5%", "weight":"bold"}),
                     dcc.Dropdown(
                                     options=[
-                                        {'label': 'Car Park', 'value': 'Car Park'},
-                                        {'label': 'Separate Area', 'value': 'Separate Area'},
-                                        {'label': 'At the edge of the road / on the road', 'value': 'At the edge of the road / on the road'},
+                                        {'label': 'car park', 'value': 'car park'},
+                                        {'label': 'separate area', 'value': 'separate area'},
+                                        {'label': 'at the edge of the road / on the road', 'value': 'at the edge of the road / on the road'},
                                     ],
                                     placeholder="edit type of facility",
                                     id={"type":"edit_kind", "index":index},
                                 ),
 
-                    dbc.Label("Number of Parking spots (class):",style = {"margin-top":"5%", "weight":"bold"}),
+                    dbc.Label("Number of Parking Lots (class):",style = {"margin-top":"5%", "weight":"bold"}),
                     dcc.Dropdown(
                         options=[
                             {'label': '1-25', 'value': '1-25'},
@@ -179,7 +179,7 @@ def create_edit_window(index:int)-> dbc.Modal:
                             {'label': '100-200', 'value': '100-200'},
                             {'label': '200-1200', 'value': '200-1200'},
                         ],
-                        placeholder="edit number of parking spots",
+                        placeholder="edit number of parking lots",
                         id={"type":"edit_number_parking_lots", "index":index}
                     ),
 
@@ -204,10 +204,10 @@ def create_edit_window(index:int)-> dbc.Modal:
                     dbc.Label("Road Network Connection:",style = {"margin-top":"5%"}),
                     dcc.Dropdown(
                         options=[
-                            {'label': 'Superordinate network within the city (interstate)', 'value': 'Superordinate network within the city (interstate)'},
-                            {'label': 'Superordinate network out of town (interstate)', 'value': 'Superordinate network out of town (interstate)'},
-                            {'label': 'Subordinate network in the city', 'value': 'Subordinate network in the city'},
-                            {'label': 'Subordinate network out of town', 'value': 'Subordinate network out of town'},
+                            {'label': 'superordinate network within the city (interstate)', 'value': 'superordinate network within the city (interstate)'},
+                            {'label': 'superordinate network out of town (interstate)', 'value': 'superordinate network out of town (interstate)'},
+                            {'label': 'subordinate network in the city', 'value': 'subordinate network in the city'},
+                            {'label': 'subordinate network out of town', 'value': 'subordinate network out of town'},
                         ],
                         placeholder="edit connection",
                         id={"type":"edit_road_network_connection", "index":index},
@@ -216,11 +216,11 @@ def create_edit_window(index:int)-> dbc.Modal:
                     dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"5%"}),
                     dcc.Dropdown(
                         options=[
-                            {'label': 'Green Spaces', 'value': 'Green Spaces'},
-                            {'label': 'Living Spaces', 'value': 'Living Spaces'},
-                            {'label': 'Industrial Areas', 'value': 'Industrial Areas'},
-                            {'label': 'Industrial Parks', 'value': 'Industrial Parks'},
-                            {'label': 'Mixed Areas', 'value': 'Mixed Areas'},
+                            {'label': 'green spaces', 'value': 'green spaces'},
+                            {'label': 'living spaces', 'value': 'living spaces'},
+                            {'label': 'industrial areas', 'value': 'industrial areas'},
+                            {'label': 'industrial parks', 'value': 'industrial parks'},
+                            {'label': 'mixed areas', 'value': 'mixed areas'},
                         ],
                         placeholder="edit surrounding infrastructure",
                         id={"type":"edit_surrounding_infrastructure", "index":index},

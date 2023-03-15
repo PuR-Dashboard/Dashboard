@@ -149,9 +149,9 @@ def get_sidebar() -> html.Div:
                             dbc.Label("Administration:",style = {"margin-top":"2%"}), #administration filter
                             dbc.RadioItems(  # Radio buttons
                                 options=[  # Define the options of the radio buttons
-                                            {'label': 'Yes', 'value': 'yes'},  # administration
-                                            {'label': 'No', 'value': 'no'},  # no administration
-                                            {'label': 'Not Specified', 'value': None}  # not specified
+                                            {'label': 'yes', 'value': 'yes'},  # administration
+                                            {'label': 'no', 'value': 'no'},  # no administration
+                                            {'label': 'no specification', 'value': None}  # not specified
                                         ],
                                 value=None,  # Set the value of the radio buttons to None
                                 inline=True,  # Set the inline-attribute of the radio buttons
@@ -160,9 +160,9 @@ def get_sidebar() -> html.Div:
                             dbc.Label("Type of Facility:",style = {"margin-top":"2%"}), # type of  facility filter
                             dcc.Dropdown(
                                 options=[ # options of this charakteristic visalized as a dropdown
-                                    {'label': 'Car Park', 'value': 'Car Park'},
-                                    {'label': 'Separate Area', 'value': 'Separate Area'},
-                                    {'label': 'At the edge of the road / on the road', 'value': 'At the edge of the road / on the road'},
+                                    {'label': 'car park', 'value': 'car park'},
+                                    {'label': 'separate area', 'value': 'separate area'},
+                                    {'label': 'at the edge of the road / on the road', 'value': 'at the edge of the road / on the road'},
                                 ],
                                 placeholder="Specify the type of the facility",#the text which is vialized as long as nothing is choosen
                                 id="modal_advanced_filter_kind" , # individuell id of this component
@@ -194,10 +194,10 @@ def get_sidebar() -> html.Div:
                             dbc.Label("Road Network Connection:",style = {"margin-top":"2%"}), # transport connection filter
                             dcc.Dropdown(
                                 options=[ # options of this charakteristic visalized as a dropdown
-                                    {'label': 'Superordinate network within the city (interstate)', 'value': 'Superordinate network within the city (interstate)'},
-                                    {'label': 'Superordinate network out of town (interstate)', 'value': 'Superordinate network out of town (interstate)'},
-                                    {'label': 'Subordinate network within the city', 'value': 'Subordinate network within the city'},
-                                    {'label': 'Subordinate network out of town', 'value': 'Subordinate network out of town'},
+                                    {'label': 'superordinate network within the city (interstate)', 'value': 'superordinate network within the city (interstate)'},
+                                    {'label': 'superordinate network out of town (interstate)', 'value': 'superordinate network out of town (interstate)'},
+                                    {'label': 'subordinate network in the city', 'value': 'subordinate network in the city'},
+                                    {'label': 'subordinate network out of town', 'value': 'subordinate network out of town'},
                                 ],
                                 placeholder="Specify connection", #the text which is visualized as long as long as nothing is choosen
                                 id="modal_advanced_filter_road_network_connection" , # individuell id of this component
@@ -208,11 +208,11 @@ def get_sidebar() -> html.Div:
                             dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"2%"}), # surrounding infrastructure filter
                             dcc.Dropdown(
                                 options=[# options of this charakteristic visalized as a dropdown
-                                    {'label': 'Green Spaces', 'value': 'Green Spaces'},
-                                    {'label': 'Living Spaces', 'value': 'Living Spaces'},
-                                    {'label': 'Industrial Areas', 'value': 'Industrial Areas'},
-                                    {'label': 'Industrial Parks', 'value': 'Industrial Parks'},
-                                    {'label': 'Mixed Areas', 'value': 'Mixed Areas'},
+                                    {'label': 'green spaces', 'value': 'green spaces'},
+                                    {'label': 'living spaces', 'value': 'living spaces'},
+                                    {'label': 'industrial areas', 'value': 'industrial areas'},
+                                    {'label': 'industrial parks', 'value': 'industrial parks'},
+                                    {'label': 'mixed areas', 'value': 'mixed areas'},
                                 ],
                                 placeholder="Specify surrounding infrastructure", #the text which is visualized as long as long as nothing is choosen
                                 id="modal_advanced_filter_surrounding_infrastructure" , # individuell id of this component
@@ -277,8 +277,8 @@ def get_sidebar() -> html.Div:
                             dbc.Label("Administration:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dcc.Dropdown(
                                 options=[ # options of this charakteristic visalized as a dropdown
-                                    {'label': 'Yes', 'value': 'Yes'},
-                                    {'label': 'No', 'value': 'No'},
+                                    {'label': 'yes', 'value': 'yes'},
+                                    {'label': 'no', 'value': 'no'},
                                 ],
                                 placeholder="Specify administration", #the text which is visualized as long as long as nothing is choosen
                                 id="modal_add_location_administration" # individuell id of this component
@@ -286,9 +286,9 @@ def get_sidebar() -> html.Div:
                             dbc.Label("Type of Facility:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dcc.Dropdown(
                                 options=[ # options of this charakteristic visalized as a dropdown
-                                    {'label': 'Car Park', 'value': 'Car Park'},
-                                    {'label': 'Separate Area', 'value': 'Separate Area'},
-                                    {'label': 'At the edge of the road / on the road', 'value': 'At the edge of the road / on the road'},
+                                    {'label': 'car park', 'value': 'car park'},
+                                    {'label': 'separate area', 'value': 'separate area'},
+                                    {'label': 'at the edge of the road / on the road', 'value': 'at the edge of the road / on the road'},
                                 ],
                                 placeholder="Specify the type of the facility", #the text which is visualized as long as long as nothing is choosen
                                 id="modal_add_location_kind" # individuell id of this component
@@ -327,10 +327,10 @@ def get_sidebar() -> html.Div:
                             dbc.Label("Road Network Connection:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dcc.Dropdown(
                                 options=[ # options of this charakteristic visalized as a dropdown
-                                    {'label': 'Superordinate network within the city (interstate)', 'value': 'Superordinate network within the city (interstate)'},
-                                    {'label': 'Superordinate network out of town (interstate)', 'value': 'Superordinate network out of town (interstate)'},
-                                    {'label': 'Subordinate network in the city', 'value': 'Subordinate network in the city'},
-                                    {'label': 'Subordinate network out of town', 'value': 'Subordinate network out of town'},
+                                    {'label': 'superordinate network within the city (interstate)', 'value': 'superordinate network within the city (interstate)'},
+                                    {'label': 'superordinate network out of town (interstate)', 'value': 'superordinate network out of town (interstate)'},
+                                    {'label': 'subordinate network in the city', 'value': 'subordinate network in the city'},
+                                    {'label': 'subordinate network out of town', 'value': 'subordinate network out of town'},
                                 ],
                                 placeholder="Specify the transport connection", #the text which is visualized as long as long as nothing is choosen
                                 id="modal_add_location_road_network_connection" # individuell id of this component
@@ -340,11 +340,11 @@ def get_sidebar() -> html.Div:
                             dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dcc.Dropdown(
                                 options=[ # options of this charakteristic visalized as a dropdown
-                                    {'label': 'Green Spaces', 'value': 'Green Spaces'},
-                                    {'label': 'Living Spaces', 'value': 'Living Spaces'},
-                                    {'label': 'Industrial Areas', 'value': 'Industrial Areas'},
-                                    {'label': 'Industrial Parks', 'value': 'Industrial Parks'},
-                                    {'label': 'Mixed Areas', 'value': 'Mixed Areas'},
+                                    {'label': 'green spaces', 'value': 'green spaces'},
+                                    {'label': 'living spaces', 'value': 'living spaces'},
+                                    {'label': 'industrial areas', 'value': 'industrial areas'},
+                                    {'label': 'industrial parks', 'value': 'industrial parks'},
+                                    {'label': 'mixed areas', 'value': 'mixed areas'},
                                 ],
                                 placeholder="Specify the surrounding infrastructure", #the text which is visualized as long as long as nothing is choosen
                                 id="modal_add_location_surrounding_infrastructure" # individuell id of this component
