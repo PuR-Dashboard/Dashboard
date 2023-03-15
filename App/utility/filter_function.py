@@ -75,7 +75,7 @@ def filter_for_value(df:pd.DataFrame, category:str, set_value:str) -> pd.DataFra
     Exception
         If filtering the df based on the category and the set value went wrong.
     """
-
+    print(set_value)
     #if no value given, dont filter
     if set_value == None:
         return df
@@ -127,10 +127,12 @@ def filter_for_list(df:pd.DataFrame, category:str, set_list:list,  filter_occupa
     #if no list given or if empty list, dont filter
     if set_list == None or len(set_list) == 0:
         return df
+    
+    set_list = [x.lower() for x in set_list]
 
     #filtering process
     try:
-        df2 = df.drop(df.loc[~df[category].isin(set_list)].index) #dropping all rows of the datframe which value for the given category is not on the list of possible values
+        df2 = df.drop(df.loc[~df[category].apply(lambda x: x.lower()).isin(set_list)].index) #dropping all rows of the datframe which value for the given category is not on the list of possible values
     except Exception as e:
         raise Exception("Something went wrong when filtering for a list of values!")
 
