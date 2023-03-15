@@ -555,7 +555,7 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
     for i in range(len(names)):
         #append header of location
         html_list.append(dbc.CardHeader([dbc.Button(
-                   [html.B(names[i]), occupancy_function(data, names[i])],
+                   [html.Div([ html.B(names[i]), occupancy_function(data, names[i])], style={ "text-align" : "left"})],
                     color="outline",
                     id={"type":"header", "index":i},
                     value=i,
