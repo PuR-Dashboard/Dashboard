@@ -75,7 +75,7 @@ def filter_for_value(df:pd.DataFrame, category:str, set_value:str) -> pd.DataFra
     Exception
         If filtering the df based on the category and the set value went wrong.
     """
-    print(set_value)
+    
     #if no value given, dont filter
     if set_value == None:
         return df
