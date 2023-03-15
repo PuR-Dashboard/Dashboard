@@ -188,6 +188,9 @@ def define_inputs_advanced_filter(special_ones:list)-> list:
     characteristics= define_chracteristics()
     #apppend characteristics according to naming scheme
     for characs in characteristics:
+        if(characs == "public_transport"):
+            continue
+
         inputs.append(Input("modal_advanced_filter_"+ characs, "value"))
 
     return inputs
@@ -216,6 +219,10 @@ def define_outputs_advanced_filter(special_ones:list)->list:
     characteristics= define_chracteristics()
     #append characteristics ouputs acording to naming scheme
     for characs in characteristics:
+
+        if(characs == "public_transport"):
+            continue
+
         outputs.append(Output("modal_advanced_filter_"+ characs, "value"))
 
     return outputs
@@ -737,7 +744,7 @@ def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
     #list of characteristics according to data
     characteristics = list(glob_vars.data.columns.values)
     #latitude and longitude not given by pop up
-    non_changeable = ["lat", "lon"]
+    non_changeable = ["lat", "lon","public_transport"]
     #remove lat and lon from characteristics
     for n in non_changeable:
         if n in characteristics:
@@ -787,8 +794,10 @@ def advanced_filter_handling(_n1, _n2, _n3, occupancy_vals, *params):
         characs = list(characs)
 
         #assign existing characteristics from filter dictionary to the input fields to "keep" existing filters
-        for i in range(len(characteristics)):
+        for i in range(len(characs)):
             key = characteristics[i]
+
+
 
             characs[i] = glob_vars.current_filter[key]
 

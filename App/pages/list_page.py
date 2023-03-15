@@ -139,10 +139,10 @@ def create_edit_window(index:int)-> dbc.Modal:
 
     edit_popUp = dbc.Modal(  # Modal to display the advanced filter
         [
-            dbc.ModalHeader("Edit"),# Header of the modal
+            dbc.ModalHeader("Edit",style = {"font-weight":"bold"}),# Header of the modal
             dbc.ModalBody(  # Body of the modal
                 [
-                    dbc.Label("Address"),
+                    dbc.Label("Address:"),
                     dbc.Input(
                                     id={"type":"edit_address", "index":index},
                                     type="text",  # Set the type of the input field to text
@@ -162,7 +162,7 @@ def create_edit_window(index:int)-> dbc.Modal:
                         id={"type":"edit_administration", "index":index}  # Set the id of the radio buttons to modal_occupancy_filter
                     ),
 
-                    dbc.Label("Type of Facility",style = {"margin-top":"5%", "weight":"bold"}),
+                    dbc.Label("Type of Facility:",style = {"margin-top":"5%", "weight":"bold"}),
                     dcc.Dropdown(
                                     options=[
                                         {'label': 'Car Park', 'value': 'Car Park'},
@@ -173,7 +173,7 @@ def create_edit_window(index:int)-> dbc.Modal:
                                     id={"type":"edit_kind", "index":index},
                                 ),
 
-                    dbc.Label("Number of Parking spots",style = {"margin-top":"5%", "weight":"bold"}),
+                    dbc.Label("Number of Parking spots (class):",style = {"margin-top":"5%", "weight":"bold"}),
                     dcc.Dropdown(
                         options=[
                             {'label': '1-25', 'value': '1-25'},
@@ -195,16 +195,16 @@ def create_edit_window(index:int)-> dbc.Modal:
                         value=None  # Set the value of the input field to an empty string
                     ),
 
-                    dbc.Label("Public Transport Accessibility",style = {"margin-top":"5%"}),
+                    dbc.Label("Public Transport Accessibility:",style = {"margin-top":"5%"}),
                     dbc.Input(
                                     id={"type":"edit_public_transport", "index":index},
-                                    type="number",  # Set the type of the input field to text
+                                    type="text",  # Set the type of the input field to text
                                     debounce=False,  # Set the debounce-attribute of the input field to True
                                     placeholder="edit public transport accessibility",
                                     value=None  # Set the value of the input field to an empty string
                     ),
 
-                    dbc.Label("Transport Connection:",style = {"margin-top":"5%"}),
+                    dbc.Label("Road Network Connection:",style = {"margin-top":"5%"}),
                     dcc.Dropdown(
                         options=[
                             {'label': 'Superordinate network within the city (interstate)', 'value': 'Superordinate network within the city (interstate)'},
@@ -216,7 +216,7 @@ def create_edit_window(index:int)-> dbc.Modal:
                         id={"type":"edit_road_network_connection", "index":index},
                     ),
 
-                    dbc.Label("Surrounding Infrastructure",style = {"margin-top":"5%"}),
+                    dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"5%"}),
                     dcc.Dropdown(
                         options=[
                             {'label': 'Green Spaces', 'value': 'Green Spaces'},
@@ -308,25 +308,18 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
         A tables which represents all the given data.
     """
 
+    #defining the header
     table_header = [
         html.Thead(html.Tr([html.Th("Characteristics"), html.Th("Values")]), style = {"marginTop":"5%"})
     ]
 
-    underscored_charakter = define_chracteristics()
+    rows = [] #storing all the rows which should be visualized
 
-    #remove the underscores
-    charakter = []
-    for c in underscored_charakter:
-        splitted_c = c.split("_")
-        new_c = " ".join(splitted_c)
-        charakter.append(new_c)
-
-
-    rows = [html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]) for i in range (len(charakter))]
 
     occupancy = glob_vars.occupancy # global variable saving the data of the occupancy
     one = occupancy.iloc[len(occupancy)-1] # getting the last row of the dataframe which is representing the currenct occupancys
 
+    #adding the occupancy and the tendencyto the table
     for i in range (len(data)):
 
         one_location_previous = data.iloc[i] # data of one location
@@ -339,10 +332,38 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
         if this_occupancy == " ausreichend vorhanden":
             this_occupancy = "sufficient available"
 
-        occupancy_tendency = " increasing" if (one_occupancy[0][1:] == " zunehmend") else ("decreasing" if (one_occupancy[0][1:] == " abnehmend")else "stagnating")
+        tendency = "increasing" if (one_occupancy[0][1:] == "'zunehmend'") else ("decreasing" if (one_occupancy[0][1:] == "'abnehmend'")else "constant")
         if content[0] == one_location_previous[0]:
-            rows.append(html.Tr([html.Td("Occupancy"), html.Td(this_occupancy)]))
-            rows.append(html.Tr([html.Td("Occupancy Tendency"), html.Td(occupancy_tendency)]))
+            rows.append(html.Tr([html.Td("occupancy"), html.Td(this_occupancy)]))
+            rows.append(html.Tr([html.Td("occupancy tendency"), html.Td(tendency)]))
+
+
+    #adding the characteristics to the table
+    underscored_charakter = define_chracteristics()
+
+    #remove the underscores
+    charakter = []
+    for c in underscored_charakter:
+        splitted_c = c.split("_")
+        new_c = " ".join(splitted_c)
+
+        if(new_c == "price"):
+            new_c = "max. price per day (€)"
+
+        if(new_c == "number parking lots"):
+            new_c = "number of parking lots (class)"
+
+
+
+        charakter.append(new_c)
+
+
+    for i in range (len(charakter)):
+        rows.append(html.Tr([html.Td(charakter[i], style={'font_size': '10px',}), html.Td(content[(i+3)*2], style={'font_size': '7px',})]))
+
+
+
+    #add icons
 
     table_body = [html.Tbody(rows)]
 
@@ -682,6 +703,7 @@ def define_inputs_edit(special_ones:list)->list:
     characteristics= define_chracteristics()
 
     for characs in characteristics:
+
         inputs.append(Input({"type": "edit_"+characs, "index": MATCH}, 'value'))
 
     return inputs
@@ -711,6 +733,7 @@ def define_outputs_edit(special_ones:list)->list:
     characteristics= define_chracteristics()
 
     for characs in characteristics:
+
         outputs.append(Output({"type": "edit_"+characs, "index": MATCH}, 'value'))
 
     return outputs
