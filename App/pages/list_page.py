@@ -268,12 +268,13 @@ def create_content(df: pd.DataFrame)-> tuple[list[str], list[str]]:
     content:
         Given Information of the location.
     """
-
+    #get characteristic names
     cols = df.columns
 
     content = []
     names = []
-
+    #iterate through data
+    #save location names and characteristic values
     for i in range(len(df)):
         row = df.iloc[[i]]
 
@@ -390,7 +391,7 @@ def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
     "": ["Monday","Tuesday", "Wednesday", "Thursday","Friday", "WE"],
     "occupancy rate": [content[0],content[1],content[2],content[3],content[4],content[5]]
     })
-
+    #graph components
     fig = px.bar(df, x="", y="occupancy rate")
     fig.add_hline(y=1,line_color="lightblue",  annotation_text="<b>high occupancy</b>")
     fig.add_hline(y=0.5,line_color="lightblue", annotation_text="<b>medium occupancy</b>")
@@ -401,6 +402,7 @@ def create_plot(content:list[str] = [1,2,3,4,5,6])-> dcc.Graph:
             'text' : "<b>Prediction over a week</b>",
         }
     )
+    #add graph
     graph = dcc.Graph(
         figure =  fig,
         config={
@@ -508,11 +510,9 @@ def create_history(name:str)-> list:
 
             else:
                 averages.append(sum(all[i])/len(all[i]))
-
-
-
-
+    
     return averages
+
 
 def occupancy_function (data:pd.DataFrame, location_name) -> html.Div:
     """
@@ -541,6 +541,7 @@ def occupancy_function (data:pd.DataFrame, location_name) -> html.Div:
                 result = html.Div("low occupancy", style = {"color":"green"})
     return result
 
+
 def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list:
     """
     This function dynamically creates the layout for the list_page.
@@ -559,8 +560,6 @@ def create_layout(data:pd.DataFrame, names:list[str], content:list[str]) -> list
         A list of python dash and dash.html elements representing the layout of the list_page.
     """
     #currently content is list of strings, datatype will vary in the future
-    #global sid
-
 
     #init list of components
     html_list = []
@@ -646,13 +645,12 @@ def edit_data(changed_data:list[str],index:int)-> None:
         The index of the location.
 
     """
-
+    #get data
     temp_data = get_data("Characteristics.csv")
-
     characteristics = define_chracteristics()
-
+    #location to edit
     location = glob_vars.data.iloc[index]["location"]
-
+    #search for global index of location to edit 
     for i in range (len(temp_data)):
         if temp_data.iloc[i]["location"] == location:
             position = i
@@ -663,8 +661,8 @@ def edit_data(changed_data:list[str],index:int)-> None:
     array.append(temp_data.iloc[position]["location"])
     dic["location"] =  temp_data.iloc[position]["location"]
 
+    #write new data into correct row
     for i  in range(len(characteristics)):
-
         if changed_data[i] == None:
             array.append(np.squeeze(temp_data.iloc[position][characteristics[i]]))
             dic[characteristics[i]] = np.squeeze(temp_data.iloc[position][characteristics[i]])
@@ -673,6 +671,7 @@ def edit_data(changed_data:list[str],index:int)-> None:
             dic[characteristics[i]] = changed_data[i]
             array.append(changed_data[i])
 
+    #update data csv
     update_characteristics_in_csv(array)
 
 
@@ -694,14 +693,13 @@ def define_inputs_edit(special_ones:list)->list:
 
 
     inputs = []
-
+    #non standard cahracteristics
     for one in special_ones:
         inputs.append(one)
 
     characteristics= define_chracteristics()
-
+    #make characs according to naming scheme
     for characs in characteristics:
-
         inputs.append(Input({"type": "edit_"+characs, "index": MATCH}, 'value'))
 
     return inputs
@@ -724,14 +722,13 @@ def define_outputs_edit(special_ones:list)->list:
     """
 
     outputs = []
-
+    #non standard characteristics
     for one in special_ones:
         outputs.append(one)
 
     characteristics= define_chracteristics()
-
+    #make characs according to naming scheme
     for characs in characteristics:
-
         outputs.append(Output({"type": "edit_"+characs, "index": MATCH}, 'value'))
 
     return outputs
