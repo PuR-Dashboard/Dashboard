@@ -169,7 +169,7 @@ def get_sidebar() -> html.Div:
                                 multi=True, #multiple inputs are possible
                             ),
 
-                            dbc.Label("Number of Parking Lots:",style = {"margin-top":"2%"}), # parking lot filter
+                            dbc.Label("Number of Parking Lots (class):",style = {"margin-top":"2%"}), # parking lot filter
                              dcc.Dropdown(
                                  options=[ # options of this charakteristic visalized as a dropdown
                                      {'label': '1-25', 'value': '1-25'},
@@ -190,16 +190,8 @@ def get_sidebar() -> html.Div:
                                  placeholder="Price in \u20ac", #the text which is vialized as long as nothing is choosen
                                  value=None  # Set the value of the input field to an empty string
                              ),
-                             dbc.Label("Number of Public Transport Connections",style = {"margin-top":"2%"}), # public transport filter
-                             dbc.Input(
-                                 id="modal_advanced_filter_public_transport" , # individuell id of this component
-                                 type="number",  # Set the type of the input field to text
-                                 debounce=False,  # Set the debounce-attribute of the input field to True
-                                 placeholder="Specify the public transport accessibility", #the text which is vialized as long as nothing is choosen
-                                 value=None  # Set the value of the input field to an empty string
-                             ),
 
-                            dbc.Label("Transport Connection:",style = {"margin-top":"2%"}), # transport connection filter
+                            dbc.Label("Road Network Connection:",style = {"margin-top":"2%"}), # transport connection filter
                             dcc.Dropdown(
                                 options=[ # options of this charakteristic visalized as a dropdown
                                     {'label': 'Superordinate network within the city (interstate)', 'value': 'Superordinate network within the city (interstate)'},
@@ -302,7 +294,7 @@ def get_sidebar() -> html.Div:
                                 id="modal_add_location_kind" # individuell id of this component
                             ),
 
-                            dbc.Label("Number of Parking Spots:",style = {"margin-top":"2%"}), # name of the characteristic as a label
+                            dbc.Label("Number of Parking Spots (class):",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dcc.Dropdown(
                                 options=[ # options of this charakteristic visalized as a dropdown
                                     {'label': '1-25', 'value': '1-25'},
@@ -327,12 +319,12 @@ def get_sidebar() -> html.Div:
                             dbc.Input(
                                 placeholder="Specify the public transport accessibility", #the text which is visualized as long as long as nothing is choosen
                                 id="modal_add_location_public_transport" , # individuell id of this component
-                                type="number",  # Set the type
+                                type="text",  # Set the type
                                 debounce=True,  # Set the debounce-attribute
                                 value=None  # Set the default value
                             ),
 
-                            dbc.Label("Transport Connection:",style = {"margin-top":"2%"}), # name of the characteristic as a label
+                            dbc.Label("Road Network Connection:",style = {"margin-top":"2%"}), # name of the characteristic as a label
                             dcc.Dropdown(
                                 options=[ # options of this charakteristic visalized as a dropdown
                                     {'label': 'Superordinate network within the city (interstate)', 'value': 'Superordinate network within the city (interstate)'},

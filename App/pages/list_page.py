@@ -139,10 +139,10 @@ def create_edit_window(index:int)-> dbc.Modal:
 
     edit_popUp = dbc.Modal(  # Modal to display the advanced filter
         [
-            dbc.ModalHeader("Edit"),# Header of the modal
+            dbc.ModalHeader("Edit",style = {"font-weight":"bold"}),# Header of the modal
             dbc.ModalBody(  # Body of the modal
                 [
-                    dbc.Label("Address"),
+                    dbc.Label("Address:"),
                     dbc.Input(
                                     id={"type":"edit_address", "index":index},
                                     type="text",  # Set the type of the input field to text
@@ -162,7 +162,7 @@ def create_edit_window(index:int)-> dbc.Modal:
                         id={"type":"edit_administration", "index":index}  # Set the id of the radio buttons to modal_occupancy_filter
                     ),
 
-                    dbc.Label("Type of Facility",style = {"margin-top":"5%", "weight":"bold"}),
+                    dbc.Label("Type of Facility:",style = {"margin-top":"5%", "weight":"bold"}),
                     dcc.Dropdown(
                                     options=[
                                         {'label': 'Car Park', 'value': 'Car Park'},
@@ -173,7 +173,7 @@ def create_edit_window(index:int)-> dbc.Modal:
                                     id={"type":"edit_kind", "index":index},
                                 ),
 
-                    dbc.Label("Number of Parking spots",style = {"margin-top":"5%", "weight":"bold"}),
+                    dbc.Label("Number of Parking spots (class):",style = {"margin-top":"5%", "weight":"bold"}),
                     dcc.Dropdown(
                         options=[
                             {'label': '1-25', 'value': '1-25'},
@@ -195,16 +195,16 @@ def create_edit_window(index:int)-> dbc.Modal:
                         value=None  # Set the value of the input field to an empty string
                     ),
 
-                    dbc.Label("Public Transport Accessibility",style = {"margin-top":"5%"}),
+                    dbc.Label("Public Transport Accessibility:",style = {"margin-top":"5%"}),
                     dbc.Input(
                                     id={"type":"edit_public_transport", "index":index},
-                                    type="number",  # Set the type of the input field to text
+                                    type="text",  # Set the type of the input field to text
                                     debounce=False,  # Set the debounce-attribute of the input field to True
                                     placeholder="edit public transport accessibility",
                                     value=None  # Set the value of the input field to an empty string
                     ),
 
-                    dbc.Label("Transport Connection:",style = {"margin-top":"5%"}),
+                    dbc.Label("Road Network Connection:",style = {"margin-top":"5%"}),
                     dcc.Dropdown(
                         options=[
                             {'label': 'Superordinate network within the city (interstate)', 'value': 'Superordinate network within the city (interstate)'},
@@ -216,7 +216,7 @@ def create_edit_window(index:int)-> dbc.Modal:
                         id={"type":"edit_road_network_connection", "index":index},
                     ),
 
-                    dbc.Label("Surrounding Infrastructure",style = {"margin-top":"5%"}),
+                    dbc.Label("Surrounding Infrastructure:",style = {"margin-top":"5%"}),
                     dcc.Dropdown(
                         options=[
                             {'label': 'Green Spaces', 'value': 'Green Spaces'},
@@ -348,7 +348,13 @@ def create_table(data:pd.DataFrame,content:list)->dbc.Table :
         new_c = " ".join(splitted_c)
 
         if(new_c == "price"):
-            new_c = "price per day (€)"
+            new_c = "max. price per day (€)"
+
+        if(new_c == "number parking lots"):
+            new_c = "number of parking lots (class)"
+
+
+
         charakter.append(new_c)
 
 
@@ -672,6 +678,7 @@ def define_inputs_edit(special_ones:list)->list:
     characteristics= define_chracteristics()
 
     for characs in characteristics:
+
         inputs.append(Input({"type": "edit_"+characs, "index": MATCH}, 'value'))
 
     return inputs
@@ -701,6 +708,7 @@ def define_outputs_edit(special_ones:list)->list:
     characteristics= define_chracteristics()
 
     for characs in characteristics:
+
         outputs.append(Output({"type": "edit_"+characs, "index": MATCH}, 'value'))
 
     return outputs

@@ -123,8 +123,8 @@ def create_html(data:pd.DataFrame,screensize:list ,colors:list)->list :
                        <li style= "font-size: 15px"> <B><font face="Arial">current occupancy:</font></B> <font face="Arial"><font color = {colors[i]}>&emsp;{this_occupancy}</font></li>&thinsp;
                        <li style= "font-size: 15px"><B><font face="Arial">occupancy tendency:</B></font></B></font><font face="Arial">&emsp; {tendency}</font></li>&thinsp;
                        <li style= "font-size: 15px"><B><font face="Arial">address:</B></font></B></font><font face="Arial">&emsp; {data.iloc[i]["address"]}</font></li>&thinsp;
-                       <li style= "font-size: 15px"> <B><font face="Arial">number of parking lots: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["number_parking_lots"]}</font></li>&thinsp;
                        <li style= "font-size: 15px"> <B><font face="Arial">type of facility:</font></B></font><font face="Arial">&emsp;{data.iloc[i]["kind"]}</font></li>&thinsp;
+                       <li style= "font-size: 15px"> <B><font face="Arial">number of parking lots (class):</font></B></font><font face="Arial">&emsp;{data.iloc[i]["number_parking_lots"]}</font></li>&thinsp;
                        <li style= "font-size: 15px"> <B><font face="Arial">public transport connections: </font></B></font><font face="Arial">&emsp;{data.iloc[i]["public_transport"]}</font></li>&thinsp;
 
                    </ul>
