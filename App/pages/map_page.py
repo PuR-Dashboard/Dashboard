@@ -1,20 +1,12 @@
-from gc import callbacks
-import dash
-import dash_bootstrap_components as dbc
 from dash import html, dcc, callback,ctx
-from dash.dependencies import Input, Output, State
-import numpy as np
+from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 import os
 from utility import map_functions
 from utility.map_functions import *
-from pandas import read_csv
-from pages import list_page
-from components.sidebar import get_sidebar
 from utility.data_functions import *
 from utility.filter_function import *
 import pages.global_vars as glob_vars
-from collections import defaultdict
 from csv import reader
 
 

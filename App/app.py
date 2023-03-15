@@ -1,6 +1,5 @@
 import dash
 import dash_bootstrap_components as dbc
-
 import pages.global_vars as glob_vars
 
 

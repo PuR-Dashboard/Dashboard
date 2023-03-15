@@ -1,9 +1,5 @@
-import dash
 import dash_bootstrap_components as dbc
-#import dash_html_components as html
 from dash import html, dcc
-#from app import app
-from dash.dependencies import Input, Output, State
 
 #------------------setting the link of the logo to urban software institute homepage---------------------
 logo_url = "https://www.ui.city/"

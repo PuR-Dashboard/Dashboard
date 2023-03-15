@@ -1,4 +1,3 @@
-import sklearn, numpy
 import pandas as pd
 from utility.data_functions import *
 from collections import defaultdict

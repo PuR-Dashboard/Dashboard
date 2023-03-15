@@ -1,4 +1,3 @@
-import pandas as pd
 from utility.data_functions import get_data
 from collections import defaultdict
 

@@ -2,22 +2,14 @@
 from dash import html, dcc, ctx
 from dash.dependencies import Input, Output, State
 import dash
-# Connect to main app.py file
 from app import app
-import dash_bootstrap_components as dbc
-# Connect to your app pages
 from pages import map_page, list_page
 from utility.filter_function import *
-# Connect the components to the index
 from components import navbar, sidebar
-#from components import sidebar
 import pages.global_vars as glob_vars
 from dash.exceptions import PreventUpdate
 from utility.data_functions import *
-from collections import defaultdict
-import fontstyle
 import base64
-import datetime
 import io
 from csv import reader
 

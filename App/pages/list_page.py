@@ -7,11 +7,8 @@ import pandas as pd
 from dash.exceptions import PreventUpdate
 from utility.filter_function import *
 from utility.data_functions import *
-from components.sidebar import get_sidebar
 import plotly.express as px
 import pages.global_vars as glob_vars
-from collections import defaultdict
-import fontstyle
 from csv import reader
 
 

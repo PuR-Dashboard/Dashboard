@@ -10,7 +10,6 @@ import pages.global_vars as glob_vars
 import pandas as pd
 import os
 import pathlib
-from collections import defaultdict
 
 import base64
 
