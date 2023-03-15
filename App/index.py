@@ -149,8 +149,11 @@ def count_active_filters():
     filters:
         The amount of currently applied filters
     """
+
+    #count number of filters
     filters = 0
     for c in glob_vars.current_filter:
+        #if filters are empty, empty string or list there are no filter values
         if glob_vars.current_filter[c] != None and glob_vars.current_filter[c] != "" and glob_vars.current_filter[c] != []:
             filters += 1
 
@@ -239,7 +242,7 @@ def check_csv_validity(temp_df: pd.DataFrame) -> bool:
 
     """
 
-    #columns do not match
+    #if columns do not match
     try:
         for tv, v in zip(list(temp_df.columns.values), list(glob_vars.data.columns.values)):
             if tv != v:
@@ -282,7 +285,7 @@ def check_json_validity(json_object:dict[str:str], csv_locations: list[str]) -> 
         Whether the DataFrame based all acceptance criteria.
     """
 
-
+    #check that every location has link
     for l in csv_locations:
         if l not in json_object:
             return False
@@ -522,7 +525,7 @@ def add_new_location(_1, _2, _3, URL_value, *params):
         for c, charac in zip(characs, characteristics):
             add_dictionary[charac] = c
 
-        # NOW FUNCTION TO ADD LOCATION TO CSV
+        #add location to data csv and occupancy csv
         try:
             add_location(url=URL_value, dic=add_dictionary)
             update_occupancies()
@@ -659,6 +662,7 @@ def choose_correct_update(*args):
     else:
         err_var = 0
 
+    #make return values for sideboard filters and count number of filters
     s_val = []
     for s in sidebar_characs:
         if type(glob_vars.current_filter[s]) != list:
