@@ -125,7 +125,7 @@ def get_image(location_name = " ") -> str:
     """
 
     #getting the path to the Images Folder
-    images_path = os.path.join(get_root_dir(), "Data\Images")
+    images_path = os.path.join(get_root_dir(), "Data" + os.sep + "Images")
 
     #adding the location name to the path
     path = os.path.join(images_path, location_name)
